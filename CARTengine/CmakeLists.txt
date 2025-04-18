@@ -1,0 +1,48 @@
+# Create a shared library with game source files
+add_library(${CART_ENGINE_TARGET_NAME} STATIC
+
+	${CMAKE_CURRENT_SOURCE_DIR}/include/Application.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Application.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/include/Delegate.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Delegate.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/include/AssetManager.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/AssetManager.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/include/Object.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Object.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/include/Actor.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Actor.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/include/Clock.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Clock.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/include/Core.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Core.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/include/World.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/World.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/include/Sprite.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Sprite.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/include/Shape.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Shape.cpp
+	
+	${CMAKE_CURRENT_SOURCE_DIR}/include/Types.h
+
+	${CMAKE_CURRENT_SOURCE_DIR}/include/MathUtility.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/MathUtility.cpp
+
+	${CMAKE_CURRENT_SOURCE_DIR}/include/UIButton.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/UIButton.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/include/UIElement.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/UIElement.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/include/Text.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Text.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/include/HUD.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/HUD.cpp
+	
+		${CMAKE_CURRENT_SOURCE_DIR}/include/easing.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/easing.cpp
+
+)
+target_include_directories(${CART_ENGINE_TARGET_NAME} PUBLIC 
+	${CMAKE_CURRENT_SOURCE_DIR}/include
+	${PROJECT_SOURCE_DIR}/build/_deps/raylib-src/src
+	${PROJECT_SOURCE_DIR}/build/_deps/raylib-src/src/external/glfw/include
+)
+

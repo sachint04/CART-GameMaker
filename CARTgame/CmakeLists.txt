@@ -1,0 +1,56 @@
+add_executable(${CART_GAME_TARGET_NAME}
+
+	${CMAKE_CURRENT_SOURCE_DIR}/src/GameFramework/main.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/include/game.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/GameFramework/game.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/include/gameplayHUD.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/GameFramework/gameplayHUD.cpp
+	
+	
+
+)
+target_link_libraries(${CART_GAME_TARGET_NAME} PUBLIC ${CART_ENGINE_TARGET_NAME} )
+
+
+target_include_directories(${CART_GAME_TARGET_NAME} PUBLIC 
+	${CMAKE_CURRENT_SOURCE_DIR}/include
+	${PROJECT_SOURCE_DIR}/${CART_ENGINE_TARGET_NAME}/include
+)
+
+
+function(CopyLibDirToTarget LIB_NAME TARGET_NAME)
+	ADD_CUSTOM_COMMAND(
+		TARGET	${TARGET_NAME}
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+		$<TARGET_FILE_DIR:${LIB_NAME}>
+		$<TARGET_FILE_DIR:${TARGET_NAME}>
+	)
+endfunction()
+
+
+
+CopyLibDirToTarget(${CART_ENGINE_TARGET_NAME} ${CART_GAME_TARGET_NAME})
+CopyLibDirToTarget(raylib ${CART_GAME_TARGET_NAME})
+
+# Link required libraries to the native application
+target_link_libraries(${CART_GAME_TARGET_NAME}  PUBLIC raylib)
+
+
+
+
+
+#copy assets folder 
+
+set(RESOURCE_FOLDER_NAME "assets")
+set(RESOURCE_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${RESOURCE_FOLDER_NAME}")
+
+add_custom_command(
+	TARGET ${CART_GAME_TARGET_NAME}
+	POST_BUILD
+	COMMAND
+	${CMAKE_COMMAND} -E copy_directory
+	${RESOURCE_SRC_DIR}
+	$<TARGET_FILE_DIR:${CART_GAME_TARGET_NAME}>/${RESOURCE_FOLDER_NAME}
+
+)

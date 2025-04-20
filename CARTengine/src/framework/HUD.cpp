@@ -57,11 +57,12 @@ namespace cart
 	}
 
 	
-	void HUD::RestartButtonClicked()
+	void HUD::RestartButtonClicked(weak<Object> obj, Vector2 pos)
 	{
+
 	}
 
-	void HUD::QuitButtonClicked()
+	void HUD::QuitButtonClicked(weak<Object> obj, Vector2 pos)
 	{
 		Application* app = m_owningworld->GetApplication();
 		app->QuitApplication();

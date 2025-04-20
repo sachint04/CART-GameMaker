@@ -4,10 +4,9 @@
 #include "UIButton.h"
 
 namespace cart {
-
+#pragma region  Constructors
 	UIElement::UIElement(World* _owningworld, const std::string& _id)
 		:Actor{ _owningworld,  _id },
-		m_size(),
 		m_texture{},
 		m_pendingUpdate{ true },
 		m_pivot{0, 0},
@@ -18,23 +17,25 @@ namespace cart {
 
 	UIElement::UIElement( World* _owningworld, const std::string& _id, Vector2 _size)
 		:Actor{ _owningworld,  _id },
-		m_size(_size),
 		m_texture{},
 		m_pendingUpdate{true},
 		m_pivot{ 0, 0 },
 		m_rawlocation{}
 	{
-
+		Actor::m_width = _size.x;
+		Actor::m_height = _size.y;
 	}
+#pragma endregion
 
+#pragma region  Initialization
 	// VIRTUAL METHOD 
 	void UIElement::Init()
 	{
 		if (m_texture.size() > 0) {
 			m_texture2d = AssetManager::Get().LoadTextureAsset(m_texture);
 			if (m_texture2d) {
-				m_texture2d->width = m_size.x;
-				m_texture2d->height = m_size.y;
+				m_texture2d->width = m_width;
+				m_texture2d->height = m_height;
 			}
 		}
 
@@ -45,37 +46,18 @@ namespace cart {
 		UpdateLocation();
 		m_pendingUpdate = false;
 	}
+#pragma endregion
 
-	Rectangle UIElement::GetBounds() {
-		return{m_location.x, m_location.y, m_size.x * m_scale, m_size.y * m_scale };
-	}
-
-    void UIElement::SetSize(Vector2 _size){
-        m_size = _size;		
-		UpdateLocation();
-    }
-
-	void UIElement::SetUIProperties(UI_Properties _prop)
-	{
-		m_location = _prop.location;
-		m_calculatedLocation = _prop.location;
-		m_scale = _prop.scale;
-		m_color = _prop.color;
-		m_scale = _prop.scale;
-		m_texture = _prop.texture;
-		m_size = _prop.size;
-		m_pivot = _prop.pivot;
-		UpdateLocation();
-	}
+#pragma region GAME LOOP
 
 	void UIElement::Update(float _deltaTime)
 	{
 		if (m_active == false)return;
-		for (int i = 0; i<m_children.size(); i++)
+		for (int i = 0; i < m_children.size(); i++)
 		{
 			bool isActive = m_children[i].lock()->IsActive();
 			if (isActive == true) {
-				
+
 				m_children[i].lock()->Update(_deltaTime);
 			}
 		}
@@ -89,7 +71,7 @@ namespace cart {
 			DrawBGColor();
 			DrawBGTexture();
 		}
-		else {			
+		else {
 			DrawBGColor();
 		}
 
@@ -100,24 +82,31 @@ namespace cart {
 		}
 
 	}
+#pragma endregion
 
-	void UIElement::DrawBGColor()
-	{
-		DrawRectangle(m_calculatedLocation.x, m_calculatedLocation.y, m_size.x * m_scale, m_size.y * m_scale, m_color);
+
+#pragma region Set Properties
+	Rectangle UIElement::GetBounds() {
+		return{ m_location.x, m_location.y, m_width * m_scale,m_height * m_scale };
 	}
 
-	void UIElement::DrawBGTexture()
-	{
-		shared<Texture2D> texture2d = AssetManager::Get().LoadTextureAsset(m_texture);
-
-        if (texture2d) {
-			texture2d->width = m_size.x * m_scale;
-			texture2d->height = m_size.y * m_scale;
-		//	DrawTextureEx(*texture2d, m_location, m_rotation, m_scale, m_color);
-			DrawTextureV(*texture2d, m_calculatedLocation, WHITE);
-		}
+	void UIElement::SetSize(Vector2 _size) {
+		m_width = _size.x;
+		m_height = _size.y;
+		UpdateLocation();
 	}
 
+	void UIElement::SetUIProperties(UI_Properties _prop)
+	{
+		SetLocation(_prop.location);
+		SetScale(_prop.scale);
+		SetColor(_prop.color);
+
+		SetTexture(_prop.texture);
+		m_pivot = _prop.pivot;
+		SetSize({ _prop.size.x, _prop.size.y });
+		UpdateLocation();
+	}
 	void UIElement::SetTexture(std::string& _texture)
 	{
 		m_texture = _texture;
@@ -137,23 +126,13 @@ namespace cart {
 	{
 		Actor::SetScale(_scale);
 
-        for (size_t i = 0; i < m_children.size(); i++)
-        {
-            m_children[i].lock()->SetScale(_scale);
-        }
-
-		UpdateLocation();
-    }
-
-	void UIElement::SetActive(bool _flag)
-	{
-		Actor::SetActive(_flag);
 		for (size_t i = 0; i < m_children.size(); i++)
 		{
-			m_children[i].lock()->SetActive(_flag);
+			m_children[i].lock()->SetScale(_scale);
 		}
-	}
 
+		UpdateLocation();
+	}
 	void UIElement::SetLocation(Vector2 _location)
 	{
 		Vector2 offset = { _location.x - m_location.x , _location.y - m_location.y };
@@ -165,6 +144,50 @@ namespace cart {
 		}
 		UpdateLocation();
 	}
+	void UIElement::Offset(Vector2 _location)
+	{
+		Actor::Offset(_location);
+	}
+#pragma endregion
+
+#pragma region  Helpers
+	void UIElement::DrawBGColor()
+	{
+		DrawRectangle(m_calculatedLocation.x, m_calculatedLocation.y, m_width * m_scale, m_height * m_scale, m_color);
+	}
+
+	void UIElement::DrawBGTexture()
+	{
+		shared<Texture2D> texture2d = AssetManager::Get().LoadTextureAsset(m_texture);
+
+		if (texture2d) {
+			texture2d->width = m_width * m_scale;
+			texture2d->height = m_height * m_scale;
+			//	DrawTextureEx(*texture2d, m_location, m_rotation, m_scale, m_color);
+			DrawTextureV(*texture2d, m_calculatedLocation, WHITE);
+		}
+	}
+
+	void UIElement::SetActive(bool _flag)
+	{
+		Actor::SetActive(_flag);
+		for (size_t i = 0; i < m_children.size(); i++)
+		{
+			m_children[i].lock()->SetActive(_flag);
+		}
+	}
+
+	void UIElement::UpdateLocation()
+	{
+		m_rawlocation = { m_location.x * m_scale, m_location.y * m_scale };
+
+		//m_calculatedLocation = { m_location.x - (m_pivot.x * m_scale) , m_location.y - (m_pivot.y * m_scale) };
+		m_calculatedLocation = { m_location.x - (m_pivot.x * m_scale), m_location.y - (m_pivot.y * m_scale) };
+
+	}
+#pragma endregion
+	
+#pragma region  Create Child Elements
 	void UIElement::AddText(const std::string& id, Text_Properties _prop)
 	{
 		weak<Text> _txt = m_owningworld->SpawnActor<Text>(id, _prop.size);
@@ -179,34 +202,29 @@ namespace cart {
 	{
 		AddUIElement(_txt);
 	}
-
 	void UIElement::AddButton(weak<UIElement> _btn)
 	{
-		AddUIElement(_btn);		
+		AddUIElement(_btn);
 	}
-
+	weak<UIButton> UIElement::AddButton(const std::string& id, Btn_Text_Properties _prop)
+	{
+		weak<UIButton> _btn = m_owningworld->SpawnActor<UIButton>(id);
+		_btn.lock()->SetButtonProperties(_prop);
+		_btn.lock()->SetVisible(true);
+		AddUIElement(_btn);
+		return _btn;
+	}
 	void UIElement::AddUIElement(weak<UIElement> _ui)
 	{
 		m_children.push_back(_ui);
 	}
+#pragma endregion
 
-	
-	void UIElement::UpdateLocation()
-	{
-		m_rawlocation = { m_location.x * m_scale, m_location.y * m_scale };
-		
-		//m_calculatedLocation = { m_location.x - (m_pivot.x * m_scale) , m_location.y - (m_pivot.y * m_scale) };
-		m_calculatedLocation = { m_location.x - (m_pivot.x * m_scale), m_location.y - (m_pivot.y * m_scale) };
-
-	}
-		
+#pragma region  Cleanup
 	void UIElement::SetPendingUpdate(bool _flag)
 	{
 		m_pendingUpdate = _flag;
 	}
-
-	
-
 	UIElement::~UIElement()
 	{
 		for (size_t i = 0; i < m_children.size(); i++)
@@ -215,4 +233,7 @@ namespace cart {
 		}
 		//LOG("%s UIElement deleted!", m_id.c_str());
 	}
+#pragma endregion
+
+
 }

@@ -9,18 +9,27 @@ namespace cart {
 
 	class UIButton : public UIElement {
 	public:
+        UIButton(World* _owningworld, const std::string& _id);
         UIButton(World* _owningworld, const std::string& _id, Vector2 _size );
         void SetTextProperties(Btn_Text_Properties _prop);
 
         bool TestMouseOver(Vector2 _point);
-        void ButtonUp();
-        void ButtonDown();
+        void ButtonUp(Vector2 pos);
+        void ButtonDown(Vector2 pos);
+        void ButtonDrag(Vector2 pos);
         void MouseHovered();     
         void MouseOut();
         void SetButtonProperties(Btn_Properties _prop);
+        void SetButtonProperties(Btn_Text_Properties _prop);
 
 
-        Delegate<> onButtonClicked;
+        Delegate<weak<Object>, Vector2> onButtonClicked;
+        Delegate<weak<Object>,  Vector2> onButtonDown;
+        Delegate<weak<Object>, Vector2> onButtonUp;
+        Delegate<weak<Object>, Vector2> onButtonDrag;
+        Delegate<weak<Object>> onButtonHover;
+        Delegate<weak<Object>> onButtonOut;
+
         Rectangle GetBounds() override;
         void Init() override;
         void SetScale(float _scale) override;

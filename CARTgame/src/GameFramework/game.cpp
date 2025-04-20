@@ -15,6 +15,7 @@
 #include "Sprite.h"
 #include "Shape.h"
 #include "gameplayHUD.h"
+#include "component/controls/transformCntrl.h"
 //using namespace std;
 using namespace cart;
 
@@ -88,8 +89,10 @@ namespace cart {
        ui.lock()->AddText(txtid, *txtprop);
        ui.lock()->SetVisible(true);
        ui.lock()->SetActive(true);
-       ui.reset();
-      delete txtprop;
+
+     
+       
+    
 #pragma endregion
 
 #pragma region Create HUD
@@ -97,6 +100,12 @@ namespace cart {
        m_GameplayHUD = m_CurrentWorld->SpawnHUD<GameplayHUD>(hudid);
 #pragma endregion
 
+       std::string cntrlid = "trsfmcntrl-id";
+       weak<TransformCntrl> trsfmcntrl = m_CurrentWorld->SpawnActor<TransformCntrl>(cntrlid, ui);
+       trsfmcntrl.lock()->Init();
+
+       ui.reset();
+       delete txtprop;
        m_assetsLoaded = true;
     }
 

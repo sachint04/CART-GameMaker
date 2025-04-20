@@ -27,13 +27,17 @@ namespace cart {
 		}*/
 
 		Rectangle rect = { m_location.x, m_location.y ,  m_width * m_scale, m_height * m_scale};
-		Vector2 origin = { rect.width / 2 ,rect.height / 2 };//{ 0.0f, 0.0f };//
+		Vector2 origin = { m_location.x - (rect.width / 2.f) , rect.height / 2 };//{ 0.0f, 0.0f };//
 
 		if (m_shapeType == SHAPE_TYPE::RECTANGLE) {
-			DrawRectanglePro(rect, origin, m_rotation,  m_color);
+			DrawRectangle(m_location.x, m_location.y, rect.width, rect.height, m_color);
 		}
 		else if (m_shapeType == SHAPE_TYPE::CIRCLE) {
 			DrawCircle(m_location.x, m_location.y, m_width * m_scale, m_color);
+		}
+		else if (m_shapeType == SHAPE_TYPE::LINE) {
+		//	DrawRectanglePro(rect, origin, m_rotation, {0,0,0,0});
+			DrawRectangleLinesEx({ m_location.x, m_location.y, m_width * m_scale,  m_height * m_scale }, 1.f, m_color);
 		}
 
 	}
@@ -41,5 +45,9 @@ namespace cart {
 	Shape::~Shape()
 	{
 		//std::cout <<this << " -> Shape deleted \n";
+	}
+	void Shape::Init()
+	{
+		UIElement::Init();
 	}
 }

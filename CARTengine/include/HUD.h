@@ -23,8 +23,8 @@ namespace cart
 
 		protected:
 			HUD();
-			virtual void RestartButtonClicked();
-			virtual void QuitButtonClicked();
+			virtual void RestartButtonClicked(weak<Object> obj, Vector2 pos);
+			virtual void QuitButtonClicked(weak<Object> obj, Vector2 pos);
 		private:
 			bool m_AlreadyInit;		
 		

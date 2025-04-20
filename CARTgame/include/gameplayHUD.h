@@ -13,8 +13,8 @@ namespace cart {
 		virtual void Init() override;
 
 	protected:
-		void RestartButtonClicked() override;
-		void QuitButtonClicked() override;
+		void RestartButtonClicked(weak<Object> obj, Vector2 pos) override;
+		void QuitButtonClicked(weak<Object> obj, Vector2 pos) override;
 
 	private:
 	};

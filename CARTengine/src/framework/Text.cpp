@@ -27,7 +27,7 @@ namespace cart {
 	void Text::Draw(float _deltaTime)
 	{
 		if (m_visible == false)return;
-		DrawRectangle(m_location.x, m_location.y, m_size.x , m_size.y, m_background);
+		DrawRectangle(m_location.x, m_location.y, m_width , m_height, m_background);
 		shared<Font>sharedfont = AssetManager::Get().LoadFontAsset(m_font, m_fontsize);	
 		DrawTextEx(*sharedfont, m_text.c_str(), m_calculatedLocation, m_fontsize * m_scale,1, m_color);
 	}
@@ -39,14 +39,14 @@ namespace cart {
 		switch (m_align)
 		{
 		case LEFT:
-			updatedLoction = { m_location.x ,  m_location.y + (m_size.y * m_scale / 2) - (m_textsize.y * m_scale)/ 2 };
+			updatedLoction = { m_location.x ,  m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale)/ 2 };
 			break;
 		case CENTER:
-			updatedLoction = { m_location.x  + (m_size.x * m_scale /2)  - (m_textsize.x * m_scale) / 2, m_location.y + (m_size.y * m_scale /2) - (m_textsize.y * m_scale)  / 2 };
+			updatedLoction = { m_location.x  + (m_width * m_scale /2)  - (m_textsize.x * m_scale) / 2, m_location.y + (m_height * m_scale /2) - (m_textsize.y * m_scale)  / 2 };
 			break;
 
 		case RIGHT:
-			updatedLoction = { m_location.x + (m_size.x * m_scale) - (m_textsize.x * m_scale),  m_location.y + (m_size.y * m_scale / 2) - (m_textsize.y * m_scale)/ 2 };
+			updatedLoction = { m_location.x + (m_width * m_scale) - (m_textsize.x * m_scale),  m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale)/ 2 };
 			break;
 		}
 	

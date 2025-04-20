@@ -9,8 +9,10 @@ namespace cart {
 	public:
 		Shape(World* _owningworld, const std::string& _id, Vector2 _location, int width, int height, Color color, SHAPE_TYPE shape );
 		~Shape() override;
+		void Init() override;
 		void Update(float _deltaTime)  override;
 		void Draw(float _deltaTime)  override;
+
 
 	protected:
 		

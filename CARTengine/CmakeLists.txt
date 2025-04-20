@@ -36,8 +36,14 @@ add_library(${CART_ENGINE_TARGET_NAME} STATIC
 	${CMAKE_CURRENT_SOURCE_DIR}/include/HUD.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/HUD.cpp
 	
-		${CMAKE_CURRENT_SOURCE_DIR}/include/easing.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/easing.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/easing.cpp
+
+	${CMAKE_CURRENT_SOURCE_DIR}/include/component/controls/transformCntrl.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/component/controls/transformCntrl.cpp
+
+
+
 
 )
 target_include_directories(${CART_ENGINE_TARGET_NAME} PUBLIC 

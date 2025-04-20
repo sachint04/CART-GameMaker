@@ -50,14 +50,14 @@ namespace cart {
 	}
 
 
-	void GameplayHUD::RestartButtonClicked()
+	void GameplayHUD::RestartButtonClicked(weak<Object> obj, Vector2 pos)
 	{
-		HUD::RestartButtonClicked();
+		HUD::RestartButtonClicked(obj,pos);
 	}
 
-	void GameplayHUD::QuitButtonClicked()
+	void GameplayHUD::QuitButtonClicked(weak<Object> obj, Vector2 pos)
 	{
-		HUD::QuitButtonClicked();
+		HUD::QuitButtonClicked(obj, pos);
 	}
 
 

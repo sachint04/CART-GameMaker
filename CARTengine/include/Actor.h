@@ -10,6 +10,7 @@ namespace cart {
 		Actor( World* _owingworld, const std::string& _id );
 		virtual ~Actor();
 		virtual void SetLocation(Vector2 _location);
+		virtual void Offset(Vector2 _location);
 		virtual void SetScale(float _scale);
 		virtual void SetRotation(float _rotation);		
 		virtual void SetVisible(bool _flag);

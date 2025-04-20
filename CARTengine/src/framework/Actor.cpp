@@ -31,6 +31,12 @@ namespace cart {
 		m_calculatedLocation = _location;
 	}
 
+	void Actor::Offset(Vector2 _location)
+	{
+		Vector2 loc = { m_location.x + _location.x, m_location.y + _location.y };
+		SetLocation(loc);
+	}
+
 	void Actor::SetScale(float _scale)
 	{
 		m_scale = _scale;

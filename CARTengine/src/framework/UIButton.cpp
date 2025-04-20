@@ -6,6 +6,31 @@ namespace cart {
 	
 #pragma region  INIT
 	
+	UIButton::UIButton(World* _owningworld, const std::string& _id) 
+		:UIElement{ _owningworld, _id },
+		m_touch{ false },
+		tCount(0),
+		m_margin(0),
+		m_textsize{},
+		m_fontLocation{},
+		m_locmouse{},
+		m_fontstr{},
+		m_text{},
+		m_align{},
+		m_fontsize(),
+		m_defaulttextcolor{},
+		m_textcolor{},
+		m_texthovercolor{},
+		m_ButtonDefaultColor{},
+		m_ButtonDownColor{},
+		m_ButtonHoverColor{},
+		m_IsButtonDown{ false },
+		m_IsMouseOver{ false },
+		m_IsSelected{ false },
+		m_IsSelectable{ false }
+	{
+
+	};
 
 	UIButton::UIButton( World* _owningworld, const std::string& _id, Vector2 _size)
 		:UIElement{ _owningworld, _id, _size },
@@ -47,19 +72,29 @@ namespace cart {
 	void UIButton::SetScale(float _scale)
 	{
 		UIElement::SetScale(_scale);
-		UpdateLocation();
 		UpdateTextLocation();
 	}
 
 	void UIButton::SetButtonProperties(Btn_Properties _prop)
 	{
-		m_color = _prop.defaultcol;
+		UIElement::SetUIProperties(_prop);
+		SetColor(_prop.defaultcol);
+		m_ButtonDefaultColor = _prop.defaultcol;
+		m_ButtonHoverColor = _prop.overcol;
+		m_ButtonDownColor = _prop.downcol;
+		m_IsSelectable = _prop.isSelectable;
+
+		
+	}
+	void UIButton::SetButtonProperties(Btn_Text_Properties _prop)
+	{
+		UIElement::SetUIProperties(_prop);
+		SetColor(_prop.defaultcol);
 		m_ButtonDefaultColor = _prop.defaultcol;
 		m_ButtonHoverColor = _prop.overcol;
 		m_ButtonDownColor = _prop.downcol;
 		m_textcolor = _prop.textcolor;
 		m_IsSelectable = _prop.isSelectable;
-
 	}
 
 	void UIButton::SetUIProperties(UI_Properties _prop)
@@ -126,7 +161,7 @@ namespace cart {
 			if (IsMouseButtonPressed(0)) {
 				if (m_touch == true)return;
 				if (TestMouseOver(tPos) == true) {
-					ButtonDown();
+					ButtonDown(tPos);
 
 				}
 				m_touch = true;
@@ -137,10 +172,15 @@ namespace cart {
 				if (m_touch == false)return;
 
 				if (TestMouseOver(tPos) == true) {
-					ButtonUp();
+					ButtonUp(tPos);
 				}
-
+				
 				m_touch = false;
+			}
+		
+			if (m_IsMouseOver && m_IsButtonDown) {
+					ButtonDrag(tPos);
+				
 			}
 		}
 #endif
@@ -151,12 +191,15 @@ namespace cart {
 		if (m_visible == false)return;
 		UIElement::Draw(_deltaTime);
 		if (m_IsSelected == true) {
-			DrawRectangle(m_calculatedLocation.x - 10.f, m_calculatedLocation.y - 10.f, m_size.x + 20.f, m_size.y + 20.f, m_color);
+			DrawRectangle(m_calculatedLocation.x - 10.f, m_calculatedLocation.y - 10.f, m_width + 20.f, m_height + 20.f, m_color);
 		}
 		if (m_text.size() > 0) {
 			shared<Font>m_font = AssetManager::Get().LoadFontAsset(m_fontstr, m_fontsize);
 			Color calcColor = { m_textcolor.r, m_textcolor.g, m_textcolor.b, m_color.a };
 			DrawTextEx(*m_font, m_text.c_str(), m_fontLocation, m_fontsize * m_scale, 2 * m_scale, calcColor);
+		}
+		else {
+			DrawRectangle(m_calculatedLocation.x, m_calculatedLocation.y, m_width , m_height, m_color);
 		}
 	}
 
@@ -197,25 +240,7 @@ namespace cart {
 
 	void UIButton::UpdateLocation()
 	{
-		m_rawlocation = m_location;
-			
-		Vector2 updatedLoction = {};
-		switch (m_align)
-		{
-		case LEFT:
-			updatedLoction = { m_location.x ,  m_location.y - (m_size.y * m_scale)  / 2.f };
-			
-			break;
-		case CENTER:
-			updatedLoction = { m_location.x - (m_size.x * m_scale) / 2, m_location.y - (m_size.y * m_scale) / 2 };
-			break;
-
-		case RIGHT:
-			updatedLoction = { m_location.x - (m_size.x * m_scale),  m_location.y - (m_size.y * m_scale) / 2 };
-			break;
-		}
-		
-		m_calculatedLocation = updatedLoction;
+		UIElement::UpdateLocation();
 
 	}
 
@@ -227,9 +252,9 @@ namespace cart {
 
 	void UIButton::UpdateTextLocation() {
 		if (m_text.size() == 0)return;
-		if (m_textsize.x < m_size.x) {
-			float margin_x = ((m_size.x *  m_scale) - (m_textsize.x * m_scale))* 0.5f;
-			float margin_y = ((m_size.y * m_scale) - (m_textsize.y * m_scale)) * 0.5f;
+		if (m_textsize.x < m_width) {
+			float margin_x = ((m_width *  m_scale) - (m_textsize.x * m_scale))* 0.5f;
+			float margin_y = ((m_height * m_scale) - (m_textsize.y * m_scale)) * 0.5f;
 
 			m_fontLocation = { m_calculatedLocation.x + margin_x, m_calculatedLocation.y + margin_y  };
 		}
@@ -250,30 +275,39 @@ namespace cart {
 #pragma endregion
 
 #pragma region  UI EVENTS
-	void UIButton::ButtonUp()
+	void UIButton::ButtonUp(Vector2 pos)
 	{
 		m_IsButtonDown = false;
 		m_color = m_ButtonDefaultColor;
-		onButtonClicked.Broadcast();
+		onButtonUp.Broadcast(GetWeakRef(),  pos);
 		//LOG("UIBUTTON  RELEASE!!");
 	}
 	
-	void UIButton::ButtonDown()
+	void UIButton::ButtonDown(Vector2 pos)
 	{
 		m_IsButtonDown = true;
 		m_color = m_ButtonDownColor;
 		if (m_IsSelectable == true) {
 			m_IsSelected = true;
 		}
+		onButtonDown.Broadcast(GetWeakRef(), pos);
 		//LOG("UIBUTTON  DOWN!!");
 	}
-	
+
+
+	void UIButton::ButtonDrag(Vector2 pos) {
+		//LOG("button dragging");
+		onButtonDrag.Broadcast(GetWeakRef(), pos);
+	}
+
+
 	void UIButton::MouseHovered()
 	{
 		m_color = m_ButtonHoverColor;
 		m_textcolor = m_texthovercolor;
 		m_IsMouseOver = true;
 		SetMouseCursor(1);
+		onButtonHover.Broadcast(GetWeakRef() );
 	//	LOG("UIBUTTON  HOVER!!");
 	}
 	void UIButton::MouseOut()
@@ -284,16 +318,19 @@ namespace cart {
 			m_IsMouseOver = false;
 			SetMouseCursor(0);
 		//	LOG("UIBUTTON  OUT!!");
+			m_IsButtonDown = false;
+			onButtonOut.Broadcast(GetWeakRef() );
 		}
 	}
 
+	
 #pragma endregion
 
 #pragma region BUTTON STATE
 	
 	Rectangle UIButton::GetBounds() 
 	{	
-		return { m_calculatedLocation.x, m_calculatedLocation.y, (float)m_size.x, (float)m_size.y };
+		return { m_calculatedLocation.x, m_calculatedLocation.y, (float)m_width, (float)m_height };
 	}
 
 #pragma endregion

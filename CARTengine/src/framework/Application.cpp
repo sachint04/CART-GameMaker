@@ -66,8 +66,6 @@ namespace cart
 
 	void Application::QuitApplication()
 	{
-
-		
 		m_exit = true;
 	}
 

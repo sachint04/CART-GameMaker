@@ -40,7 +40,7 @@ namespace  cart {
 		void onDragBottomRight(weak<Object> btn, Vector2 pos);
 
 		void TransformTarget(Rectangle rect);
-		void UpdateCntrls(Rectangle rect);
+		void UpdateCntrls();
 
 		void onDragStart(weak<Object>, Vector2 pos);
 		void onDragEnd(weak<Object>, Vector2 pos);
@@ -52,8 +52,11 @@ namespace  cart {
 
 		float cntrlsize;
 		float cntrlhalf;
+		float m_aspectRatio;
 		std::string curDragCntrl;
 		bool m_isScaling;
+		bool m_isfixedAspectRatio;
+		Vector2 m_tmpPivot;
 		Vector2 tempTargetLoc;
 		
 	};

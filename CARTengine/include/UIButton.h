@@ -56,6 +56,7 @@ namespace cart {
         std::string m_text;
         ALIGN m_align = LEFT;
         float m_fontsize;
+        float m_fontspace;
         Color m_defaulttextcolor;
         Color m_textcolor;
         Color m_texthovercolor;

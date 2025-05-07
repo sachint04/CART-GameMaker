@@ -20,9 +20,13 @@ namespace cart {
 		cntrlsize{ 8.f },
 		cntrlhalf{ cntrlsize /2},
 		curDragCntrl{""},
-		m_isScaling{false}
+		m_isScaling{false},
+		m_isfixedAspectRatio{true},
+		m_aspectRatio{1},
+		m_tmpPivot{},
+		tempTargetLoc{}
 	{
-		
+		m_aspectRatio = { m_target.lock()->GetBounds().width / m_target.lock()->GetBounds().height };
 	}
 
 	void TransformCntrl::Init()
@@ -31,7 +35,7 @@ namespace cart {
 		Btn_Text_Properties cntrlui = {};		
 		cntrlui.color = GRAY;
 		cntrlui.size = { cntrlsize, cntrlsize };
-		cntrlui.defaultcol = GRAY;
+		cntrlui.btncol = GRAY;
 		cntrlui.overcol = GRAY;
 		cntrlui.downcol = ORANGE;
 
@@ -43,7 +47,7 @@ namespace cart {
 		Btn_Text_Properties btnprop = {};
 		btnprop.location = m_location;
 		btnprop.size = { rect.width, rect.height };
-		btnprop.defaultcol = {0};
+		btnprop.btncol = {0};
 		btnprop.overcol = {0};
 		btnprop.downcol = { 255,255,255,50 };
 		btnprop.size = { rect.width, rect.height };
@@ -139,10 +143,13 @@ namespace cart {
 
 		float width =  rectmaxH - pos.x;
 		float height = rectmaxY - pos.y;
+
+	
 		if (width < cntrlsize || height < cntrlsize)return;
 		//if (rectmaxY < pos.y)return;
 		TransformTarget({ pos.x , pos.y, width , height });
-		UpdateCntrls({ pos.x , pos.y, width , height });		
+		//UpdateCntrls({ pos.x , pos.y, width , height });		
+		UpdateCntrls();		
 	}
 	void TransformCntrl::onDragTopCenter(weak<Object> btn, Vector2 pos)
 	{
@@ -161,7 +168,8 @@ namespace cart {
 		//if (rectmaxY < pos.y)return;
 
 		TransformTarget({ pos.x , pos.y, width , height });
-		UpdateCntrls({ pos.x , pos.y, width , height });
+		//UpdateCntrls({ pos.x , pos.y, width , height });
+		UpdateCntrls();
 	}
 	void TransformCntrl::onDragTopRight(weak<Object> btn, Vector2 pos)
 	{
@@ -178,7 +186,8 @@ namespace cart {
 		if (width < cntrlsize || height < cntrlsize)return;
 		//if (rectmaxY < pos.y)return;
 		TransformTarget({ rectminH , pos.y, width , height });
-		UpdateCntrls({ rectminH , pos.y, width , height });
+	//	UpdateCntrls({ rectminH , pos.y, width , height });
+		UpdateCntrls();
 	}
 	void TransformCntrl::onDragMiddleLeft(weak<Object> btn, Vector2 pos)
 	{
@@ -194,7 +203,8 @@ namespace cart {
 		float height = rectmaxY - pos.y;
 		if (width < cntrlsize || height < cntrlsize)return;
 		TransformTarget({ pos.x , pos.y, width , height });
-		UpdateCntrls({ pos.x , pos.y, width , height });
+		//UpdateCntrls({ pos.x , pos.y, width , height });
+		UpdateCntrls();
 	}
 	void TransformCntrl::onDragMiddleRight(weak<Object> btn, Vector2 pos)
 	{
@@ -212,7 +222,8 @@ namespace cart {
 		if (width < cntrlsize || height < cntrlsize)return;
 		//if (rectmaxY < pos.y)return;
 		TransformTarget({ rectminH , pos.y, width , height });
-		UpdateCntrls({ rectminH , pos.y, width , height });
+		//UpdateCntrls({ rectminH , pos.y, width , height });
+		UpdateCntrls();
 	}
 	void TransformCntrl::onDragBottomLeft(weak<Object>btn, Vector2 pos)
 	{
@@ -228,7 +239,8 @@ namespace cart {
 
 		if (width < cntrlsize || height < cntrlsize)return;
 		TransformTarget({ pos.x , rectminY, width , height });
-		UpdateCntrls({ pos.x , rectminY, width , height });
+		//UpdateCntrls({ pos.x , rectminY, width , height });
+		UpdateCntrls();
 	}
 	void TransformCntrl::onDragBottomCenter(weak<Object> btn, Vector2 pos)
 	{
@@ -245,7 +257,8 @@ namespace cart {
 
 		if (width < cntrlsize || height < cntrlsize)return;
 		TransformTarget({ pos.x , rectminY, width , height });
-		UpdateCntrls({ pos.x , rectminY, width , height });
+		//UpdateCntrls({ pos.x , rectminY, width , height });
+		UpdateCntrls();
 	}
 	void TransformCntrl::onDragBottomRight(weak<Object> btn, Vector2 pos)
 	{
@@ -261,24 +274,27 @@ namespace cart {
 
 		if (width < cntrlsize || height < cntrlsize)return;
 		TransformTarget({ rectminH ,rectminY, width , height });
-		UpdateCntrls({ rectminH ,rectminY, width , height });
+		//UpdateCntrls({ rectminH ,rectminY, width , height });
+		UpdateCntrls();
 	}	
 	void TransformCntrl::onDragStart(weak<Object> btn, Vector2 pos)
 	{
 		if (m_isScaling)return;
 		//LOG("Active Control %s ", btn.lock()->GetID().c_str());
 		m_isScaling = true;
+		Rectangle rect = m_target.lock()->GetBounds();
+		m_tmpPivot = { rect.x + rect.width / 2.f , rect.y + rect.height / 2.f };
 		curDragCntrl = btn.lock()->GetID();
 	}
 	void TransformCntrl::onDragEnd(weak<Object> btn, Vector2 pos)
 	{
-		LOG("Drag ended %s ", btn.lock()->GetID().c_str());
+		//LOG("Drag ended %s ", btn.lock()->GetID().c_str());
 		m_isScaling = false;
 		curDragCntrl = "";
 	}
 	void TransformCntrl::onDragOut(weak<Object> btn)
 	{
-		LOG("Drag out end %s ", btn.lock()->GetID().c_str());
+		//LOG("Drag out end %s ", btn.lock()->GetID().c_str());
 		m_isScaling = false;
 		curDragCntrl = "";
 	}
@@ -292,21 +308,35 @@ namespace cart {
 		if (m_isScaling)return;
 		Vector2 offset = { pos.x - tempTargetLoc.x, pos.y - tempTargetLoc.y };
 		m_target.lock()->Offset(offset);			
-		UpdateCntrls(m_target.lock()->GetBounds());
+		//UpdateCntrls(m_target.lock()->GetBounds());
+		UpdateCntrls();
 		tempTargetLoc = pos;
 	}
 	void TransformCntrl::onTranslateEnd(weak<Object>) {
 	//	LOG("Translate Control End");
 	}
 	void TransformCntrl::TransformTarget(Rectangle rect) {
+
+		if (m_isfixedAspectRatio) {
+			if (rect.height < rect.width) {
+				rect.height = rect.width / m_aspectRatio;
+			}
+			else {
+				rect.width = rect.height * m_aspectRatio;
+			}
+			rect.x = m_tmpPivot.x - rect.width / 2.f;
+			rect.y = m_tmpPivot.y - rect.height / 2.f;
+		}
 		m_target.lock()->SetLocation({ rect.x, rect.y });
 		m_target.lock()->SetSize({ rect.width, rect.height });
 		m_outline.lock()->SetLocation({ rect.x, rect.y });
 		m_outline.lock()->SetSize({ rect.width, rect.height });
+
 	}
 
-	void TransformCntrl::UpdateCntrls(Rectangle rect)
+	void TransformCntrl::UpdateCntrls()
 	{
+		Rectangle rect = m_target.lock()->GetBounds();
 		m_translateCntrl.lock()->SetLocation({ rect.x, rect.y });
 		m_translateCntrl.lock()->SetSize({ rect.width, rect.height });
 

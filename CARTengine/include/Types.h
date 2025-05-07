@@ -79,7 +79,7 @@ namespace cart {
 
     struct Btn_Properties :UI_Properties {
     public:
-        Color defaultcol;
+        Color btncol;
         Color overcol;
         Color downcol;
         Color textcolor;
@@ -91,9 +91,9 @@ namespace cart {
         std::string font;
         std::string text;        
         float fontsize;
-        ALIGN align = ALIGN::LEFT;
-        Color color;
-        Color hovercolor;
+        float fontspace;
+        ALIGN textAlign = ALIGN::LEFT;
+        Color texthoverolor;
 
     };
    

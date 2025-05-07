@@ -19,7 +19,7 @@ namespace cart
 		template<typename WorldType>
 		weak<WorldType> LoadWorld();
 		bool m_exit;
-		void QuitApplication();
+		virtual void QuitApplication();
 	protected:
 		
 		virtual void Draw(float deltaTime);

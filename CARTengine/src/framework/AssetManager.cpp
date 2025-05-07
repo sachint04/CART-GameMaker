@@ -2,7 +2,7 @@
 #include <iostream> 
 #include <raylib.h>
 #include <string>
-
+#include <memory>
  namespace cart {
     unique<AssetManager> AssetManager::assetManager{ nullptr };
 
@@ -105,7 +105,7 @@
     {
        for (auto iter = m_textureLoadedMap.begin(); iter != m_textureLoadedMap.end();)
         {
-            if (iter->second.unique()) {
+            if (iter->second.use_count() == 1) {
 
                 //LOG("cleaning texture %s", iter->first.c_str());
                 iter = m_textureLoadedMap.erase(iter);
@@ -117,7 +117,7 @@
 
        for (auto iter = m_fontLoadedMap.begin(); iter != m_fontLoadedMap.end();)
        {
-           if (iter->second.unique()) {
+           if (iter->second.use_count() == 1) {
 
                //LOG("cleaning font %s", iter->first.c_str());
                //            UnloadFont(fnt);

@@ -10,7 +10,10 @@ namespace cart {
 		m_texture{},
 		m_pendingUpdate{ true },
 		m_pivot{0, 0},
-		m_rawlocation{}
+		m_rawlocation{},
+		m_flipH{false},
+		m_flipV{false},
+		m_TextureScale{1.f}
 	{
 
 	}
@@ -31,13 +34,13 @@ namespace cart {
 	// VIRTUAL METHOD 
 	void UIElement::Init()
 	{
-		if (m_texture.size() > 0) {
-			m_texture2d = AssetManager::Get().LoadTextureAsset(m_texture);
-			if (m_texture2d) {
-				m_texture2d->width = m_width;
-				m_texture2d->height = m_height;
-			}
-		}
+		//if (m_texture.size() > 0) {
+		//	m_texture2d = AssetManager::Get().LoadTextureAsset(m_texture);
+		//	if (m_texture2d) {
+		//		m_texture2d->width = m_width;
+		//		m_texture2d->height = m_height;
+		//	}
+		//}
 
 		for (size_t i = 0; i < m_children.size(); i++)
 		{
@@ -159,12 +162,49 @@ namespace cart {
 	void UIElement::DrawBGTexture()
 	{
 		shared<Texture2D> texture2d = AssetManager::Get().LoadTextureAsset(m_texture);
-
+		Vector2 imgLoc = m_location;
+		Vector2 imgCenterLoc = m_location;
 		if (texture2d) {
-			texture2d->width = m_width * m_scale;
-			texture2d->height = m_height * m_scale;
+			if (m_bAspectRatio == true) {
+				float w = texture2d->width;
+				float h = texture2d->height;
+
+				// Lanscape 
+				if (h < w) {
+					if (w > m_width) {
+						m_TextureScale = m_width / w;
+					}
+					imgLoc.y += (m_height - (h * m_TextureScale)) / 2.f;
+
+				}
+				else {
+					if (h > m_height) {
+						m_TextureScale = m_height/ h;
+					}
+					imgLoc.x += (m_width - (w * m_TextureScale)) / 2.f;
+
+				}
+				
+
+				imgCenterLoc = { imgLoc.x - (m_pivot.x ), imgLoc.y - (m_pivot.y) };
+			}
+			
 			//	DrawTextureEx(*texture2d, m_location, m_rotation, m_scale, m_color);
-			DrawTextureV(*texture2d, m_calculatedLocation, WHITE);
+			if (m_flipH) {
+				Image img = LoadImageFromTexture(*texture2d);
+				Image* img_ptr = new Image{ img };
+				ImageFlipHorizontal(img_ptr);
+				Texture2D tmpTexture2d = LoadTextureFromImage(*img_ptr);
+				UnloadImage(img);
+				delete img_ptr;
+
+				DrawTextureV(tmpTexture2d, m_calculatedLocation, WHITE);
+				LOG("image fliped!");
+			}			
+			else {
+				DrawTextureEx(*texture2d, imgCenterLoc, m_rotation, m_TextureScale, m_color);
+//				DrawTextureV(*texture2d, m_calculatedLocation, WHITE);
+			}
 		}
 	}
 
@@ -224,6 +264,14 @@ namespace cart {
 	void UIElement::SetPendingUpdate(bool _flag)
 	{
 		m_pendingUpdate = _flag;
+	}
+	void UIElement::SetFlipH(bool fliph)
+	{
+		m_flipH = fliph;
+	}
+	void UIElement::SetFlipV(bool flipv)
+	{
+		m_flipV = flipv;
 	}
 	UIElement::~UIElement()
 	{

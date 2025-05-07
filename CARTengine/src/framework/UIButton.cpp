@@ -12,6 +12,7 @@ namespace cart {
 		tCount(0),
 		m_margin(0),
 		m_textsize{},
+		m_fontspace{},
 		m_fontLocation{},
 		m_locmouse{},
 		m_fontstr{},
@@ -75,32 +76,7 @@ namespace cart {
 		UpdateTextLocation();
 	}
 
-	void UIButton::SetButtonProperties(Btn_Properties _prop)
-	{
-		UIElement::SetUIProperties(_prop);
-		SetColor(_prop.defaultcol);
-		m_ButtonDefaultColor = _prop.defaultcol;
-		m_ButtonHoverColor = _prop.overcol;
-		m_ButtonDownColor = _prop.downcol;
-		m_IsSelectable = _prop.isSelectable;
-
-		
-	}
-	void UIButton::SetButtonProperties(Btn_Text_Properties _prop)
-	{
-		UIElement::SetUIProperties(_prop);
-		SetColor(_prop.defaultcol);
-		m_ButtonDefaultColor = _prop.defaultcol;
-		m_ButtonHoverColor = _prop.overcol;
-		m_ButtonDownColor = _prop.downcol;
-		m_textcolor = _prop.textcolor;
-		m_IsSelectable = _prop.isSelectable;
-	}
-
-	void UIButton::SetUIProperties(UI_Properties _prop)
-	{
-		UIElement::SetUIProperties(_prop);
-	}
+	
 
 #pragma endregion
 
@@ -196,7 +172,7 @@ namespace cart {
 		if (m_text.size() > 0) {
 			shared<Font>m_font = AssetManager::Get().LoadFontAsset(m_fontstr, m_fontsize);
 			Color calcColor = { m_textcolor.r, m_textcolor.g, m_textcolor.b, m_color.a };
-			DrawTextEx(*m_font, m_text.c_str(), m_fontLocation, m_fontsize * m_scale, 2 * m_scale, calcColor);
+			DrawTextEx(*m_font, m_text.c_str(), m_fontLocation, m_fontsize * m_scale, m_fontspace * m_scale, calcColor);
 		}
 		else {
 			DrawRectangle(m_calculatedLocation.x, m_calculatedLocation.y, m_width , m_height, m_color);
@@ -222,17 +198,41 @@ namespace cart {
 	
 #pragma region Helpers
 	
+	void UIButton::SetButtonProperties(Btn_Properties _prop)
+	{
+		UIElement::SetUIProperties(_prop);
+		SetColor(_prop.btncol);
+		m_ButtonDefaultColor = _prop.btncol;
+		m_ButtonHoverColor = _prop.overcol;
+		m_ButtonDownColor = _prop.downcol;
+		m_IsSelectable = _prop.isSelectable;
+
+
+	}
+	void UIButton::SetButtonProperties(Btn_Text_Properties _prop)
+	{
+		SetTextProperties(_prop);	
+		m_IsSelectable = _prop.isSelectable;
+
+	}
+
+	void UIButton::SetUIProperties(UI_Properties _prop)
+	{
+		UIElement::SetUIProperties(_prop);
+	}
+
 	void UIButton::SetTextProperties(Btn_Text_Properties _prop)
 	{
 		SetUIProperties(_prop);
-		SetButtonProperties(_prop);
+		SetButtonProperties((Btn_Properties)_prop);
 		m_fontstr = _prop.font;
 		m_text = _prop.text;
 		m_fontsize = _prop.fontsize;
-		m_align = _prop.align;
+		m_align = _prop.textAlign;
 		m_textcolor = _prop.textcolor;
 		m_defaulttextcolor = _prop.textcolor;
-		m_texthovercolor = _prop.hovercolor;
+		m_texthovercolor = _prop.texthoverolor;
+		m_fontspace = _prop.fontspace;
 		//UpdateLocation();
      //   m_ButtonDefaultColor = _prop._color;
 

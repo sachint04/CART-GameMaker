@@ -15,9 +15,6 @@ namespace cart
 	}
 
 	Object::~Object()  {
-		if (m_id == "") {
-			LOG("NUll Pointer");
-		}
 		//LOG("%s Object Destroyed ", m_id.c_str());
 	}
 

@@ -42,7 +42,7 @@ namespace cart {
 		extbtn.lock()->SetVisible(true);
 		extbtn.lock()->SetActive(true);
 		extbtn.lock()->Init();
-		extbtn.lock()->onButtonClicked.BindAction(GetWeakRef(), &GameplayHUD::QuitButtonClicked);
+		extbtn.lock()->onButtonUp.BindAction(GetWeakRef(), &GameplayHUD::QuitButtonClicked);
 		btnprop = {};// clear struct
 #pragma endregion
 

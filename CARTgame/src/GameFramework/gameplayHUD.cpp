@@ -18,6 +18,7 @@ namespace cart {
 
 	void GameplayHUD::Init()
 	{
+
 	#pragma region Exit Button
 		UI_Properties btnui = {};
 		Vector2 screenSize = m_owningworld->GetAppWindowSize();
@@ -27,11 +28,11 @@ namespace cart {
 		Btn_Text_Properties btnprop = {};
 		btnprop.font = FONT_NAME;
 		btnprop.fontsize = 12.f;
-		btnprop.defaultcol = GRAY;
+		btnprop.btncol = GRAY;
 		btnprop.color = GRAY;
 		btnprop.overcol = DARKGRAY;
 		btnprop.text = "X";
-		btnprop.align = ALIGN::CENTER;
+		btnprop.textAlign = ALIGN::CENTER;
 		btnprop.size = { 20.f, 20.f };
 		btnprop.location = { screenSize.x - 25.f, 12.f };
 		btnprop.textcolor = BLACK;

@@ -37,7 +37,7 @@ namespace cart
 	{
 		
 	for(auto ui : m_children) {
-		if (CheckCollisionPointRec(_locmouse, ui.lock()->GetBounds()) && ui.lock()->IsVisible() == true) {
+		if (CheckCollisionPointRec(_locmouse, ui->GetBounds()) && ui->IsVisible() == true) {
 				return true;
 			}
 		}

@@ -28,8 +28,7 @@ namespace cart {
         List<Font> fonts= { };
         
         Dictionary<std::string, shared<Font>> m_fontLoadedMap;
-        shared<Font> LoadFont(const std::string& path, int fontSize, Dictionary<std::string, shared<Font>>& constainer);
-
+        shared<Font> LoadFont(const std::string& path, int fontSize, Dictionary<std::string, shared<Font>>& constainer);       
         void  ClearTextureMap();
         void  ClearFontMap();
 

@@ -1,11 +1,13 @@
 #pragma once
 #include <raylib.h>
 #include "Core.h"
+#include "DataFile.h"
+
 namespace cart
 {
 	class HUD;
 	class World;
-	class Application
+	class Application 
 	{
 	public:
 		Application(int _winWidth, int _winHeight, const std::string& title);
@@ -20,6 +22,8 @@ namespace cart
 		weak<WorldType> LoadWorld();
 		bool m_exit;
 		virtual void QuitApplication();
+		virtual DataFile& GetModel() { return m_Model; };
+		virtual std::string& GetResourcePath();
 	protected:
 		
 		virtual void Draw(float deltaTime);
@@ -31,6 +35,7 @@ namespace cart
 		float m_targetFrameRate;
 	
 		shared<World> m_CurrentWorld;
+		DataFile m_Model;
 		//shared<World> m_PendingWorld;
 	};
 	

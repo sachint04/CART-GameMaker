@@ -5,6 +5,10 @@
 #include "Actor.h"
 #include "HUD.h"
 #include "Clock.h"
+#include "GameStage.h"
+#include <stdexcept>
+#include "AssetManager.h"
+#include <limits> // Required for std::numeric_limits
 
 namespace cart {
 
@@ -14,7 +18,9 @@ namespace cart {
 		m_Actors{},
 		m_PendingActors{},
 		m_cleanCycleStartTime(0),
-		m_cleanCycleIter{ 5.f }
+		m_cleanCycleIter{ 5.f },
+		m_gameStages{},
+		m_currentStage{m_gameStages.end()}
 		
 	{
 		
@@ -23,32 +29,113 @@ namespace cart {
 	void World::Init() {
 
 		m_cleanCycleStartTime = Clock::Get().ElapsedTime();
+		InitGameStages();
+		StartStage();
 	}
+#pragma region GAME STAGE MANAGEMENT
+	void World::InitGameStages()
+	{
+
+	}
+
+    void World::AllGameStagesFinieshed()
+    {
+		LOG("All game stages fnished.");
+    }
+
+    void World::NextGameStage()
+	{
+		//m_currentStage = m_gameStages.erase(m_currentStage);
+		++m_currentStage;
+		if (m_currentStage != m_gameStages.end())
+		{
+			m_currentStage->get()->StartStage();
+			m_currentStage->get()->onStageFinished.BindAction(GetWeakRef(), &World::NextGameStage);
+		}else{
+
+			AllGameStagesFinieshed();
+		}
+	}
+
+	void World::PreviousGameStage()
+	{
+		//m_currentStage = m_gameStages.erase(m_currentStage);
+		--m_currentStage;
+		if (m_currentStage != m_gameStages.end())
+		{
+			m_currentStage->get()->StartStage();
+			//m_currentStage->get()->onStageFinished.BindAction(GetWeakRef(), &World::NextGameStage);
+		}
+		
+	}
+
+	void World::AddStage(const shared<GameStage>& newStage)
+	{
+		m_gameStages.push_back(newStage);
+		
+	}
+
+	void World::StartStage()
+	{
+		m_currentStage = m_gameStages.begin();
+		if (m_currentStage != m_gameStages.end())
+		{
+			m_currentStage->get()->StartStage();
+			m_currentStage->get()->onStageFinished.BindAction(GetWeakRef(), &World::NextGameStage);
+		}
+	}
+
+
+#pragma endregion
 
 
 	void World::Update(float _deltaTime)
 	{
-#pragma region Update All Actors, Move destroyed actors to pending list
-		for (auto iter = m_Actors.begin(); iter != m_Actors.end();)
-		{		
-			// Move Actors to Pending Destroy list
-			iter->get()->Update(_deltaTime);
-			if (iter->get()->IsPendingDestroy() == true) {
-				m_PendingActors.push_back(std::move(*iter));
-				iter = m_Actors.erase(iter);
-			}
-			else {
-				++iter;
-			}
+		for (size_t i = 0; i < m_Actors.size(); i++)
+		{
+			if(m_Actors.at(i).get()->IsPendingDestroy() == false)
+				m_Actors.at(i).get()->Update(_deltaTime);
 		}
-#pragma endregion
+		//if (m_Actors.size() > 0) {
+		//	List<shared<Actor>>::iterator iter = m_Actors.begin();
+		//	
+		//	LOG("(> WORLD <) Update() %d", &iter);
+		//	for (auto iter = m_Actors.begin(); iter != m_Actors.end(); ++iter)
+		//	{
+		//		if (!iter->get()->IsPendingDestroy()) {
+		//			iter->get()->Update(_deltaTime);
+		//		}
+		//	}
+		//}
 
+		/*
+		*/
+//		for (auto iter = m_Actors.begin(); iter != m_Actors.end();)
+//		{
+//			iter->get()->Update(_deltaTime);
+		//		++iter;
+			//if (iter->get()->IsPendingDestroy() == true) {
+			//	m_PendingActors.push_back(std::move(*iter));
+			//	iter = m_Actors.erase(iter);											
+			//}
+			//else 
+			//{
+			//	++iter;
+			//}				
+	//	}
+
+
+		if(m_currentStage != m_gameStages.end())
+		{
+			m_currentStage->get()->Update(_deltaTime);
+		}
+		
 #pragma region Garbage Collection TImer
 		double curTime = Clock::Get().ElapsedTime();
 		double elapsetime = curTime - m_cleanCycleStartTime;
 		long garbagesize = GetSizeOfPendingActors();
 
-		if (garbagesize >= (double)5000 || elapsetime >= m_cleanCycleIter) {
+		if (elapsetime >= m_cleanCycleIter) {
 			CleanCycle();
 			m_cleanCycleStartTime  = Clock::Get().ElapsedTime();
 		}
@@ -69,10 +156,10 @@ namespace cart {
 
 	void World::Draw(float _deltaTime)
 	{
-		for (auto iter = m_Actors.begin(); iter != m_Actors.end();)
+		ClearBackground(RAYWHITE);
+		for (auto iter = m_Actors.begin(); iter != m_Actors.end();  ++iter)
 		{
 			iter->get()->Draw(_deltaTime);
-			++iter;
 		}
 
 		if (mHUD)
@@ -93,19 +180,29 @@ namespace cart {
 	}
 
 	void World::CleanCycle() {
-		for (auto iter = m_PendingActors.begin(); iter != m_PendingActors.end();)
+		LOG("(- WORLD -) CleanCycle() ");
+		for (auto iter = m_Actors.begin(); iter != m_Actors.end();)
 		{
-			if (iter->get()->IsPendingDestroy())
-			{
-			//	LOG("WORLD CleanClcyle %s ", iter->get()->GetID().c_str());
-				iter = m_PendingActors.erase(iter);
+			//if (iter->get()->IsPendingDestroy() && iter->use_count() == 1)
+				LOG("Actor %s with use count%lu \n", iter->get()->GetID().c_str(), iter->use_count());
+			if (iter->use_count() == 1)
+			{			
+				LOG("Removing last instanece of actor %s with use count%lu \n", iter->get()->GetID().c_str(), iter->use_count());
+				iter->reset();
+				iter = m_Actors.erase(iter);
+				
 			}
 			else
 			{
 				++iter;
 			}
 		}
+		LOG("Current Live Actors count %zu", m_Actors.size());
+		LOG("(- WORLD -) CleanCycle() END!");
+		AssetManager::Get().CleanCycle();
+	
 	}
+
 
 	void World::Unload()
 	{

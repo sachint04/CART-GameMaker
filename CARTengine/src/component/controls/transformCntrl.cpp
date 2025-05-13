@@ -4,7 +4,7 @@
 #include "UIButton.h"
 #include "Shape.h"
 namespace cart {
-	TransformCntrl::TransformCntrl(World* _owningworld, const std::string& id, weak<UIElement> target)
+	TransformCntrl::TransformCntrl(World* _owningworld, const std::string& id, weak<UIElement> target, Vector2 minsize, Vector2 maxsize)
 		: UIElement{ _owningworld, id },
 		 m_topleftCntrl{},
 		  m_topcenterCntrl{},
@@ -24,7 +24,9 @@ namespace cart {
 		m_isfixedAspectRatio{true},
 		m_aspectRatio{1},
 		m_tmpPivot{},
-		tempTargetLoc{}
+		m_tempTargetLoc{},
+		m_minSize{ minsize },
+		m_maxSize{maxsize}
 	{
 		m_aspectRatio = { m_target.lock()->GetBounds().width / m_target.lock()->GetBounds().height };
 	}
@@ -40,7 +42,10 @@ namespace cart {
 		cntrlui.downcol = ORANGE;
 
 
-		Rectangle rect = m_target.lock()->GetBounds();
+		m_targetInitState = m_target.lock()->GetBounds();
+
+		Rectangle rect = m_targetInitState;// m_target.lock()->GetBounds();
+		
 		m_location = { rect.x, rect.y };
 
 		std::string btnid = "translate-btn";
@@ -59,6 +64,9 @@ namespace cart {
 
 		std::string id = "outline-cntrl";
 		m_outline = m_owningworld->SpawnActor<Shape>(id, m_location, rect.width, rect.height, BLUE, SHAPE_TYPE::LINE);	
+		m_outline.lock()->SetVisible(true);
+		m_outline.lock()->Init();
+		AddChild(m_outline);
 
 		id = "topleft-cntrl";
 		cntrlui.location = { rect.x -cntrlhalf, rect.y - cntrlhalf };
@@ -67,7 +75,6 @@ namespace cart {
 		m_topleftCntrl.lock()->onButtonDown.BindAction(GetWeakRef(), &TransformCntrl::onDragStart);
 		m_topleftCntrl.lock()->onButtonUp.BindAction(GetWeakRef(), &TransformCntrl::onDragEnd);
 		m_topleftCntrl.lock()->onButtonOut.BindAction(GetWeakRef(), &TransformCntrl::onDragOut);
-		m_outline.lock()->Init();
 
 		id = "topcenter-cntrl";
 		cntrlui.location = { rect.x + rect.width / 2.f -cntrlhalf, rect.y - cntrlhalf };
@@ -145,7 +152,7 @@ namespace cart {
 		float height = rectmaxY - pos.y;
 
 	
-		if (width < cntrlsize || height < cntrlsize)return;
+		if (width < m_minSize.x || height < m_minSize.y)return;
 		//if (rectmaxY < pos.y)return;
 		TransformTarget({ pos.x , pos.y, width , height });
 		//UpdateCntrls({ pos.x , pos.y, width , height });		
@@ -164,7 +171,7 @@ namespace cart {
 
 		float width = rectmaxH - pos.x;
 		float height = rectmaxY - pos.y;
-		if (width < cntrlsize || height < cntrlsize)return;
+		if (width < m_minSize.x || height < m_minSize.y)return;
 		//if (rectmaxY < pos.y)return;
 
 		TransformTarget({ pos.x , pos.y, width , height });
@@ -183,7 +190,7 @@ namespace cart {
 		float width = pos.x - rectminH;
 		float height = rectmaxY - pos.y;
 
-		if (width < cntrlsize || height < cntrlsize)return;
+		if (width < m_minSize.x || height < m_minSize.y)return;
 		//if (rectmaxY < pos.y)return;
 		TransformTarget({ rectminH , pos.y, width , height });
 	//	UpdateCntrls({ rectminH , pos.y, width , height });
@@ -201,7 +208,7 @@ namespace cart {
 
 		float width = rectmaxH - pos.x;
 		float height = rectmaxY - pos.y;
-		if (width < cntrlsize || height < cntrlsize)return;
+		if (width < m_minSize.x || height < m_minSize.y)return;
 		TransformTarget({ pos.x , pos.y, width , height });
 		//UpdateCntrls({ pos.x , pos.y, width , height });
 		UpdateCntrls();
@@ -219,7 +226,7 @@ namespace cart {
 		float width = pos.x - rectminH;
 		float height = rectmaxY - pos.y;
 
-		if (width < cntrlsize || height < cntrlsize)return;
+		if (width < m_minSize.x || height < m_minSize.y)return;
 		//if (rectmaxY < pos.y)return;
 		TransformTarget({ rectminH , pos.y, width , height });
 		//UpdateCntrls({ rectminH , pos.y, width , height });
@@ -237,7 +244,7 @@ namespace cart {
 		float width = rectmaxH - pos.x;
 		float height =  pos.y - rectminY;
 
-		if (width < cntrlsize || height < cntrlsize)return;
+		if (width < m_minSize.x || height < m_minSize.y)return;
 		TransformTarget({ pos.x , rectminY, width , height });
 		//UpdateCntrls({ pos.x , rectminY, width , height });
 		UpdateCntrls();
@@ -255,7 +262,7 @@ namespace cart {
 		float width = rectmaxH - pos.x;
 		float height = pos.y - rectminY;
 
-		if (width < cntrlsize || height < cntrlsize)return;
+		if (width < m_minSize.x || height < m_minSize.y)return;
 		TransformTarget({ pos.x , rectminY, width , height });
 		//UpdateCntrls({ pos.x , rectminY, width , height });
 		UpdateCntrls();
@@ -272,7 +279,7 @@ namespace cart {
 		float width = pos.x - rectminH;
 		float height = pos.y - rectminY;
 
-		if (width < cntrlsize || height < cntrlsize)return;
+		if (width < m_minSize.x || height < m_minSize.y)return;
 		TransformTarget({ rectminH ,rectminY, width , height });
 		//UpdateCntrls({ rectminH ,rectminY, width , height });
 		UpdateCntrls();
@@ -300,17 +307,17 @@ namespace cart {
 	}
 	void TransformCntrl::onTranslateStart(weak<Object>, Vector2 pos) {
 		if (m_isScaling)return;
-		tempTargetLoc = pos;
+		m_tempTargetLoc = pos;
 		//LOG("Translate Control Start");
 	}
 	void TransformCntrl::onTranslateContinue(weak<Object>, Vector2 pos) {
 
 		if (m_isScaling)return;
-		Vector2 offset = { pos.x - tempTargetLoc.x, pos.y - tempTargetLoc.y };
+		Vector2 offset = { pos.x - m_tempTargetLoc.x, pos.y - m_tempTargetLoc.y };
 		m_target.lock()->Offset(offset);			
 		//UpdateCntrls(m_target.lock()->GetBounds());
 		UpdateCntrls();
-		tempTargetLoc = pos;
+		m_tempTargetLoc = pos;
 	}
 	void TransformCntrl::onTranslateEnd(weak<Object>) {
 	//	LOG("Translate Control End");
@@ -327,7 +334,8 @@ namespace cart {
 			rect.x = m_tmpPivot.x - rect.width / 2.f;
 			rect.y = m_tmpPivot.y - rect.height / 2.f;
 		}
-		m_target.lock()->SetLocation({ rect.x, rect.y });
+		
+		m_target.lock()->SetLocation({ rect.x + m_target.lock()->GetPivot().x, rect.y+ m_target.lock()->GetPivot().y });
 		m_target.lock()->SetSize({ rect.width, rect.height });
 		m_outline.lock()->SetLocation({ rect.x, rect.y });
 		m_outline.lock()->SetSize({ rect.width, rect.height });
@@ -357,6 +365,30 @@ namespace cart {
 	bool TransformCntrl::IsActiveCtrl(std::string _cntrl) {
 
 		return curDragCntrl  == _cntrl;
+	}
+	void TransformCntrl::Reset(){
+		m_tmpPivot = { m_targetInitState.x + (m_targetInitState.width /2.f) , m_targetInitState.y + (m_targetInitState.height /2.f)};
+		TransformTarget({ m_targetInitState.x , m_targetInitState.y, m_targetInitState.width , m_targetInitState.height });
+		UpdateCntrls();
+	}
+
+	void TransformCntrl::Close()
+	{
+		m_target.lock()->SetVisible(false);
+		m_outline.lock()->SetVisible(false);
+
+		m_target.lock()->Destroy();
+		m_topleftCntrl.lock()->Destroy();
+		m_topcenterCntrl.lock()->Destroy();
+		m_toprightCntrl.lock()->Destroy();
+		m_middleleftCntrl.lock()->Destroy();
+		m_middlerightCntrl.lock()->Destroy();
+		m_bottomleftCntrl.lock()->Destroy();
+		m_bottomcenterCntrl.lock()->Destroy();
+		m_bottomrightCntrl.lock()->Destroy();
+		m_translateCntrl.lock()->Destroy();
+		m_outline.lock()->Destroy();
+		SetVisible(false);
 	}
 	TransformCntrl::~TransformCntrl()
 	{

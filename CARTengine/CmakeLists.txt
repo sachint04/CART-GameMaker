@@ -39,10 +39,13 @@ add_library(${CART_ENGINE_TARGET_NAME} STATIC
 	${CMAKE_CURRENT_SOURCE_DIR}/include/easing.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/easing.cpp
 
+	${CMAKE_CURRENT_SOURCE_DIR}/include/DataFile.h
+
 	${CMAKE_CURRENT_SOURCE_DIR}/include/component/controls/transformCntrl.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/component/controls/transformCntrl.cpp
 
-
+	${CMAKE_CURRENT_SOURCE_DIR}/include/GameStage.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/GameStage.cpp
 
 
 )

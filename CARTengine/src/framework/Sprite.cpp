@@ -17,12 +17,12 @@ namespace cart {
 	}
 	void Sprite::Draw(float _deltaTime)
 	{
-		shared<Texture2D> texture2d = AssetManager::Get().LoadTextureAsset(m_texturePath);
-		if (texture2d) {
-			texture2d->width = m_size.width;
-			texture2d->height = m_size.height;
-			DrawTextureEx(*texture2d, m_location, m_rotation, m_scale, m_color);
-		}
+		weak<Texture2D> texture2d = AssetManager::Get().LoadTextureAsset(m_texturePath);
+		//if (texture2d) {
+		/*	texture2d->width = m_size.width;
+			texture2d->height = m_size.height;*/
+			DrawTextureEx(*texture2d.lock(), m_location, m_rotation, m_scale, m_color);
+		//}
 	}
 	Sprite::~Sprite()
 	{

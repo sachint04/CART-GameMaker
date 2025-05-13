@@ -9,13 +9,16 @@ namespace  cart {
 	class TransformCntrl : public UIElement {
 
 	public:
-		TransformCntrl(World* _owningworld, const std::string& id, weak<UIElement> target);
+		TransformCntrl(World* _owningworld, const std::string& id, weak<UIElement> target, Vector2 minsize, Vector2 maxsize);
 		~TransformCntrl();
 
 		void Init() override;
+		void Reset();
+		void Close();
 		Delegate<Rectangle>onScaled;
 		Delegate<float>onRotated;
 		Delegate<Vector2> onMoved;
+
 
 	private:
 		weak<UIElement> m_target;
@@ -52,12 +55,15 @@ namespace  cart {
 
 		float cntrlsize;
 		float cntrlhalf;
+		Vector2 m_minSize;
+		Vector2 m_maxSize;
 		float m_aspectRatio;
 		std::string curDragCntrl;
 		bool m_isScaling;
 		bool m_isfixedAspectRatio;
 		Vector2 m_tmpPivot;
-		Vector2 tempTargetLoc;
+		Vector2 m_tempTargetLoc;
+		Rectangle m_targetInitState;
 		
 	};
 }

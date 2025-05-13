@@ -3,6 +3,7 @@
 #include <raylib.h>
 #include <string>
 #include <memory>
+#include <stdexcept>
  namespace cart {
     unique<AssetManager> AssetManager::assetManager{ nullptr };
 
@@ -32,6 +33,7 @@
      }
 
     shared<Texture2D> AssetManager::LoadTextureAsset(const std::string &path){  
+     //   LOG("|>=-=ASSETMANAGER =-=<| LoadTextureAsset() %s", path.c_str());
        return LoadTexture( path, m_textureLoadedMap);
     }
     
@@ -40,23 +42,34 @@
         auto found = constainer.find(path);
         if (found != constainer.end())
         {
-           // LOG("%s Texture Found in Memory!", path.c_str());
+           LOG("|>=-=ASSETMANAGER =-=<| %s Texture Found in Memory!", path.c_str());
+          //  shared<Texture2D> weak_texture = found->second;
             return found->second;
         }
        
         Image image = LoadImage(path.c_str());     // Loaded in CPU memory (RAM)
-        Texture2D tex = LoadTextureFromImage(image);         // Image converted to texture, GPU memory (VRAM)
-
-        shared<Texture2D> texture = std::make_shared<Texture2D>(tex);
+        Texture2D texture = LoadTextureFromImage(image);         // Image converted to texture, GPU memory (VRAM)       
         UnloadImage(image);// Loaded in CPU memory (RAM)
-        if (texture)
-        {
-            //LOG("IO %s Texture Loaded!", path.c_str());
-            constainer.insert({ path, texture });           
-            return texture;
-        }
+        
+        //LOG("IO %s Texture Loaded!", path.c_str());
+        try {
+            constainer.insert({ path, std::make_shared<Texture2D>(texture) });
+           // shared<Texture2D> t = constainer.find(path)->second;
+            LOG("|>=-=ASSETMANAGER =-=<| Creating  TextureMap  %s User Count  %lu ", path.c_str(), constainer.find(path)->second.use_count());
+            texture = {};
+            return constainer.find(path)->second;
 
-        return shared<Texture2D > {nullptr};
+        }
+        catch(const std::runtime_error& e){
+            LOG("ERROR!! cannot fine Image with path %s", path.c_str());
+        }
+       
+        return shared<Texture2D >{nullptr};
+
+        
+           
+        
+
     }
     
 #pragma region LOAD FONT
@@ -103,11 +116,17 @@
 
     void AssetManager::CleanCycle()
     {
+
+        LOG("|>=-=ASSETMANAGER =-=<| CleanCycle()  ");
        for (auto iter = m_textureLoadedMap.begin(); iter != m_textureLoadedMap.end();)
         {
+                LOG("TextureMap  %s User Count  %lu ", iter->first.c_str(), iter->second.use_count());
             if (iter->second.use_count() == 1) {
 
-                //LOG("cleaning texture %s", iter->first.c_str());
+                LOG("Cleaning TextureMap  %s", iter->first.c_str());
+                UnloadTexture(*iter->second);
+                iter->second.reset();
+                
                 iter = m_textureLoadedMap.erase(iter);
             }
             else {
@@ -117,10 +136,12 @@
 
        for (auto iter = m_fontLoadedMap.begin(); iter != m_fontLoadedMap.end();)
        {
+           LOG("Font Map  %s User Count  %lu ", iter->first.c_str(), iter->second.use_count());
            if (iter->second.use_count() == 1) {
 
-               //LOG("cleaning font %s", iter->first.c_str());
+               LOG("Cleaning Font Map  %s", iter->first.c_str());
                //            UnloadFont(fnt);
+               iter->second.reset();
                iter = m_fontLoadedMap.erase(iter);
 
            }
@@ -128,7 +149,10 @@
                ++iter;
            }
        }
-       for (int i = 0; i < fonts.size(); i++) UnloadFont(fonts[i]);
+       LOG("Current Live Texture count %zu", m_textureLoadedMap.size());
+       LOG("Current Live Font count %zu", m_fontLoadedMap.size());
+
+       LOG("|>=-=ASSETMANAGER =-=<| CleanCycle() END!! ");
     }
 
     void AssetManager::ClearTextureMap()
@@ -140,6 +164,7 @@
                iter = m_textureLoadedMap.erase(iter);
           
         }
+     
     }
 
     void AssetManager::ClearFontMap()

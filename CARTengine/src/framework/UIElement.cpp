@@ -7,7 +7,7 @@ namespace cart {
 #pragma region  Constructors
 	UIElement::UIElement(World* _owningworld, const std::string& _id)
 		:Actor{ _owningworld,  _id },
-		m_texture{},
+		m_strTexture{},
 		m_pendingUpdate{ true },
 		m_pivot{0, 0},
 		m_rawlocation{},
@@ -20,7 +20,7 @@ namespace cart {
 
 	UIElement::UIElement( World* _owningworld, const std::string& _id, Vector2 _size)
 		:Actor{ _owningworld,  _id },
-		m_texture{},
+		m_strTexture{},
 		m_pendingUpdate{true},
 		m_pivot{ 0, 0 },
 		m_rawlocation{}
@@ -41,11 +41,14 @@ namespace cart {
 		//		m_texture2d->height = m_height;
 		//	}
 		//}
-
-		for (size_t i = 0; i < m_children.size(); i++)
+		for (auto iter = m_children.begin(); iter != m_children.end(); ++iter)
 		{
-			m_children[i].lock()->Init();
+			iter->get()->Init();
 		}
+	/*	for (size_t i = 0; i < m_children.size(); i++)
+		{
+			m_children[i]->Init();
+		}*/
 		UpdateLocation();
 		m_pendingUpdate = false;
 	}
@@ -55,42 +58,28 @@ namespace cart {
 
 	void UIElement::Update(float _deltaTime)
 	{
-		if (m_active == false)return;
-		for (int i = 0; i < m_children.size(); i++)
-		{
-			bool isActive = m_children[i].lock()->IsActive();
-			if (isActive == true) {
-
-				m_children[i].lock()->Update(_deltaTime);
-			}
-		}
+		if (!m_active)return;
+	//	LOG("UIElement::::: %s ::::UPDATE()", GetID().c_str());
 	}
 
 	void UIElement::Draw(float _deltaTime)
 	{
 		if (m_visible == false)return;
-
-		if (m_texture.size() > 0) {
+	//	LOG("UIElement::::: %s ::::DRAW()", GetID().c_str());
+		if (m_strTexture.size() > 0) {
 			DrawBGColor();
 			DrawBGTexture();
 		}
 		else {
 			DrawBGColor();
 		}
-
-		for (int i = 0; i < m_children.size(); i++)
-		{
-			m_children[i].lock()->Draw(_deltaTime);
-
-		}
-
 	}
 #pragma endregion
 
 
 #pragma region Set Properties
 	Rectangle UIElement::GetBounds() {
-		return{ m_location.x, m_location.y, m_width * m_scale,m_height * m_scale };
+		return{ m_location.x - m_pivot.x, m_location.y - m_pivot.y, m_width * m_scale,m_height * m_scale };
 	}
 
 	void UIElement::SetSize(Vector2 _size) {
@@ -110,18 +99,14 @@ namespace cart {
 		SetSize({ _prop.size.x, _prop.size.y });
 		UpdateLocation();
 	}
+	
 	void UIElement::SetTexture(std::string& _texture)
 	{
-		m_texture = _texture;
+		m_strTexture = _texture;
 	}
 
 	void UIElement::SetVisible(bool _flag)
 	{
-		for (int i = 0; i < m_children.size(); i++)
-		{
-			m_children[i].lock()->SetVisible(_flag);
-
-		}
 		Actor::SetVisible(_flag);
 	}
 
@@ -129,9 +114,9 @@ namespace cart {
 	{
 		Actor::SetScale(_scale);
 
-		for (size_t i = 0; i < m_children.size(); i++)
+		for (auto iter = m_children.begin(); iter != m_children.end(); ++iter)
 		{
-			m_children[i].lock()->SetScale(_scale);
+			iter->get()->SetScale(_scale);
 		}
 
 		UpdateLocation();
@@ -140,10 +125,11 @@ namespace cart {
 	{
 		Vector2 offset = { _location.x - m_location.x , _location.y - m_location.y };
 		Actor::SetLocation(_location);
-		for (auto iter : m_children) {
-			Vector2 loc = iter.lock()->GetLocation();
+		for (auto iter = m_children.begin(); iter != m_children.end(); ++iter)
+		{		
+			Vector2 loc = iter->get()->GetLocation();
 			Vector2 newloc = { loc.x + offset.x, loc.y + offset.y };
-			iter.lock()->SetLocation(newloc);
+			iter->get()->SetLocation(newloc);
 		}
 		UpdateLocation();
 	}
@@ -161,13 +147,16 @@ namespace cart {
 
 	void UIElement::DrawBGTexture()
 	{
-		shared<Texture2D> texture2d = AssetManager::Get().LoadTextureAsset(m_texture);
+		if (!m_texture2d) {
+			 m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture);
+			 LOG("UIElement DrawTexture() usecount %lu ", m_texture2d.use_count());
+		}
 		Vector2 imgLoc = m_location;
 		Vector2 imgCenterLoc = m_location;
-		if (texture2d) {
+		
 			if (m_bAspectRatio == true) {
-				float w = texture2d->width;
-				float h = texture2d->height;
+				float w = m_texture2d->width;
+				float h = m_texture2d->height;
 
 				// Lanscape 
 				if (h < w) {
@@ -191,29 +180,35 @@ namespace cart {
 			
 			//	DrawTextureEx(*texture2d, m_location, m_rotation, m_scale, m_color);
 			if (m_flipH) {
-				Image img = LoadImageFromTexture(*texture2d);
+				
+				/*Image img = LoadImageFromTexture(*m_texture2d);
 				Image* img_ptr = new Image{ img };
 				ImageFlipHorizontal(img_ptr);
 				Texture2D tmpTexture2d = LoadTextureFromImage(*img_ptr);
 				UnloadImage(img);
 				delete img_ptr;
 
-				DrawTextureV(tmpTexture2d, m_calculatedLocation, WHITE);
+				DrawTextureV(tmpTexture2d, m_calculatedLocation, WHITE);*/
+				
 				LOG("image fliped!");
 			}			
 			else {
-				DrawTextureEx(*texture2d, imgCenterLoc, m_rotation, m_TextureScale, m_color);
+				DrawTextureEx(*m_texture2d, imgCenterLoc, m_rotation, m_TextureScale, WHITE);
+
 //				DrawTextureV(*texture2d, m_calculatedLocation, WHITE);
 			}
-		}
+	
+	//		m_texture2d.reset();			
+			imgLoc = {};
+			imgCenterLoc = {};
 	}
 
 	void UIElement::SetActive(bool _flag)
 	{
 		Actor::SetActive(_flag);
-		for (size_t i = 0; i < m_children.size(); i++)
+		for (auto iter = m_children.begin(); iter != m_children.end(); ++iter)
 		{
-			m_children[i].lock()->SetActive(_flag);
+			iter->get()->SetActive(_flag);
 		}
 	}
 
@@ -236,27 +231,23 @@ namespace cart {
 		Vector2 loc = { 0,0 };
 		_txt.lock()->Init();
 		_txt.lock()->SetVisible(true);
-		AddUIElement(_txt);
+		AddChild(_txt);
 	}
-	void UIElement::AddText(weak<UIElement> _txt)
-	{
-		AddUIElement(_txt);
-	}
-	void UIElement::AddButton(weak<UIElement> _btn)
-	{
-		AddUIElement(_btn);
-	}
+
 	weak<UIButton> UIElement::AddButton(const std::string& id, Btn_Text_Properties _prop)
 	{
 		weak<UIButton> _btn = m_owningworld->SpawnActor<UIButton>(id);
 		_btn.lock()->SetButtonProperties(_prop);
 		_btn.lock()->SetVisible(true);
-		AddUIElement(_btn);
+		AddChild(_btn);
 		return _btn;
 	}
-	void UIElement::AddUIElement(weak<UIElement> _ui)
+	void UIElement::AddChild(weak<UIElement> _ui)
 	{
-		m_children.push_back(_ui);
+		shared<UIElement> shared_ui = _ui.lock();
+		m_children.push_back(shared_ui);
+		shared_ui.reset();
+	
 	}
 #pragma endregion
 
@@ -273,12 +264,34 @@ namespace cart {
 	{
 		m_flipV = flipv;
 	}
+	void UIElement::ClearTexture() {
+		if (m_texture2d) {
+			UnloadTexture(*m_texture2d);
+			m_texture2d.reset();
+		}
+	}
+	void UIElement::Destroy() {
+		LOG("UIElemente | %s | Destroyed!!", m_id.c_str());
+		/*for (size_t i = 0; i < m_children.size(); i++)
+		{
+			m_children[i].lock()->SetActive(false);
+			m_children[i].lock()->SetVisible(false);
+			m_children[i].lock()->Destroy();
+		}*/
+		//		std::vector<weak<UIElement>>::iterator iter = m_children.begin();
+		
+		for (auto iter = m_children.begin(); iter != m_children.end();)
+		{
+			iter->get()->Destroy();
+			iter = m_children.erase(iter);
+		}
+		m_children.clear();
+		ClearTexture();
+		SetVisible(false);
+		Actor::Destroy();
+	}
 	UIElement::~UIElement()
 	{
-		for (size_t i = 0; i < m_children.size(); i++)
-		{
-			m_children[i].lock()->Destroy();
-		}
 		//LOG("%s UIElement deleted!", m_id.c_str());
 	}
 #pragma endregion

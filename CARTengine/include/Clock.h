@@ -17,6 +17,7 @@ namespace cart {
 		void TimeScale(float _t);
 		double TimeScale();
 		void Tick();
+		time_t Now();
 		~Clock();
 	protected:
 		Clock();
@@ -25,7 +26,7 @@ namespace cart {
 
 		steady_clock::time_point m_startTime;
 		steady_clock::time_point m_previousTime;
-
+		
 		duration<double> m_elapsedTime;
 		duration<double> m_deltaTime;
 

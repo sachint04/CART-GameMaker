@@ -12,47 +12,59 @@ namespace cart
 	class Actor;
 	class Application;
 	class HUD;
-
+	class GameStage;
 	class World : public Object
 	{
 
 	public:
 		World(Application* owningApp);
 		virtual void Init();
-		//void BeginPlayInternal();
+		virtual void Update(float _deltaTime);
+		virtual void Draw(float _deltaTime);
+		virtual void AddStage(const shared<GameStage>& newStage);
 		virtual ~World();
 
+		//void BeginPlayInternal();
+
 		Vector2 GetAppWindowSize() const;
-		void Update(float _deltaTime);
-		void Draw(float _deltaTime);
 		Application* GetApplication() { return m_owningApp; }
 		const Application* GetApplication() const { return m_owningApp; }
 		long GetSizeOfPendingActors();
 		void CleanCycle();
 		void Unload();
+		void StartStage();
+		void NextGameStage();
+		void PreviousGameStage();
+
 		template<typename ActorType, typename... Args>
 		weak<ActorType> SpawnActor(Args... args);
-
+		
 		template<typename HUDType, typename... Args>
 		weak<HUDType> SpawnHUD(Args... args);
-	
-	private:
-
-		Application* m_owningApp;
+		
+		private:
+		
+		virtual void InitGameStages();
+		
 		bool m_BeginPlay;
 		float m_cleanCycleIter;
 		double m_cleanCycleStartTime;
-		List<shared<Actor>> m_Actors;
 
+		Application* m_owningApp;
+
+		List<shared<Actor>> m_Actors;
 		List<shared<Actor>> m_PendingActors;
+		List<shared<GameStage>> m_gameStages;
 		shared<HUD> mHUD;
+		List<shared<GameStage>>::iterator  m_currentStage;
+		
+		virtual void AllGameStagesFinieshed();
 	};
 
 
 	template<typename ActorType, typename...Args>
 	weak<ActorType> World::SpawnActor(Args...args)
 	{
-		//std::cout << "args " << args... << std::endl;
 		shared<ActorType> newActor{ new ActorType(this, args...) };
 		m_Actors.push_back(newActor);
 		return newActor;

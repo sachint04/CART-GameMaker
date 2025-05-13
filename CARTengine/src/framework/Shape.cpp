@@ -21,6 +21,7 @@ namespace cart {
 
 	void Shape::Draw(float _deltaTime)
 	{
+		if (!m_visible)return;
 		/*if (m_location.x < 0 || m_location.x + (m_width * m_scale) > GetWindowSize().x
 			|| m_location.y < 0 || m_location.y + (m_height * m_scale)> GetWindowSize().y) {			
 			return;

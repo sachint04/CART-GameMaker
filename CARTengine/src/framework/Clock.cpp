@@ -46,6 +46,12 @@ namespace cart {
 	Clock::Clock() :m_startTime{}, m_elapsedTime(), m_timeScale(1.f), m_deltaTime()
 	{
 	}
+
+	time_t Clock::Now() {
+		auto now = system_clock::now();
+		std::time_t t = system_clock::to_time_t(now);		
+		return t;
+	}
 	void Clock::Tick()
 	{
 		steady_clock::time_point curTime = steady_clock::now();

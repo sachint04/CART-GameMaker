@@ -132,8 +132,13 @@ namespace cart
 
     float GetVectorLength(Vector2 vector) {
 		float len = std::sqrt(vector.x * vector.x + vector.y * vector.y);
-        return std::abs(len);
+		return std::abs(len);
     }
+
+	float GetRawVectorLength(Vector2 vector) {
+		float len = std::sqrt(vector.x * vector.x + vector.y * vector.y);
+        return len;
+	}
 
 
     Vector2 NormailzeVec(Vector2 vector)

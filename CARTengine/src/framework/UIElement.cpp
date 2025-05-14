@@ -13,7 +13,10 @@ namespace cart {
 		m_rawlocation{},
 		m_flipH{false},
 		m_flipV{false},
-		m_TextureScale{1.f}
+		m_bAspectRatio{false},
+		m_defaultSize{},
+		m_textureScaleX{1.f},
+		m_textureScaleY{1.f}
 	{
 
 	}
@@ -23,11 +26,19 @@ namespace cart {
 		m_strTexture{},
 		m_pendingUpdate{true},
 		m_pivot{ 0, 0 },
-		m_rawlocation{}
+		m_rawlocation{},
+		m_flipH{ false },
+		m_flipV{ false },
+		m_bAspectRatio{ false },
+		m_textureScaleX{ 1.f },
+		m_textureScaleY{ 1.f }
 	{
+		m_defaultSize = _size;
 		Actor::m_width = _size.x;
 		Actor::m_height = _size.y;
 	}
+
+
 #pragma endregion
 
 #pragma region  Initialization
@@ -79,10 +90,18 @@ namespace cart {
 
 #pragma region Set Properties
 	Rectangle UIElement::GetBounds() {
-		return{ m_location.x - m_pivot.x, m_location.y - m_pivot.y, m_width * m_scale,m_height * m_scale };
+	//	return{ m_location.x - m_pivot.x, m_location.y - m_pivot.y, m_width * m_scale,m_height * m_scale };
+		return{ m_calculatedLocation.x, m_calculatedLocation.y, m_width * m_scale,m_height * m_scale };
 	}
 
 	void UIElement::SetSize(Vector2 _size) {
+		m_textureScaleX =  _size.x / m_defaultSize.x;
+		m_textureScaleY =  _size.y / m_defaultSize.y;
+		
+		//Vector2 pivot = { m_pivot.x - m_pivot.x * m_textureScaleX, m_pivot.y - m_pivot.y * m_textureScaleY};
+		//m_pivot = pivot;
+		//LOG("SetSize() pivot  x -  %.2f y - %.2f  scale  x - %.2f y - %.2f   ", m_pivot.x, m_pivot.y, m_textureScaleX, m_textureScaleY);
+		
 		m_width = _size.x;
 		m_height = _size.y;
 		UpdateLocation();
@@ -90,13 +109,16 @@ namespace cart {
 
 	void UIElement::SetUIProperties(UI_Properties _prop)
 	{
-		SetLocation(_prop.location);
-		SetScale(_prop.scale);
-		SetColor(_prop.color);
+		m_location  = _prop.location;
+		m_rawlocation = _prop.location;
+		m_scale = _prop.scale;
+		m_color = _prop.color;
 
-		SetTexture(_prop.texture);
+		m_strTexture = _prop.texture;
 		m_pivot = _prop.pivot;
-		SetSize({ _prop.size.x, _prop.size.y });
+		m_defaultSize = _prop.size;
+		m_width =  _prop.size.x, 
+		m_height = 	_prop.size.y ;
 		UpdateLocation();
 	}
 	
@@ -121,6 +143,7 @@ namespace cart {
 
 		UpdateLocation();
 	}
+
 	void UIElement::SetLocation(Vector2 _location)
 	{
 		Vector2 offset = { _location.x - m_location.x , _location.y - m_location.y };
@@ -133,6 +156,12 @@ namespace cart {
 		}
 		UpdateLocation();
 	}
+
+	void UIElement::SetPivot(Vector2 _pivot)
+	{
+		m_pivot = _pivot;
+	}
+	
 	void UIElement::Offset(Vector2 _location)
 	{
 		Actor::Offset(_location);
@@ -151,56 +180,42 @@ namespace cart {
 			 m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture);
 			 LOG("UIElement DrawTexture() usecount %lu ", m_texture2d.use_count());
 		}
-		Vector2 imgLoc = m_location;
-		Vector2 imgCenterLoc = m_location;
+
 		
-			if (m_bAspectRatio == true) {
-				float w = m_texture2d->width;
-				float h = m_texture2d->height;
+		if (m_bAspectRatio == true) 
+		{
+			float tmpscale = std::min((float)m_width / (float)m_texture2d.get()->width, (float)m_height / (float)m_texture2d.get()->height);
 
-				// Lanscape 
-				if (h < w) {
-					if (w > m_width) {
-						m_TextureScale = m_width / w;
-					}
-					imgLoc.y += (m_height - (h * m_TextureScale)) / 2.f;
+			Vector2 textLoc = { ((m_location.x + m_width / 2.f) - (m_texture2d.get()->width * tmpscale) / 2.f ) - m_pivot.x,
+								((m_location.y + m_height / 2.f) - (m_texture2d.get()->height * tmpscale) / 2.f ) - m_pivot.y};
+		//	LOG("DrawBGTexture x  %.2f  y %.2f scale %.2f ", textLoc.x, textLoc.y, tmpscale);
+			DrawTextureEx(*m_texture2d, textLoc, m_rotation, tmpscale, WHITE);
+		}
+		else {
+			m_texture2d.get()->width = m_width;
+			m_texture2d.get()->height = m_height;
+			DrawTextureEx(*m_texture2d, m_calculatedLocation, m_rotation, 1.f, WHITE);
+		}
 
-				}
-				else {
-					if (h > m_height) {
-						m_TextureScale = m_height/ h;
-					}
-					imgLoc.x += (m_width - (w * m_TextureScale)) / 2.f;
-
-				}
-				
-
-				imgCenterLoc = { imgLoc.x - (m_pivot.x ), imgLoc.y - (m_pivot.y) };
-			}
-			
-			//	DrawTextureEx(*texture2d, m_location, m_rotation, m_scale, m_color);
-			if (m_flipH) {
-				
-				/*Image img = LoadImageFromTexture(*m_texture2d);
-				Image* img_ptr = new Image{ img };
-				ImageFlipHorizontal(img_ptr);
-				Texture2D tmpTexture2d = LoadTextureFromImage(*img_ptr);
-				UnloadImage(img);
-				delete img_ptr;
-
-				DrawTextureV(tmpTexture2d, m_calculatedLocation, WHITE);*/
-				
-				LOG("image fliped!");
-			}			
-			else {
-				DrawTextureEx(*m_texture2d, imgCenterLoc, m_rotation, m_TextureScale, WHITE);
-
-//				DrawTextureV(*texture2d, m_calculatedLocation, WHITE);
-			}
-	
+//			if (m_flipH) {
+//				
+//				/*Image img = LoadImageFromTexture(*m_texture2d);
+//				Image* img_ptr = new Image{ img };
+//				ImageFlipHorizontal(img_ptr);
+//				Texture2D tmpTexture2d = LoadTextureFromImage(*img_ptr);
+//				UnloadImage(img);
+//				delete img_ptr;
+//
+//				DrawTextureV(tmpTexture2d, m_calculatedLocation, WHITE);*/
+//				
+//				LOG("image fliped!");
+//			}			
+//			else {
+//				DrawTextureEx(*m_texture2d, imgCenterLoc, m_rotation, m_textureScale, WHITE);
+//
+////				DrawTextureV(*texture2d, m_calculatedLocation, WHITE);
+//			}
 	//		m_texture2d.reset();			
-			imgLoc = {};
-			imgCenterLoc = {};
 	}
 
 	void UIElement::SetActive(bool _flag)
@@ -220,6 +235,13 @@ namespace cart {
 		m_calculatedLocation = { m_location.x - (m_pivot.x * m_scale), m_location.y - (m_pivot.y * m_scale) };
 
 	}
+
+	Vector2 UIElement::GetPivot()
+	{
+		return { m_pivot.x * m_scale , m_pivot.y * m_scale };
+	}
+
+
 #pragma endregion
 	
 #pragma region  Create Child Elements
@@ -239,6 +261,16 @@ namespace cart {
 		weak<UIButton> _btn = m_owningworld->SpawnActor<UIButton>(id);
 		_btn.lock()->SetButtonProperties(_prop);
 		_btn.lock()->SetVisible(true);
+		_btn.lock()->Init();
+		AddChild(_btn);
+		return _btn;
+	}
+	weak<UIButton> UIElement::AddButton(const std::string& id, Btn_Text_Properties _prop, SHAPE_TYPE _shape = SHAPE_TYPE::RECTANGLE)
+	{
+		weak<UIButton> _btn = m_owningworld->SpawnActor<UIButton>(id, _shape);
+		_btn.lock()->SetButtonProperties(_prop);
+		_btn.lock()->SetVisible(true);
+		_btn.lock()->Init();
 		AddChild(_btn);
 		return _btn;
 	}
@@ -270,6 +302,7 @@ namespace cart {
 			m_texture2d.reset();
 		}
 	}
+	
 	void UIElement::Destroy() {
 		LOG("UIElemente | %s | Destroyed!!", m_id.c_str());
 		/*for (size_t i = 0; i < m_children.size(); i++)

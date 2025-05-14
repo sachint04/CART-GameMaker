@@ -134,6 +134,7 @@
             }
         }
 
+       /*
        for (auto iter = m_fontLoadedMap.begin(); iter != m_fontLoadedMap.end();)
        {
            LOG("Font Map  %s User Count  %lu ", iter->first.c_str(), iter->second.use_count());
@@ -149,6 +150,7 @@
                ++iter;
            }
        }
+       */
        LOG("Current Live Texture count %zu", m_textureLoadedMap.size());
        LOG("Current Live Font count %zu", m_fontLoadedMap.size());
 

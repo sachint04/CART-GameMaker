@@ -7,7 +7,7 @@ namespace cart {
 
 	class Shape : public UIElement {
 	public:
-		Shape(World* _owningworld, const std::string& _id, Vector2 _location, int width, int height, Color color, SHAPE_TYPE shape );
+		Shape(World* _owningworld, const std::string& _id, Vector2 _location, int width, int height, Color color, SHAPE_TYPE shape , int linewidth);
 		~Shape() override;
 		void Init() override;
 		void Update(float _deltaTime)  override;
@@ -17,5 +17,6 @@ namespace cart {
 	protected:
 		
 		SHAPE_TYPE m_shapeType;
+		int m_LineWidth;
 	};
 }

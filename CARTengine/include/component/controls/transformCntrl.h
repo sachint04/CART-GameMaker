@@ -23,24 +23,14 @@ namespace  cart {
 	private:
 		weak<UIElement> m_target;
 		weak<UIButton> m_topleftCntrl;
-		weak<UIButton>  m_topcenterCntrl;
 		weak<UIButton>  m_toprightCntrl;
-		weak<UIButton>  m_middleleftCntrl;
-		weak<UIButton>  m_middlerightCntrl;
 		weak<UIButton>  m_bottomleftCntrl;
-		weak<UIButton>  m_bottomcenterCntrl;
 		weak<UIButton>  m_bottomrightCntrl;
 		weak<UIButton> m_translateCntrl;
 		weak<Shape> m_outline;
 
-		void onDragTopLeft(weak<Object> btn, Vector2 pos);
-		void onDragTopCenter(weak<Object> btn, Vector2 pos);
-		void onDragTopRight(weak<Object> btn, Vector2 pos);
-		void onDragMiddleLeft(weak<Object> btn, Vector2 pos);
-		void onDragMiddleRight(weak<Object> btn, Vector2 pos);
-		void onDragBottomLeft(weak<Object> btn, Vector2 pos);
-		void onDragBottomCenter(weak<Object> btn, Vector2 pos);
-		void onDragBottomRight(weak<Object> btn, Vector2 pos);
+		void onScaleHandler(weak<Object> btn, Vector2 pos);
+
 
 		void TransformTarget(Rectangle rect);
 		void UpdateCntrls();
@@ -53,6 +43,8 @@ namespace  cart {
 		void onTranslateEnd(weak<Object>);
 		bool IsActiveCtrl(std::string _cntrl);
 
+		void Draw(float _deltaTime)override;
+
 		float cntrlsize;
 		float cntrlhalf;
 		Vector2 m_minSize;
@@ -64,6 +56,7 @@ namespace  cart {
 		Vector2 m_tmpPivot;
 		Vector2 m_tempTargetLoc;
 		Rectangle m_targetInitState;
+		Vector2 m_center;
 		
 	};
 }

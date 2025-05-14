@@ -6,7 +6,7 @@ namespace cart {
 	
 #pragma region  INIT
 	
-	UIButton::UIButton(World* _owningworld, const std::string& _id) 
+	UIButton::UIButton(World* _owningworld, const std::string& _id)
 		:UIElement{ _owningworld, _id },
 		m_touch{ false },
 		tCount(0),
@@ -28,10 +28,40 @@ namespace cart {
 		m_IsButtonDown{ false },
 		m_IsMouseOver{ false },
 		m_IsSelected{ false },
-		m_IsSelectable{ false }
+		m_IsSelectable{ false },
+		m_shapeType{ SHAPE_TYPE::RECTANGLE }
 	{
 
 	};
+
+	UIButton::UIButton(World* _owningworld, const std::string& _id, SHAPE_TYPE _shape = SHAPE_TYPE::RECTANGLE)
+		:UIElement{ _owningworld, _id },
+		m_touch{ false },
+		tCount(0),
+		m_margin(0),
+		m_textsize{},
+		m_fontspace{},
+		m_fontLocation{},
+		m_locmouse{},
+		m_fontstr{},
+		m_text{},
+		m_align{},
+		m_fontsize(),
+		m_defaulttextcolor{},
+		m_textcolor{},
+		m_texthovercolor{},
+		m_ButtonDefaultColor{},
+		m_ButtonDownColor{},
+		m_ButtonHoverColor{},
+		m_IsButtonDown{ false },
+		m_IsMouseOver{ false },
+		m_IsSelected{ false },
+		m_IsSelectable{ false },
+		m_shapeType{ _shape }
+	{
+
+	}
+	
 
 	UIButton::UIButton( World* _owningworld, const std::string& _id, Vector2 _size)
 		:UIElement{ _owningworld, _id, _size },
@@ -54,10 +84,11 @@ namespace cart {
 		m_IsButtonDown{false},
 		m_IsMouseOver{ false },
 		m_IsSelected{false},
-		m_IsSelectable{false}
+		m_IsSelectable{false},
+		m_shapeType{ SHAPE_TYPE::RECTANGLE }
         {
 		
-		};
+		}
 
 	void UIButton::Init()
 	{
@@ -172,12 +203,30 @@ namespace cart {
 		if (m_text.size() > 0) {
 			shared<Font>m_font = AssetManager::Get().LoadFontAsset(m_fontstr, m_fontsize);
 			Color calcColor = { m_textcolor.r, m_textcolor.g, m_textcolor.b, m_color.a };
-			DrawTextEx(*m_font, m_text.c_str(), m_fontLocation, m_fontsize * m_scale, m_fontspace * m_scale, calcColor);
+			switch (m_shapeType)
+			{
+			case SHAPE_TYPE::CIRCLE:
+				DrawCircle(m_calculatedLocation.x + m_width / 2.f, m_calculatedLocation.y + m_width / 2.f, m_width, m_color);				
+				break;
+			default:				
+				DrawTextEx(*m_font, m_text.c_str(), m_fontLocation, m_fontsize * m_scale, m_fontspace * m_scale, calcColor);
+				break;
+			}
 		}
 		else {
-			DrawRectangle(m_calculatedLocation.x, m_calculatedLocation.y, m_width , m_height, m_color);
+			switch (m_shapeType)
+			{
+				case SHAPE_TYPE::CIRCLE:
+					DrawCircle(m_calculatedLocation.x + m_width / 2.f, m_calculatedLocation.y + m_width / 2.f, m_width, m_color);
+					break;
+				default:
+					DrawRectangle(m_calculatedLocation.x, m_calculatedLocation.y, m_width , m_height, m_color);		
+				break;
+			}
 		}
 	}
+
+
 
 	void UIButton::SetSelected(bool _flag)
 	{

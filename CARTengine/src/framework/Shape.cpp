@@ -3,8 +3,8 @@
 
 namespace cart {
 	
-	Shape::Shape(World* _owningworld, const std::string& _id, Vector2 _location, int width, int height, Color color, SHAPE_TYPE shape)
-		:UIElement{ _owningworld, _id }, m_shapeType{ shape }
+	Shape::Shape(World* _owningworld, const std::string& _id, Vector2 _location, int width, int height, Color color, SHAPE_TYPE shape = SHAPE_TYPE::RECTANGLE, int linewidth = 1)
+		:UIElement{ _owningworld, _id }, m_shapeType{ shape }, m_LineWidth{ linewidth }
 	{
 		//std::cout << GetID() << " ->Shape created \n";
 		m_location = _location;
@@ -38,7 +38,7 @@ namespace cart {
 		}
 		else if (m_shapeType == SHAPE_TYPE::LINE) {
 		//	DrawRectanglePro(rect, origin, m_rotation, {0,0,0,0});
-			DrawRectangleLinesEx({ m_location.x, m_location.y, m_width * m_scale,  m_height * m_scale }, 1.f, m_color);
+			DrawRectangleLinesEx({ m_location.x, m_location.y, m_width * m_scale,  m_height * m_scale },m_LineWidth, m_color);
 		}
 
 	}

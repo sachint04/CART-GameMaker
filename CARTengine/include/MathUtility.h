@@ -27,6 +27,8 @@ namespace cart
 
     float GetVectorLength(Vector2 vector);
 
+    float GetRawVectorLength(Vector2 vector);
+
     Vector2 NormailzeVec(Vector2 vector);
 
 	Vector2 Direction(const Vector2& begin, const Vector2& end);

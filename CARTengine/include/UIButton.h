@@ -10,7 +10,8 @@ namespace cart {
 	class UIButton : public UIElement {
 	public:
         UIButton(World* _owningworld, const std::string& _id);
-        UIButton(World* _owningworld, const std::string& _id, Vector2 _size );
+        UIButton(World* _owningworld, const std::string& _id, SHAPE_TYPE _shape);
+        UIButton(World* _owningworld, const std::string& _id, Vector2 _size);
         void SetTextProperties(Btn_Text_Properties _prop);
 
         bool TestMouseOver(Vector2 _point);
@@ -67,7 +68,7 @@ namespace cart {
         bool m_IsMouseOver;
         bool m_IsSelected;
         bool m_IsSelectable;
-      
+        SHAPE_TYPE m_shapeType;
      
 	};
 

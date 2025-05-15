@@ -5,7 +5,11 @@ add_executable(${CART_GAME_TARGET_NAME}
 	${CMAKE_CURRENT_SOURCE_DIR}/src/GameFramework/game.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/gameplayHUD.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/GameFramework/gameplayHUD.cpp
+
+	${CMAKE_CURRENT_SOURCE_DIR}/include/puzzleimagecontroller.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/puzzleimagecontroller.cpp
 	
+
 	
 
 )

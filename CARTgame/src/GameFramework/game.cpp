@@ -16,6 +16,7 @@
 #include "Shape.h"
 #include "gameplayHUD.h"
 #include "component/controls/transformCntrl.h"
+#include "puzzleimagecontroller.h"
 //using namespace std;
 using namespace cart;
 
@@ -61,7 +62,7 @@ namespace cart {
 
 
 #pragma region Draw Engine logo  
-        std::string uiID = "welcome";
+      /*  std::string uiID = "welcome";
         UI_Properties uiprop = {};
         uiprop.color = {255};
         Vector2 uiloc = { m_winWidth / 2.f - 171.f, m_winHeight / 2.f - 50.f };
@@ -75,7 +76,7 @@ namespace cart {
        ui.lock()->Init();
        ui.lock()->SetUIProperties(uiprop);
 
-       std::string txtid = "welcomeid";
+      std::string txtid = "welcomeid";
        Text_Properties* txtprop = new Text_Properties{};
        txtprop->color = BLUE;
        txtprop->align = ALIGN::CENTER;
@@ -88,7 +89,7 @@ namespace cart {
        
        ui.lock()->AddText(txtid, *txtprop);
        ui.lock()->SetVisible(true);
-       ui.lock()->SetActive(true);
+       ui.lock()->SetActive(true);*/
 
      
        
@@ -99,13 +100,16 @@ namespace cart {
        std::string hudid = "hud-main";
        m_GameplayHUD = m_CurrentWorld->SpawnHUD<GameplayHUD>(hudid);
 #pragma endregion
+        int scrW = GetScreenWidth();
+      int scrH = GetScreenHeight();
+       weak<PuzzleImageController> imagecontrols = m_CurrentWorld->SpawnActor<PuzzleImageController>(std::string{ "control" }, std::string{ "cartengine.png" }, scrW, scrH, 300, 300, 400, 400, 300, 300);
+       m_imagecontrols = imagecontrols.lock();
+       m_imagecontrols.get()->Init();
+       m_imagecontrols.get()->SetVisible(true);
+       //Rectangle rect = ui.lock()->GetBounds();
 
-       std::string cntrlid = "trsfmcntrl-id";
-       weak<TransformCntrl> trsfmcntrl = m_CurrentWorld->SpawnActor<TransformCntrl>(cntrlid, ui);
-       trsfmcntrl.lock()->Init();
 
-       ui.reset();
-       delete txtprop;
+      // delete txtprop;
        m_assetsLoaded = true;
     }
 

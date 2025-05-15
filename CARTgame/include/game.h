@@ -26,7 +26,8 @@ using namespace std::chrono;
 
 namespace cart {
 
- 
+    class PuzzleImageController;
+
     class Game :public Application 
     {
        
@@ -58,7 +59,7 @@ namespace cart {
 
         void CleanDebugData();
     
-        
+        shared<PuzzleImageController> m_imagecontrols;
         weak<HUD> m_GameplayHUD;
         List<DebugData> m_DebugData;
     };

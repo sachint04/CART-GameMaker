@@ -5,7 +5,7 @@
 #include "Shape.h"
 #include "MathUtility.h"
 namespace cart {
-	TransformCntrl::TransformCntrl(World* _owningworld, const std::string& id, weak<UIElement> target, Vector2 minsize, Vector2 maxsize)
+	TransformCntrl::TransformCntrl(World* _owningworld, const std::string& id, Vector2 minsize, Vector2 maxsize , Rectangle targetInitState)
 		: UIElement{ _owningworld, id },
 		 m_topleftCntrl{},
 		 m_toprightCntrl{},
@@ -13,21 +13,18 @@ namespace cart {
 		m_bottomrightCntrl{},
 		m_outline{},
 		m_translateCntrl{},
-		m_target{ target },
 		cntrlsize{ 8.f },
 		cntrlhalf{ cntrlsize /2},
 		curDragCntrl{""},
 		m_isScaling{false},
-		m_isfixedAspectRatio{true},
-		m_aspectRatio{1},
-		m_tmpPivot{},
 		m_tempTargetLoc{},
 		m_minSize{ minsize },
-		m_maxSize{maxsize}
+		m_maxSize{maxsize},
+		m_targetInitState{ targetInitState }
 	{
-		m_aspectRatio = { m_target.lock()->GetBounds().width / m_target.lock()->GetBounds().height };
-		m_center = { m_target.lock()->GetLocation().x ,
-					m_target.lock()->GetLocation().y };
+		
+		m_center = { targetInitState.x + targetInitState.width/2.f,
+					targetInitState.y + targetInitState.height/2.f};
 	}
 
 	void TransformCntrl::Init()
@@ -41,24 +38,18 @@ namespace cart {
 		cntrlui.downcol = ORANGE;
 
 		
-		m_targetInitState.x  = m_target.lock()->GetBounds().x;
-		m_targetInitState.y  = m_target.lock()->GetBounds().y;
-		m_targetInitState.width = m_target.lock()->GetDefaultSize().x;
-		m_targetInitState.height = m_target.lock()->GetDefaultSize().y;
-
-		Rectangle rect = m_target.lock()->GetBounds();// m_target.lock()->GetBounds();
 		
-		m_location = { rect.x, rect.y };
+		m_location = { m_targetInitState.x, m_targetInitState.y };
 
 		std::string btnid = "translate-btn";
 		Btn_Text_Properties btnprop = {};
 		btnprop.location = m_location;
-		btnprop.size = { rect.width, rect.height };
+		btnprop.size = { m_targetInitState.width, m_targetInitState.height };
 		btnprop.color = {0};
 		btnprop.btncol = {0};
 		btnprop.overcol = {0};
 		btnprop.downcol = {255 ,255, 255, 50};
-		btnprop.size = { rect.width, rect.height };
+		btnprop.size = { m_targetInitState.width, m_targetInitState.height };
 
 		m_translateCntrl = AddButton(btnid, btnprop);
 		m_translateCntrl.lock()->onButtonDown.BindAction(GetWeakRef(), &TransformCntrl::onTranslateStart);
@@ -69,13 +60,13 @@ namespace cart {
 
 		std::string id = "outline-cntrl";
 
-		m_outline = m_owningworld->SpawnActor<Shape>(id, m_location, rect.width, rect.height, BLUE, SHAPE_TYPE::LINE, 2);	
+		m_outline = m_owningworld->SpawnActor<Shape>(id, m_location, m_targetInitState.width, m_targetInitState.height, BLUE, SHAPE_TYPE::LINE, 2);
 		m_outline.lock()->SetVisible(true);
 		m_outline.lock()->Init();
 		AddChild(m_outline);
 
 
-		cntrlui.location = { rect.x, rect.y };
+		cntrlui.location = { m_targetInitState.x, m_targetInitState.y };
 		cntrlui.color = SKYBLUE;
 		cntrlui.btncol = SKYBLUE;
 		cntrlui.overcol = SKYBLUE;
@@ -91,7 +82,7 @@ namespace cart {
 		
 
 		id = "topright-cntrl";
-		cntrlui.location = { rect.x + rect.width , rect.y  };
+		cntrlui.location = { m_targetInitState.x + m_targetInitState.width , m_targetInitState.y  };
 		m_toprightCntrl = AddButton(id, cntrlui,SHAPE_TYPE::CIRCLE);
 		m_toprightCntrl.lock()->onButtonDrag.BindAction(GetWeakRef(), &TransformCntrl::onScaleHandler);
 		m_toprightCntrl.lock()->onButtonDown.BindAction(GetWeakRef(), &TransformCntrl::onDragStart);
@@ -100,7 +91,7 @@ namespace cart {
 
 	
 		id = "bottomleft-cntrl";
-		cntrlui.location = { rect.x, rect.y + rect.height  };
+		cntrlui.location = { m_targetInitState.x, m_targetInitState.y + m_targetInitState.height  };
 		m_bottomleftCntrl = AddButton(id, cntrlui,SHAPE_TYPE::CIRCLE);
 		m_bottomleftCntrl.lock()->onButtonDrag.BindAction(GetWeakRef(), &TransformCntrl::onScaleHandler);
 		m_bottomleftCntrl.lock()->onButtonDown.BindAction(GetWeakRef(), &TransformCntrl::onDragStart);
@@ -109,7 +100,7 @@ namespace cart {
 
 		
 		id = "bottomright-cntrl";
-		cntrlui.location = { rect.x + rect.width , rect.y + rect.height  };
+		cntrlui.location = { m_targetInitState.x + m_targetInitState.width , m_targetInitState.y + m_targetInitState.height  };
 		m_bottomrightCntrl = AddButton(id, cntrlui,SHAPE_TYPE::CIRCLE);
 		m_bottomrightCntrl.lock()->onButtonDrag.BindAction(GetWeakRef(), &TransformCntrl::onScaleHandler);
 		m_bottomrightCntrl.lock()->onButtonDown.BindAction(GetWeakRef(), &TransformCntrl::onDragStart);
@@ -149,13 +140,13 @@ namespace cart {
 		float width = GetVectorLength(Direction(m_toprightCntrl.lock()->GetLocation() , m_topleftCntrl.lock()->GetLocation()));
 		float height = GetVectorLength(Direction( m_bottomleftCntrl.lock()->GetLocation(), m_topleftCntrl.lock()->GetLocation()));
 
-	
 	//	LOG("OnDragTopLeft() width %.2f  height %.2f m_center x %.2f  y %.2f", width, height, m_center.x , m_center.y);
-		m_target.lock()->SetSize({width,height});
-		m_target.lock()->SetPivot({width/2.f,height/2.f});
+		//m_target.lock()->SetSize({width,height});
+		//m_target.lock()->SetPivot({width/2.f,height/2.f});
 
 		m_center = { m_topleftCntrl.lock()->GetLocation().x + width / 2.f,  m_topleftCntrl.lock()->GetLocation().y + height / 2.f };
-		m_target.lock()->SetLocation(m_center);
+		//m_target.lock()->SetLocation(m_center);
+		onScaled.Broadcast(m_center, { width, height }, { width / 2.f, height / 2.f });
 
 		m_outline.lock()->SetLocation({ m_topleftCntrl.lock()->GetLocation().x ,  m_topleftCntrl.lock()->GetLocation().y });
 		m_outline.lock()->SetSize({ width,  height});
@@ -169,9 +160,7 @@ namespace cart {
 	{
 		if (m_isScaling)return;
 		//LOG("Active Control %s ", btn.lock()->GetID().c_str());
-		m_isScaling = true;
-		Rectangle rect = m_target.lock()->GetBounds();
-		m_tmpPivot = { rect.x + rect.width / 2.f , rect.y + rect.height / 2.f };
+		m_isScaling = true;	
 		curDragCntrl = btn.lock()->GetID();
 	}
 	void TransformCntrl::onDragEnd(weak<Object> btn, Vector2 pos)
@@ -201,50 +190,17 @@ namespace cart {
 		float height = GetVectorLength(Direction(m_bottomleftCntrl.lock()->GetLocation(), m_topleftCntrl.lock()->GetLocation()));
 		m_center = { m_topleftCntrl.lock()->GetLocation().x + width / 2.f,  m_topleftCntrl.lock()->GetLocation().y + height / 2.f };
 	//	LOG("onTranslateContinue() | offset x %.2f y %.2f  | width %.2f  height %.2f | center x %.2f  y %.2f", offset.x, offset.y, width, height, m_center.x, m_center.y);
-		m_target.lock()->SetLocation(m_center);
+		
+		//m_target.lock()->SetLocation(m_center);
 		m_outline.lock()->SetLocation({ m_topleftCntrl.lock()->GetLocation().x ,  m_topleftCntrl.lock()->GetLocation().y });
 		m_translateCntrl.lock()->SetLocation({ m_topleftCntrl.lock()->GetLocation().x ,  m_topleftCntrl.lock()->GetLocation().y });
+		onMoved.Broadcast(m_center);
 		m_tempTargetLoc = pos;
 	}
 	void TransformCntrl::onTranslateEnd(weak<Object>) {
 	//	LOG("Translate Control End");
 	}
-	void TransformCntrl::TransformTarget(Rectangle rect) {
-
-		Rectangle bound = m_target.lock()->GetBounds();
-		if (m_isfixedAspectRatio) {
-			if (rect.height < rect.width) {
-				rect.height = rect.width / m_aspectRatio;
-			}
-			else {
-				rect.width = rect.height * m_aspectRatio;
-			}
-			//rect.x = rect.x - rect.width / 2.f;
-			//rect.y = rect.y - rect.height / 2.f;
-		}
-		Vector2 pivot = m_target.lock()->GetPivot();
-		//m_target.lock()->SetLocation({ rect.x + m_tempTargetLoc 2.f ,pivot.y + rect.height /2.f});
-		m_target.lock()->SetSize({ rect.width, rect.height });
-		m_outline.lock()->SetLocation({ bound.x - pivot.x , bound.y  - pivot.y});
-		LOG("TransformTarget x  %.2f  y %.2f width %.2f height %.2f ", rect.x, rect.y, rect.width, rect.height);
-	//	m_outline.lock()->SetSize({ rect.width, rect.height });
-
-	}
-
-	void TransformCntrl::UpdateCntrls()
-	{
-		Rectangle rect = m_target.lock()->GetBounds();
-		m_translateCntrl.lock()->SetLocation({ rect.x, rect.y });
-		m_translateCntrl.lock()->SetSize({ rect.width, rect.height });
-		m_outline.lock()->SetLocation({rect.x, rect.y});
-		m_outline.lock()->SetSize({rect.width, rect.height});
-		m_topleftCntrl.lock()->SetLocation({ rect.x - cntrlhalf, rect.y - cntrlhalf});
-		m_toprightCntrl.lock()->SetLocation({ rect.x + rect.width - cntrlhalf, rect.y - cntrlhalf });
-		m_bottomleftCntrl.lock()->SetLocation({ rect.x - cntrlhalf, rect.y + rect.height - cntrlhalf });
-		m_bottomrightCntrl.lock()->SetLocation({ rect.x + rect.width - cntrlhalf, rect.y + rect.height - cntrlhalf });
-
-	}
-
+	
 	bool TransformCntrl::IsActiveCtrl(std::string _cntrl) {
 
 		return curDragCntrl  == _cntrl;
@@ -257,12 +213,9 @@ namespace cart {
 			
 		//LOG("Reset() | init  x %.2f y %.2f ", m_targetInitState.x, m_targetInitState.y);
 		SetLocation( { m_targetInitState.x , m_targetInitState.y });
-
 		float width = GetVectorLength(Direction(m_toprightCntrl.lock()->GetLocation(), m_topleftCntrl.lock()->GetLocation()));
 		float height = GetVectorLength(Direction(m_bottomleftCntrl.lock()->GetLocation(), m_topleftCntrl.lock()->GetLocation()));
-		m_center = { m_topleftCntrl.lock()->GetLocation().x + width / 2.f,  m_topleftCntrl.lock()->GetLocation().y + height / 2.f };
-		
-		m_target.lock()->SetLocation(m_center);
+		m_center = { m_topleftCntrl.lock()->GetLocation().x + width / 2.f,  m_topleftCntrl.lock()->GetLocation().y + height / 2.f };	
 		m_outline.lock()->SetLocation({ m_topleftCntrl.lock()->GetLocation().x ,  m_topleftCntrl.lock()->GetLocation().y });
 		m_translateCntrl.lock()->SetLocation({ m_topleftCntrl.lock()->GetLocation().x ,  m_topleftCntrl.lock()->GetLocation().y });
 		m_tempTargetLoc = { m_targetInitState.x , m_targetInitState.y };
@@ -272,9 +225,9 @@ namespace cart {
 
 	void TransformCntrl::Close()
 	{
-		m_target.lock()->SetVisible(false);
+
 		m_outline.lock()->SetVisible(false);
-		m_target.lock()->Destroy();
+
 		m_topleftCntrl.lock()->Destroy();
 		m_toprightCntrl.lock()->Destroy();
 		m_bottomleftCntrl.lock()->Destroy();

@@ -1,3 +1,11 @@
+/**********************************************************************************************
+* CART Engine UI Element Transform control
+* Input 1) Minimum Scaled  size 2) Max scaled size 3) Current Rectangle information of target UI
+* 
+* Important: This control doesnot directly communicates with target UI, Listent to "onScaled" & "onMoved" Events 
+* and  update target from outside
+**********************************************************************************************/
+
 #pragma once
 #include <raylib.h>
 #include "UIElement.h"
@@ -9,19 +17,16 @@ namespace  cart {
 	class TransformCntrl : public UIElement {
 
 	public:
-		TransformCntrl(World* _owningworld, const std::string& id, weak<UIElement> target, Vector2 minsize, Vector2 maxsize);
+		TransformCntrl(World* _owningworld, const std::string& id, Vector2 minsize, Vector2 maxsize, Rectangle targetInitState);
 		~TransformCntrl();
 
 		void Init() override;
 		void Reset();
 		void Close();
-		Delegate<Rectangle>onScaled;
+		Delegate<Vector2, Vector2, Vector2>onScaled;
 		Delegate<float>onRotated;
 		Delegate<Vector2> onMoved;
-
-
 	private:
-		weak<UIElement> m_target;
 		weak<UIButton> m_topleftCntrl;
 		weak<UIButton>  m_toprightCntrl;
 		weak<UIButton>  m_bottomleftCntrl;
@@ -30,11 +35,7 @@ namespace  cart {
 		weak<Shape> m_outline;
 
 		void onScaleHandler(weak<Object> btn, Vector2 pos);
-
-
-		void TransformTarget(Rectangle rect);
-		void UpdateCntrls();
-
+		
 		void onDragStart(weak<Object>, Vector2 pos);
 		void onDragEnd(weak<Object>, Vector2 pos);
 		void onDragOut(weak<Object>);

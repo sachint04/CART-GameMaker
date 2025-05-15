@@ -161,6 +161,7 @@
     {
         for (auto iter = m_textureLoadedMap.begin(); iter != m_textureLoadedMap.end();)
         {
+            UnloadTexture(*iter->second);
              iter->second.reset();
              //LOG("%s Cleared Texture Map.", iter->first.c_str());
                iter = m_textureLoadedMap.erase(iter);

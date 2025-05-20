@@ -47,7 +47,10 @@ add_library(${CART_ENGINE_TARGET_NAME} STATIC
 	${CMAKE_CURRENT_SOURCE_DIR}/include/GameStage.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/GameStage.cpp
 
+	${CMAKE_CURRENT_SOURCE_DIR}/include/TextInput.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/TextInput.cpp
 
+	
 )
 target_include_directories(${CART_ENGINE_TARGET_NAME} PUBLIC 
 	${CMAKE_CURRENT_SOURCE_DIR}/include

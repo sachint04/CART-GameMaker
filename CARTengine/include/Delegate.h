@@ -23,7 +23,6 @@ namespace cart
 
 				return false;
 			};
-
 				mCallbacks.push_back(callbackFunc);			
 		}
 

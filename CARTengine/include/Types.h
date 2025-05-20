@@ -66,6 +66,7 @@ namespace cart {
         float scale{ 1.f };
         float rotation;
         std::string texture;
+        Color textureColor = { WHITE };
     };
 
 	struct Text_Properties : UI_Properties{
@@ -73,6 +74,7 @@ namespace cart {
 		std::string font;
 		std::string text;
 		float fontsize;
+        float fontspacing = 2.f;
 		ALIGN align = ALIGN::LEFT;	
         Color textbackground;
 	};

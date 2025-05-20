@@ -53,6 +53,9 @@ namespace cart {
 		void Destroy()override;
 		void ClearTexture();
 		Vector2 GetDefaultSize() { return m_defaultSize; };
+		Color GetTextureColor() { return m_textureColor; };
+		void SetTextureColor(Color col) { m_textureColor = col; };
+		void SetScreenMask(const Image &strmask);
 	protected:
 		Vector2 m_rawlocation;	
 		Vector2 m_pivot;
@@ -68,6 +71,10 @@ namespace cart {
 		Vector2 m_defaultSize;
 		float m_textureScaleX;
 		float m_textureScaleY;
+		Color m_textureColor;
+		Image m_screenMask;
+		bool m_bMasked;
+		Texture2D tmptex;
 	};
 
 }

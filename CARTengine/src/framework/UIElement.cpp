@@ -16,7 +16,10 @@ namespace cart {
 		m_bAspectRatio{false},
 		m_defaultSize{},
 		m_textureScaleX{1.f},
-		m_textureScaleY{1.f}
+		m_textureScaleY{1.f},
+		m_textureColor{WHITE},
+		m_bMasked{false},
+		tmptex{}
 	{
 
 	}
@@ -31,7 +34,9 @@ namespace cart {
 		m_flipV{ false },
 		m_bAspectRatio{ false },
 		m_textureScaleX{ 1.f },
-		m_textureScaleY{ 1.f }
+		m_textureScaleY{ 1.f },
+		m_textureColor{ WHITE},
+		m_bMasked{false}
 	{
 		m_defaultSize = _size;
 		Actor::m_width = _size.x;
@@ -119,6 +124,7 @@ namespace cart {
 		m_defaultSize = _prop.size;
 		m_width =  _prop.size.x, 
 		m_height = 	_prop.size.y ;
+		m_textureColor = _prop.textureColor;
 		UpdateLocation();
 	}
 	
@@ -178,10 +184,9 @@ namespace cart {
 	{
 		if (!m_texture2d) {
 			 m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture);
-			 LOG("UIElement DrawTexture() usecount %lu ", m_texture2d.use_count());
+		//	 LOG("UIElement DrawTexture() usecount %lu ", m_texture2d.use_count());
 		}
 
-		
 		if (m_bAspectRatio == true) 
 		{
 			float tmpscale = std::min((float)m_width / (float)m_texture2d.get()->width, (float)m_height / (float)m_texture2d.get()->height);
@@ -189,12 +194,50 @@ namespace cart {
 			Vector2 textLoc = { ((m_location.x + m_width / 2.f) - (m_texture2d.get()->width * tmpscale) / 2.f ) - m_pivot.x,
 								((m_location.y + m_height / 2.f) - (m_texture2d.get()->height * tmpscale) / 2.f ) - m_pivot.y};
 		//	LOG("DrawBGTexture x  %.2f  y %.2f scale %.2f ", textLoc.x, textLoc.y, tmpscale);
-			DrawTextureEx(*m_texture2d, textLoc, m_rotation, tmpscale, WHITE);
+			if (m_bMasked)
+			{
+				
+				Image* tmpImage = new Image{ LoadImageFromTexture(*m_texture2d) };
+				ImageFormat(tmpImage, 7);
+				ImageResize(tmpImage, tmpImage->width * tmpscale, tmpImage->height * tmpscale);
+
+
+				for (int i = 0, k = 3; (i < tmpImage->width * tmpImage->height); i++, k += 4)
+				{
+					//if (i == image.width * image.height - 1) {
+					int y = textLoc.y + ceil(i / tmpImage->width);
+					int x = textLoc.x + (i % tmpImage->width);
+
+
+					if (x >= 0 && x < GetScreenWidth() - 1 && y >= 0 && y < GetScreenHeight() - 1)
+						((unsigned char*)tmpImage->data)[k] = ((unsigned char*)m_screenMask.data)[(m_screenMask.width * y + x) * 4];
+
+				}
+			
+
+				UnloadTexture(tmptex);
+				tmptex = LoadTextureFromImage(*tmpImage);
+				DrawTextureEx(tmptex, textLoc, m_rotation, 1.f, m_textureColor);
+				//UnloadTexture(*m_texture2d);
+				UnloadImage(*tmpImage);
+				delete tmpImage;
+
+				
+			}
+			else
+			{
+				DrawTextureEx(*m_texture2d, textLoc, m_rotation, tmpscale, m_textureColor);
+			}
 		}
 		else {
+			
 			m_texture2d.get()->width = m_width;
 			m_texture2d.get()->height = m_height;
-			DrawTextureEx(*m_texture2d, m_calculatedLocation, m_rotation, 1.f, WHITE);
+			SetTextureFilter(*m_texture2d, TEXTURE_FILTER_TRILINEAR);
+			DrawTextureEx(*m_texture2d, m_calculatedLocation, m_rotation, 1.f, m_textureColor);
+
+		
+
 		}
 
 //			if (m_flipH) {
@@ -241,7 +284,14 @@ namespace cart {
 		return { m_pivot.x * m_scale , m_pivot.y * m_scale };
 	}
 
+	void UIElement::SetScreenMask(const Image &strmask)
+	{
+		m_screenMask = strmask;
+		m_bMasked = true;
 
+	//	LOG("mask width %d height %d", m_screenMask.width, m_screenMask.height);
+		
+	}
 #pragma endregion
 	
 #pragma region  Create Child Elements
@@ -318,7 +368,9 @@ namespace cart {
 			iter->get()->Destroy();
 			iter = m_children.erase(iter);
 		}
-		m_children.clear();
+		m_children.clear();	
+		
+
 		ClearTexture();
 		SetVisible(false);
 		Actor::Destroy();

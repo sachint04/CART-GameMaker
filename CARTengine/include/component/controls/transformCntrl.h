@@ -26,6 +26,8 @@ namespace  cart {
 		Delegate<Vector2, Vector2, Vector2>onScaled;
 		Delegate<float>onRotated;
 		Delegate<Vector2> onMoved;
+		Delegate<Vector2> onButtonUp;
+		Delegate<>onStop;
 	private:
 		weak<UIButton> m_topleftCntrl;
 		weak<UIButton>  m_toprightCntrl;
@@ -39,6 +41,7 @@ namespace  cart {
 		void onDragStart(weak<Object>, Vector2 pos);
 		void onDragEnd(weak<Object>, Vector2 pos);
 		void onDragOut(weak<Object>);
+		void onButtonClick(weak<Object>, Vector2 pos);
 		void onTranslateStart(weak<Object>, Vector2 pos);
 		void onTranslateContinue(weak<Object>, Vector2 pos);
 		void onTranslateEnd(weak<Object>);

@@ -42,7 +42,7 @@
         auto found = constainer.find(path);
         if (found != constainer.end())
         {
-           LOG("|>=-=ASSETMANAGER =-=<| %s Texture Found in Memory!", path.c_str());
+        //   LOG("|>=-=ASSETMANAGER =-=<| %s Texture Found in Memory!", path.c_str());
           //  shared<Texture2D> weak_texture = found->second;
             return found->second;
         }
@@ -55,8 +55,7 @@
         try {
             constainer.insert({ path, std::make_shared<Texture2D>(texture) });
            // shared<Texture2D> t = constainer.find(path)->second;
-            LOG("|>=-=ASSETMANAGER =-=<| Creating  TextureMap  %s User Count  %lu ", path.c_str(), constainer.find(path)->second.use_count());
-            texture = {};
+         //   LOG("|>=-=ASSETMANAGER =-=<| Creating  TextureMap  %s User Count  %lu ", path.c_str(), constainer.find(path)->second.use_count());
             return constainer.find(path)->second;
 
         }
@@ -72,18 +71,25 @@
 
     }
     
+    bool AssetManager::UnloadTextureAsset(const std::string& path)
+    {
+        auto found = m_textureLoadedMap.find(path);
+        if (found != m_textureLoadedMap.end())
+        {   
+            UnloadTexture(*found->second);
+            found->second.reset();
+            m_textureLoadedMap.erase(found);
+            return true;
+        }
+        LOG("AssetManager |UnloadTextureAsset()| ERROR! Failed to unload Texture %s ", path.c_str());
+        return false;
+    }
 #pragma region LOAD FONT
     shared<Font> AssetManager::LoadFontAsset(const std::string& path, int fontSize) {
-        return LoadFont(path, fontSize, m_fontLoadedMap);
+        return LoadFontMap(path, fontSize, m_fontLoadedMap);
     }
 
-    AssetManager::~AssetManager()
-    {
-     
-    }
-
-
-    shared<Font> AssetManager::LoadFont(const std::string& path, int fontSize, Dictionary<std::string, shared<Font>>& constainer)
+    shared<Font> AssetManager::LoadFontMap(const std::string& path, int fontSize, Dictionary<std::string, shared<Font>>& constainer)
     {
         std::string strsize = std::to_string(fontSize);
         auto found = m_fontLoadedMap.find(path + strsize);
@@ -94,6 +100,7 @@
         }
       
         Font font = LoadFontEx(path.c_str(), fontSize, 0, 250);
+      //  Font font = LoadFont(path.c_str());
         if(font.baseSize > 0){
             shared<Font> fontptr = std::make_shared<Font>(font);
              m_fontLoadedMap.insert({ path + strsize, fontptr});
@@ -107,7 +114,10 @@
 #pragma region  Cleanup
 
 
+    AssetManager::~AssetManager()
+    {
 
+    }
     void AssetManager::Unload()
     {
         ClearTextureMap();

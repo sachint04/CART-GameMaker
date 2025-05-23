@@ -180,14 +180,14 @@ namespace cart {
 	}
 
 	void World::CleanCycle() {
-		LOG("(- WORLD -) CleanCycle() ");
+	//	LOG("(- WORLD -) CleanCycle() ");
 		for (auto iter = m_Actors.begin(); iter != m_Actors.end();)
 		{
 			//if (iter->get()->IsPendingDestroy() && iter->use_count() == 1)
-				LOG("Actor %s with use count%lu \n", iter->get()->GetID().c_str(), iter->use_count());
+			//	LOG("Actor %s with use count%lu \n", iter->get()->GetID().c_str(), iter->use_count());
 			if (iter->use_count() == 1)
 			{			
-				LOG("Removing last instanece of actor %s with use count%lu \n", iter->get()->GetID().c_str(), iter->use_count());
+		//		LOG("Removing last instanece of actor %s with use count%lu \n", iter->get()->GetID().c_str(), iter->use_count());
 				iter->reset();
 				iter = m_Actors.erase(iter);
 				
@@ -197,8 +197,8 @@ namespace cart {
 				++iter;
 			}
 		}
-		LOG("Current Live Actors count %zu", m_Actors.size());
-		LOG("(- WORLD -) CleanCycle() END!");
+	//	LOG("Current Live Actors count %zu", m_Actors.size());
+	//	LOG("(- WORLD -) CleanCycle() END!");
 		AssetManager::Get().CleanCycle();
 	
 	}

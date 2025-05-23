@@ -41,14 +41,14 @@ namespace cart {
 		switch (m_align)
 		{
 		case LEFT:
-			updatedLoction = { m_location.x ,  m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 };
+			updatedLoction = { m_location.x ,  m_location.y  };
 			break;
 		case CENTER:
-			updatedLoction = { m_location.x + (m_width * m_scale / 2) - (m_textsize.x * m_scale) / 2, m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 };
+			updatedLoction = { m_location.x + (m_width * m_scale / 2) - (m_textsize.x * m_scale) / 2, m_location.y };
 			break;
 
 		case RIGHT:
-			updatedLoction = { m_location.x + (m_width * m_scale) - (m_textsize.x * m_scale),  m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 };
+			updatedLoction = { m_location.x + (m_width * m_scale) - (m_textsize.x * m_scale),  m_location.y };
 			break;
 		}
 
@@ -64,10 +64,10 @@ namespace cart {
 		m_text = _prop.text;
 		m_fontsize = _prop.fontsize;
 		m_align = _prop.align;
-		m_color = _prop.color;
-		m_location = _prop.location;
+		m_color = _prop.color;	
 		m_background = _prop.textbackground;
-		UpdateLocation();
+		m_fontspacing = _prop.fontspacing;
+		SetUIProperties((UI_Properties)_prop);
 	}
 #pragma endregion
 

@@ -127,13 +127,13 @@
     void AssetManager::CleanCycle()
     {
 
-        LOG("|>=-=ASSETMANAGER =-=<| CleanCycle()  ");
+     //   LOG("|>=-=ASSETMANAGER =-=<| CleanCycle()  ");
        for (auto iter = m_textureLoadedMap.begin(); iter != m_textureLoadedMap.end();)
         {
-                LOG("TextureMap  %s User Count  %lu ", iter->first.c_str(), iter->second.use_count());
+       //         LOG("TextureMap  %s User Count  %lu ", iter->first.c_str(), iter->second.use_count());
             if (iter->second.use_count() == 1) {
 
-                LOG("Cleaning TextureMap  %s", iter->first.c_str());
+         //       LOG("Cleaning TextureMap  %s", iter->first.c_str());
                 UnloadTexture(*iter->second);
                 iter->second.reset();
                 
@@ -161,10 +161,10 @@
            }
        }
        */
-       LOG("Current Live Texture count %zu", m_textureLoadedMap.size());
-       LOG("Current Live Font count %zu", m_fontLoadedMap.size());
+    //   LOG("Current Live Texture count %zu", m_textureLoadedMap.size());
+    //   LOG("Current Live Font count %zu", m_fontLoadedMap.size());
 
-       LOG("|>=-=ASSETMANAGER =-=<| CleanCycle() END!! ");
+    //   LOG("|>=-=ASSETMANAGER =-=<| CleanCycle() END!! ");
     }
 
     void AssetManager::ClearTextureMap()

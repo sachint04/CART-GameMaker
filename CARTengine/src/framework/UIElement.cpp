@@ -2,6 +2,7 @@
 #include "AssetManager.h"
 #include "Text.h"
 #include "UIButton.h"
+#include <memory>
 
 namespace cart {
 #pragma region  Constructors
@@ -19,7 +20,10 @@ namespace cart {
 		m_textureScaleY{1.f},
 		m_textureColor{WHITE},
 		m_bMasked{false},
-		tmptex{}
+		tmptex{},
+		m_screenMask{},
+		m_texturetype{TEXTURE_FULL},
+		m_texturesource{}
 	{
 
 	}
@@ -36,7 +40,11 @@ namespace cart {
 		m_textureScaleX{ 1.f },
 		m_textureScaleY{ 1.f },
 		m_textureColor{ WHITE},
-		m_bMasked{false}
+		m_bMasked{false},
+		tmptex{},
+		m_screenMask{},
+		m_texturetype{ TEXTURE_FULL },
+		m_texturesource{}
 	{
 		m_defaultSize = _size;
 		Actor::m_width = _size.x;
@@ -50,21 +58,12 @@ namespace cart {
 	// VIRTUAL METHOD 
 	void UIElement::Init()
 	{
-		//if (m_texture.size() > 0) {
-		//	m_texture2d = AssetManager::Get().LoadTextureAsset(m_texture);
-		//	if (m_texture2d) {
-		//		m_texture2d->width = m_width;
-		//		m_texture2d->height = m_height;
-		//	}
-		//}
+
 		for (auto iter = m_children.begin(); iter != m_children.end(); ++iter)
 		{
 			iter->get()->Init();
 		}
-	/*	for (size_t i = 0; i < m_children.size(); i++)
-		{
-			m_children[i]->Init();
-		}*/
+
 		UpdateLocation();
 		m_pendingUpdate = false;
 	}
@@ -125,6 +124,8 @@ namespace cart {
 		m_width =  _prop.size.x, 
 		m_height = 	_prop.size.y ;
 		m_textureColor = _prop.textureColor;
+		m_texturetype = _prop.texturetype;
+		m_texturesource = _prop.texturesource;
 		UpdateLocation();
 	}
 	
@@ -135,7 +136,18 @@ namespace cart {
 
 	void UIElement::SetVisible(bool _flag)
 	{
+		std::vector<shared<UIElement>>::iterator iter;
+
+		for (iter = m_children.begin(); iter != m_children.end();++iter)
+		{
+			iter->get()->SetVisible(_flag);
+			
+		}
 		Actor::SetVisible(_flag);
+	}
+
+	void UIElement::Notify(const std::string& strevent)
+	{
 	}
 
 	void UIElement::SetScale(float _scale)
@@ -186,59 +198,62 @@ namespace cart {
 			 m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture);
 		//	 LOG("UIElement DrawTexture() usecount %lu ", m_texture2d.use_count());
 		}
-
-		if (m_bAspectRatio == true) 
-		{
-			float tmpscale = std::min((float)m_width / (float)m_texture2d.get()->width, (float)m_height / (float)m_texture2d.get()->height);
-
-			Vector2 textLoc = { ((m_location.x + m_width / 2.f) - (m_texture2d.get()->width * tmpscale) / 2.f ) - m_pivot.x,
-								((m_location.y + m_height / 2.f) - (m_texture2d.get()->height * tmpscale) / 2.f ) - m_pivot.y};
-		//	LOG("DrawBGTexture x  %.2f  y %.2f scale %.2f ", textLoc.x, textLoc.y, tmpscale);
-			if (m_bMasked)
-			{
-				
-				Image* tmpImage = new Image{ LoadImageFromTexture(*m_texture2d) };
-				ImageFormat(tmpImage, 7);
-				ImageResize(tmpImage, tmpImage->width * tmpscale, tmpImage->height * tmpscale);
-
-
-				for (int i = 0, k = 3; (i < tmpImage->width * tmpImage->height); i++, k += 4)
-				{
-					//if (i == image.width * image.height - 1) {
-					int y = textLoc.y + ceil(i / tmpImage->width);
-					int x = textLoc.x + (i % tmpImage->width);
-
-
-					if (x >= 0 && x < GetScreenWidth() - 1 && y >= 0 && y < GetScreenHeight() - 1)
-						((unsigned char*)tmpImage->data)[k] = ((unsigned char*)m_screenMask.data)[(m_screenMask.width * y + x) * 4];
-
-				}
-			
-
-				UnloadTexture(tmptex);
-				tmptex = LoadTextureFromImage(*tmpImage);
-				DrawTextureEx(tmptex, textLoc, m_rotation, 1.f, m_textureColor);
-				//UnloadTexture(*m_texture2d);
-				UnloadImage(*tmpImage);
-				delete tmpImage;
-
-				
-			}
-			else
-			{
-				DrawTextureEx(*m_texture2d, textLoc, m_rotation, tmpscale, m_textureColor);
-			}
+		
+		if (m_texturetype == TEXTURE_PART) {
+			DrawTextureRec(*m_texture2d,m_texturesource, m_calculatedLocation, m_textureColor);
 		}
 		else {
-			
-			m_texture2d.get()->width = m_width;
-			m_texture2d.get()->height = m_height;
-			SetTextureFilter(*m_texture2d, TEXTURE_FILTER_TRILINEAR);
-			DrawTextureEx(*m_texture2d, m_calculatedLocation, m_rotation, 1.f, m_textureColor);
+			if (m_bAspectRatio == true)
+			{
+				float tmpscale = std::min((float)m_width / (float)m_texture2d.get()->width, (float)m_height / (float)m_texture2d.get()->height);
 
-		
+				Vector2 textLoc = { ((m_location.x + m_width / 2.f) - (m_texture2d.get()->width * tmpscale) / 2.f) - m_pivot.x,
+									((m_location.y + m_height / 2.f) - (m_texture2d.get()->height * tmpscale) / 2.f) - m_pivot.y };
+				//	LOG("DrawBGTexture x  %.2f  y %.2f scale %.2f ", textLoc.x, textLoc.y, tmpscale);
+				if (m_bMasked)
+				{
 
+					Image* tmpImage = new Image{ LoadImageFromTexture(*m_texture2d) };
+					ImageFormat(tmpImage, 7);
+					ImageResize(tmpImage, tmpImage->width * tmpscale, tmpImage->height * tmpscale);
+
+
+					for (int i = 0, k = 3; (i < tmpImage->width * tmpImage->height); i++, k += 4)
+					{
+						//if (i == image.width * image.height - 1) {
+						int y = textLoc.y + ceil(i / tmpImage->width);
+						int x = textLoc.x + (i % tmpImage->width);
+
+
+						if (x >= 0 && x < GetScreenWidth() - 1 && y >= 0 && y < GetScreenHeight() - 1)
+							((unsigned char*)tmpImage->data)[k] = ((unsigned char*)m_screenMask.data)[(m_screenMask.width * y + x) * 4];
+
+					}
+
+
+					UnloadTexture(tmptex);
+					tmptex = LoadTextureFromImage(*tmpImage);
+					DrawTextureEx(tmptex, textLoc, m_rotation, 1.f, m_textureColor);
+					//UnloadTexture(*m_texture2d);
+					UnloadImage(*tmpImage);
+					delete tmpImage;
+
+
+				}
+				else
+				{
+					DrawTextureEx(*m_texture2d, textLoc, m_rotation, tmpscale, m_textureColor);
+				}
+			}
+			else {
+
+				m_texture2d.get()->width = m_width;
+				m_texture2d.get()->height = m_height;
+				SetTextureFilter(*m_texture2d, TEXTURE_FILTER_TRILINEAR);
+				DrawTextureEx(*m_texture2d, m_calculatedLocation, m_rotation, 1.f, m_textureColor);
+			}
 		}
+		
 
 //			if (m_flipH) {
 //				
@@ -292,6 +307,10 @@ namespace cart {
 	//	LOG("mask width %d height %d", m_screenMask.width, m_screenMask.height);
 		
 	}
+
+
+
+
 #pragma endregion
 	
 #pragma region  Create Child Elements

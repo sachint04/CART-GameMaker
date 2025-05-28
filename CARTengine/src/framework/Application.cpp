@@ -14,7 +14,9 @@ namespace cart
 		m_targetFrameRate{ 60 },
 		m_exit{ false },
 		hud{},
-		m_Model{}
+		m_resourcedir{},
+		m_Model{},
+		m_gameConfig{}
 	{
 	}
 
@@ -74,8 +76,17 @@ namespace cart
 
 	std::string& Application::GetResourcePath()
 	{
-		std::string dir = "";
-		return dir;
+		return m_resourcedir;
+	}
+
+	std::string Application::GetResourceDisplayPath()
+	{
+		std::string path = "";
+		return path;
+	}
+
+	float Application::GetIconSize() {
+		return NULL;
 	}
 
 }

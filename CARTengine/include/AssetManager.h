@@ -16,7 +16,9 @@ namespace cart {
         void SetAssetRootDirectory(const std::string& directory);
         shared<Texture2D> LoadTextureAsset(const std::string &path);
         shared<Font> LoadFontAsset(const std::string& path, int fontSize);
+
         bool UnloadTextureAsset(const std::string& path);
+        bool UnloadFontAsset(const std::string& path , int fontsize);
         ~AssetManager();
     protected:
         AssetManager();

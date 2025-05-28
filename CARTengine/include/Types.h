@@ -54,6 +54,11 @@ namespace cart {
 
     };
 
+    enum TEXTURE_TYPE {
+        TEXTURE_FULL,
+        TEXTURE_PART,
+    };
+
 #pragma endregion
 
 #pragma region STRUCTS
@@ -62,11 +67,14 @@ namespace cart {
         Vector2 size;
         Vector2 location;
         Vector2 pivot;
-        Color color;
+        Color color = WHITE;
         float scale{ 1.f };
         float rotation;
         std::string texture;
-        Color textureColor = { WHITE };
+        Color textureColor =  WHITE ;
+        TEXTURE_TYPE texturetype = TEXTURE_TYPE::TEXTURE_FULL;
+        Rectangle texturesource;
+
     };
 
 	struct Text_Properties : UI_Properties{
@@ -87,13 +95,15 @@ namespace cart {
         Color textcolor;
         ALIGN align = ALIGN::LEFT;
         bool isSelectable;
+        int borderwidth = 0;
+        Color bordercol = GRAY;
     };
     struct Btn_Text_Properties : Btn_Properties {
     public:
         std::string font;
         std::string text;        
         float fontsize;
-        float fontspace;
+        float fontspace = 2.f;
         ALIGN textAlign = ALIGN::LEFT;
         Color texthoverolor;
 

@@ -50,6 +50,15 @@ add_library(${CART_ENGINE_TARGET_NAME} STATIC
 	${CMAKE_CURRENT_SOURCE_DIR}/include/TextInput.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/TextInput.cpp
 
+	${CMAKE_CURRENT_SOURCE_DIR}/include/component/UIList.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/component/UIList.cpp
+	
+	${CMAKE_CURRENT_SOURCE_DIR}/include/component/IController.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/component/InputController.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/component/InputController.cpp
+	
+	
+
 	
 )
 target_include_directories(${CART_ENGINE_TARGET_NAME} PUBLIC 

@@ -14,7 +14,9 @@ namespace cart {
 		void Update(float _deltaTime)override;
 		void Draw(float _deltaTime)override;
 		void Destroy()override;
-
+		void SetText(const std::string &txt);
+		void SetFontName(const std::string& strfnt)override;
+		float GetFontSize() { return m_fontsize; };
 	private:
 		int m_charLimit;
 		int m_curletterindex;
@@ -35,7 +37,7 @@ namespace cart {
 		bool m_touch;
 		Vector2 m_touchstartpos;
 		Vector2 m_touchendpos;
-		shared<Font> fnt;
+	/*	shared<Font> fnt;*/
 		shared<Font> infofnt;
 		void TextLine(const std::vector<std::pair<std::string, Vector2>>& str);
 		//void CharsToVec();

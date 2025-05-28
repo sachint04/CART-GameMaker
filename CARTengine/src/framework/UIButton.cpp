@@ -1,7 +1,9 @@
+#include <memory>
 #include "UIButton.h"
 #include  "AssetManager.h"
 #include "Core.h"
-
+#include "component/InputController.h"
+#include "World.h"
 namespace cart {
 	
 #pragma region  INIT
@@ -12,7 +14,7 @@ namespace cart {
 		tCount(0),
 		m_margin(0),
 		m_textsize{},
-		m_fontspace{},
+		m_fontspace{2.f},
 		m_fontLocation{},
 		m_locmouse{},
 		m_fontstr{},
@@ -22,6 +24,7 @@ namespace cart {
 		m_defaulttextcolor{},
 		m_textcolor{},
 		m_texthovercolor{},
+		m_defaulttexturecolor{},
 		m_ButtonDefaultColor{},
 		m_ButtonDownColor{},
 		m_ButtonHoverColor{},
@@ -29,7 +32,10 @@ namespace cart {
 		m_IsMouseOver{ false },
 		m_IsSelected{ false },
 		m_IsSelectable{ false },
-		m_shapeType{ SHAPE_TYPE::RECTANGLE }
+		m_shapeType{ SHAPE_TYPE::RECTANGLE },
+		m_borderwidth{0},
+		m_borderColor{GRAY}
+
 	{
 
 	};
@@ -40,7 +46,7 @@ namespace cart {
 		tCount(0),
 		m_margin(0),
 		m_textsize{},
-		m_fontspace{},
+		m_fontspace{2.f},
 		m_fontLocation{},
 		m_locmouse{},
 		m_fontstr{},
@@ -48,6 +54,7 @@ namespace cart {
 		m_align{},
 		m_fontsize(),
 		m_defaulttextcolor{},
+		m_defaulttexturecolor{},
 		m_textcolor{},
 		m_texthovercolor{},
 		m_ButtonDefaultColor{},
@@ -57,18 +64,20 @@ namespace cart {
 		m_IsMouseOver{ false },
 		m_IsSelected{ false },
 		m_IsSelectable{ false },
-		m_shapeType{ _shape }
+		m_shapeType{ _shape },
+		m_borderwidth{ 0 },
+		m_borderColor{ GRAY }
 	{
 
 	}
 	
-
 	UIButton::UIButton( World* _owningworld, const std::string& _id, Vector2 _size)
 		:UIElement{ _owningworld, _id, _size },
 		m_touch{false},
 		tCount(0),
 		m_margin(0),
 		m_textsize{},
+		m_fontspace{2.f},
 		m_fontLocation{},
 		m_locmouse{},
 		m_fontstr{},
@@ -76,6 +85,7 @@ namespace cart {
 		m_align{},
 		m_fontsize(),
 		m_defaulttextcolor{},
+		m_defaulttexturecolor{},
 		m_textcolor{},
 		m_texthovercolor{},
 		m_ButtonDefaultColor{},
@@ -85,20 +95,25 @@ namespace cart {
 		m_IsMouseOver{ false },
 		m_IsSelected{false},
 		m_IsSelectable{false},
-		m_shapeType{ SHAPE_TYPE::RECTANGLE }
+		m_shapeType{ SHAPE_TYPE::RECTANGLE },
+		m_borderwidth{ 0 },
+		m_borderColor{ GRAY }
         {
-		
-		}
+				}
 
 	void UIButton::Init()
 	{
-		shared<Font>m_font = AssetManager::Get().LoadFontAsset(m_fontstr, m_fontsize);
-		UpdateLocation();
+		UIElement::Init();
+
+		m_owningworld->GetInputController()->RegisterUI(GetWeakRef());
+
+		m_font = AssetManager::Get().LoadFontAsset(m_fontstr, m_fontsize);
+		
 		if (m_text.size() > 0) {
 			m_textsize = MeasureTextEx(*m_font, m_text.c_str(), m_fontsize, 2.f);
 			UpdateTextLocation();
 		}
-		m_pendingUpdate = false;
+		
 	}
 
 	void UIButton::SetScale(float _scale)
@@ -115,8 +130,8 @@ namespace cart {
 	
 	void UIButton::Update(float _deltaTime)
 	{
-		if (m_visible == false)return;
 
+		if (!m_visible)return;
 
 #if defined(PLATFORM_ANDROID)
 		tCount = GetTouchPointCount();
@@ -155,53 +170,59 @@ namespace cart {
 #else
 		if (m_active == true) {
 			Vector2 tPos = { (float)GetMouseX(), (float)GetMouseY() };
+			bool mouseonBtn = m_owningworld->GetInputController()->IsMouseOver(GetWeakRef());
 
-			if (IsMouseButtonUp(0) && m_touch == false) {
-				if (TestMouseOver(tPos) == true) {
-					MouseHovered();
+			
+				if (IsMouseButtonUp(0) && m_touch == false) {
+					//if (TestMouseOver(tPos) == true) {
+					if (mouseonBtn) {
+						MouseHovered();
+					}
+					else {
+						MouseOut();
+					}
 				}
-				else {
-					MouseOut();
+
+				if (IsMouseButtonPressed(0)) {
+					if (m_touch == true)return;
+					//if (TestMouseOver(tPos) == true) {
+					if (mouseonBtn) {
+						ButtonDown(tPos);
+
+					}
+					m_touch = true;
 				}
-			}
 
-			if (IsMouseButtonPressed(0)) {
-				if (m_touch == true)return;
-				if (TestMouseOver(tPos) == true) {
-					ButtonDown(tPos);
+				if (IsMouseButtonReleased(0)) {
 
-				}
-				m_touch = true;
-			}
+					if (m_touch == false)return;
 
-			if (IsMouseButtonReleased(0)) {
-
-				if (m_touch == false)return;
-
-				if (TestMouseOver(tPos) == true) {
-					ButtonUp(tPos);
-				}
+					//if (TestMouseOver(tPos) == true) {
+					if (mouseonBtn) {
+						ButtonUp(tPos);
+					}
 				
-				m_touch = false;
-			}
+					m_touch = false;
+				}
 		
-			if (m_IsMouseOver && m_IsButtonDown) {
-					ButtonDrag(tPos);
+				if (m_IsMouseOver && m_IsButtonDown) {
+						ButtonDrag(tPos);
 				
-			}
+				}
+			
 		}
 #endif
 	}
 
 	void UIButton::Draw(float  _deltaTime)
 	{
-		if (m_visible == false)return;
+		if (!m_visible)return;
 		UIElement::Draw(_deltaTime);
 		if (m_IsSelected == true) {
 			DrawRectangle(m_calculatedLocation.x - 10.f, m_calculatedLocation.y - 10.f, m_width + 20.f, m_height + 20.f, m_color);
 		}
 		if (m_text.size() > 0) {
-			shared<Font>m_font = AssetManager::Get().LoadFontAsset(m_fontstr, m_fontsize);
+
 			Color calcColor = { m_textcolor.r, m_textcolor.g, m_textcolor.b, m_color.a };
 			switch (m_shapeType)
 			{
@@ -220,9 +241,16 @@ namespace cart {
 					DrawCircle(m_calculatedLocation.x + m_width / 2.f, m_calculatedLocation.y + m_width / 2.f, m_width, m_color);
 					break;
 				default:
-					DrawRectangle(m_calculatedLocation.x, m_calculatedLocation.y, m_width , m_height, m_color);		
+					DrawRectangle(m_calculatedLocation.x, m_calculatedLocation.y, m_width , m_height, m_textcolor);
 				break;
 			}
+		}
+
+		if (m_borderwidth > 0)
+		{
+			Rectangle rect = { m_calculatedLocation.x , m_calculatedLocation.y, (float)m_width - m_borderwidth, (float)m_height - m_borderwidth };
+			DrawRectangleLinesEx(rect, m_borderwidth, m_borderColor);
+
 		}
 	}
 
@@ -255,7 +283,9 @@ namespace cart {
 		m_ButtonHoverColor = _prop.overcol;
 		m_ButtonDownColor = _prop.downcol;
 		m_IsSelectable = _prop.isSelectable;
-
+		m_defaulttexturecolor = _prop.textureColor;
+		m_borderwidth = _prop.borderwidth;
+		m_borderColor = _prop.bordercol;
 
 	}
 	void UIButton::SetButtonProperties(Btn_Text_Properties _prop)
@@ -312,6 +342,11 @@ namespace cart {
 		}
 	}
 
+	void UIButton::SetFontName(const std::string &strfnt)
+	{
+		m_fontstr = strfnt;
+	}
+
 
 	bool UIButton::TestMouseOver(Vector2 _point)
 	{
@@ -327,7 +362,11 @@ namespace cart {
 	void UIButton::ButtonUp(Vector2 pos)
 	{
 		m_IsButtonDown = false;
-		m_color = m_ButtonDefaultColor;
+		if (m_strTexture.size() > 0)
+			m_textureColor = m_defaulttexturecolor;
+		else
+			m_color = m_ButtonDefaultColor;
+		
 		onButtonUp.Broadcast(GetWeakRef(),  pos);
 		//LOG("UIBUTTON  RELEASE!!");
 	}
@@ -335,7 +374,12 @@ namespace cart {
 	void UIButton::ButtonDown(Vector2 pos)
 	{
 		m_IsButtonDown = true;
-		m_color = m_ButtonDownColor;
+		if (m_strTexture.size() > 0)
+			m_textureColor = m_ButtonDownColor;
+		else
+			m_color = m_ButtonDownColor;
+		
+		
 		if (m_IsSelectable == true) {
 			m_IsSelected = true;
 		}
@@ -352,22 +396,33 @@ namespace cart {
 
 	void UIButton::MouseHovered()
 	{
-		m_color = m_ButtonHoverColor;
+		if (m_strTexture.size() > 0)
+			m_textureColor = m_ButtonHoverColor;
+		else
+			m_color = m_ButtonHoverColor;
+
+		if(m_strTexture.size() > 0)
 		m_textcolor = m_texthovercolor;
+
 		m_IsMouseOver = true;
-		SetMouseCursor(1);
+		SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
 		onButtonHover.Broadcast(GetWeakRef() );
 	//	LOG("UIBUTTON  HOVER!!");
 	}
 	void UIButton::MouseOut()
 	{
 		if(m_IsMouseOver == true){
-			m_color = m_ButtonDefaultColor;
+			if (m_strTexture.size() > 0)
+				m_textureColor = m_defaulttexturecolor;
+			else
+				m_color = m_ButtonDefaultColor;
+
 			m_textcolor = m_defaulttextcolor;
 			m_IsMouseOver = false;
 			SetMouseCursor(0);
 		//	LOG("UIBUTTON  OUT!!");
 			m_IsButtonDown = false;
+			SetMouseCursor(MOUSE_CURSOR_ARROW);
 			onButtonOut.Broadcast(GetWeakRef() );
 		}
 	}
@@ -386,6 +441,7 @@ namespace cart {
 
 UIButton::~UIButton()
 	{
+	m_font.reset();
 		//LOG("%s UIButton Deleted ", m_id.c_str());
 	}
 }

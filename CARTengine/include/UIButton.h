@@ -5,9 +5,8 @@
 #include "Types.h"
 
 namespace cart {
-  
 
-	class UIButton : public UIElement {
+	class UIButton : public UIElement{
 	public:
         UIButton(World* _owningworld, const std::string& _id);
         UIButton(World* _owningworld, const std::string& _id, SHAPE_TYPE _shape);
@@ -42,6 +41,7 @@ namespace cart {
         void UpdateLocation() override;
         void SetLocation(Vector2 _location) override;
         void UpdateTextLocation();
+        void SetFontName(const std::string& strfnt);
 		~UIButton();
         
     protected:
@@ -59,6 +59,7 @@ namespace cart {
         float m_fontsize;
         float m_fontspace;
         Color m_defaulttextcolor;
+        Color m_defaulttexturecolor;
         Color m_textcolor;
         Color m_texthovercolor;
         Color m_ButtonDefaultColor;
@@ -69,6 +70,10 @@ namespace cart {
         bool m_IsSelected;
         bool m_IsSelectable;
         SHAPE_TYPE m_shapeType;
+        shared<Font> m_font;
+        int m_borderwidth;
+        Color m_borderColor;
+
      
 	};
 

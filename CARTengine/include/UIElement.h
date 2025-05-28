@@ -11,7 +11,7 @@ namespace cart {
     class Text;
 
 
-	class UIElement : public Actor{
+	class UIElement : public Actor {
 		
 	public:
 		
@@ -34,6 +34,9 @@ namespace cart {
 		virtual void DrawBGColor();
 		virtual void DrawBGTexture();
 		virtual void SetVisible(bool _flag) override;
+		virtual void Notify(const std::string& strevent);
+
+
 		virtual ~UIElement();
 
 		void SetTexture(std::string& _texture);
@@ -75,6 +78,8 @@ namespace cart {
 		Image m_screenMask;
 		bool m_bMasked;
 		Texture2D tmptex;
+		TEXTURE_TYPE  m_texturetype = TEXTURE_FULL;
+		Rectangle m_texturesource;
 	};
 
 }

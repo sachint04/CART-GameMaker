@@ -18,8 +18,8 @@ namespace cart {
 
 	void Text::Init()
 	{
-		shared<Font>sharedfont = AssetManager::Get().LoadFontAsset(m_font, m_fontsize);
-		m_textsize = MeasureTextEx(*sharedfont, m_text.c_str(), m_fontsize, 1);
+		m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, m_fontsize);
+		m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), m_fontsize, 1);
 		UpdateLocation();
 		m_pendingUpdate = false;
 	}
@@ -30,9 +30,9 @@ namespace cart {
 	void Text::Draw(float _deltaTime)
 	{
 		if (m_visible == false)return;
-		DrawRectangle(m_location.x, m_location.y, m_width, m_height, m_background);
-		shared<Font>sharedfont = AssetManager::Get().LoadFontAsset(m_font, m_fontsize);
-		DrawTextEx(*sharedfont, m_text.c_str(), m_calculatedLocation, m_fontsize * m_scale, 1, m_color);
+		DrawRectangle(m_location.x, m_location.y, m_width, m_height, m_background);	
+		m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, m_fontsize);
+		DrawTextEx(*m_sharedfont, m_text.c_str(), m_calculatedLocation, m_fontsize * m_scale, 1, m_color);
 	}
 
 	void Text::UpdateLocation()
@@ -69,6 +69,18 @@ namespace cart {
 		m_fontspacing = _prop.fontspacing;
 		SetUIProperties((UI_Properties)_prop);
 	}
+	void Text::SetFontName(const std::string& strfnt)
+	{
+		m_font = strfnt;
+	}
+	void Text::SetFontSize(float size)
+	{
+		if (m_fontsize == size)return;
+		m_sharedfont.reset();
+		m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, size);
+		AssetManager::Get().UnloadFontAsset(m_font, m_fontsize);
+		m_fontsize = size;
+	}
 #pragma endregion
 
 
@@ -76,11 +88,13 @@ namespace cart {
 
 	Text::~Text()
 	{
+		m_sharedfont.reset();
 	//	LOG("%s Text Deleted!", m_id.c_str());
 	}
 
 	void Text::Destroy() {
 		UIElement::Destroy();
 	}
+
 #pragma endregion
 }

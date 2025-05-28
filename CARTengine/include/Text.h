@@ -14,18 +14,19 @@ namespace cart {
 		void Init() override;
 		void Draw(float _deltaTime) override;
 		void Destroy() override;
-
+		virtual void SetFontName(const std::string& strfnt);
+		virtual void SetFontSize(float size);
 	protected:
 		std::string m_text;
 		std::string m_font;
-		int m_fontsize;
+		float m_fontsize;
 		ALIGN m_align;
 		Vector2 m_textsize;
 		float m_fontspacing;
 		int m_margin;
 		Color m_background;
 		void UpdateLocation() override;
-
+		shared<Font> m_sharedfont;
 
 	};
 }

@@ -23,7 +23,10 @@ namespace cart
 		bool m_exit;
 		virtual void QuitApplication();
 		virtual DataFile& GetModel() { return m_Model; };
+		DataFile& GetGameConfig(){ return m_gameConfig; };
 		virtual std::string& GetResourcePath();
+		virtual std::string GetResourceDisplayPath();
+		virtual float GetIconSize();
 	protected:
 		
 		virtual void Draw(float deltaTime);
@@ -35,7 +38,9 @@ namespace cart
 		float m_targetFrameRate;
 	
 		shared<World> m_CurrentWorld;
-		DataFile m_Model;
+		std::string m_resourcedir;
+		DataFile m_Model; 
+		DataFile m_gameConfig;
 		//shared<World> m_PendingWorld;
 	};
 	

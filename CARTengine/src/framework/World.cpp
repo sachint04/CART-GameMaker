@@ -9,7 +9,7 @@
 #include <stdexcept>
 #include "AssetManager.h"
 #include <limits> // Required for std::numeric_limits
-
+#include "component/InputController.h"
 namespace cart {
 
 	World::World(Application* owningApp)
@@ -20,13 +20,13 @@ namespace cart {
 		m_cleanCycleStartTime(0),
 		m_cleanCycleIter{ 5.f },
 		m_gameStages{},
-		m_currentStage{m_gameStages.end()}
-		
+		m_currentStage{m_gameStages.end()}		
 	{
 		
 	}
 
 	void World::Init() {
+
 
 		m_cleanCycleStartTime = Clock::Get().ElapsedTime();
 		InitGameStages();
@@ -35,7 +35,7 @@ namespace cart {
 #pragma region GAME STAGE MANAGEMENT
 	void World::InitGameStages()
 	{
-
+		m_inputController = new InputController{ };
 	}
 
     void World::AllGameStagesFinieshed()
@@ -226,4 +226,6 @@ namespace cart {
 	World::~World() {
 		
 	}
+
+	
 }

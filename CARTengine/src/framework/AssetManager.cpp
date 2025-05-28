@@ -42,7 +42,7 @@
         auto found = constainer.find(path);
         if (found != constainer.end())
         {
-        //   LOG("|>=-=ASSETMANAGER =-=<| %s Texture Found in Memory!", path.c_str());
+           LOG("|>=-=ASSETMANAGER =-=<| %s Texture Found in Memory!", path.c_str());
           //  shared<Texture2D> weak_texture = found->second;
             return found->second;
         }
@@ -51,7 +51,7 @@
         Texture2D texture = LoadTextureFromImage(image);         // Image converted to texture, GPU memory (VRAM)       
         UnloadImage(image);// Loaded in CPU memory (RAM)
         
-        //LOG("IO %s Texture Loaded!", path.c_str());
+        LOG("IO %s Texture Loaded!", path.c_str());
         try {
             constainer.insert({ path, std::make_shared<Texture2D>(texture) });
            // shared<Texture2D> t = constainer.find(path)->second;
@@ -82,6 +82,22 @@
             return true;
         }
         LOG("AssetManager |UnloadTextureAsset()| ERROR! Failed to unload Texture %s ", path.c_str());
+        return false;
+    }
+   
+    bool AssetManager::UnloadFontAsset(const std::string& path, int fontsize)
+    {
+        std::string strsize = std::to_string(fontsize);
+        auto found = m_fontLoadedMap.find(path + strsize);
+        if (found != m_fontLoadedMap.end())
+        {
+            UnloadFont(*found->second);
+            found->second.reset();
+            m_fontLoadedMap.erase(found);
+            return true;
+        }
+        LOG("AssetManager |UnloadFont()| ERROR! Failed to unload Font %s ", path.c_str());
+    
         return false;
     }
 #pragma region LOAD FONT

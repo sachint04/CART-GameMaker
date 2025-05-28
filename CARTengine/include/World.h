@@ -13,6 +13,7 @@ namespace cart
 	class Application;
 	class HUD;
 	class GameStage;
+	class InputController;
 	class World : public Object
 	{
 
@@ -22,13 +23,19 @@ namespace cart
 		virtual void Update(float _deltaTime);
 		virtual void Draw(float _deltaTime);
 		virtual void AddStage(const shared<GameStage>& newStage);
+		virtual void AllGameStagesFinieshed();
+
+		virtual InputController* GetInputController() { return m_inputController; };
+		virtual const InputController* GetInputController() const { return m_inputController; }
+
+		virtual Application* GetApplication() { return m_owningApp; }
+		virtual const Application* GetApplication() const { return m_owningApp; }
+		virtual void InitGameStages();
 		virtual ~World();
 
-		//void BeginPlayInternal();
+
 
 		Vector2 GetAppWindowSize() const;
-		Application* GetApplication() { return m_owningApp; }
-		const Application* GetApplication() const { return m_owningApp; }
 		long GetSizeOfPendingActors();
 		void CleanCycle();
 		void Unload();
@@ -41,16 +48,15 @@ namespace cart
 		
 		template<typename HUDType, typename... Args>
 		weak<HUDType> SpawnHUD(Args... args);
+
 		
-		private:
-		
-		virtual void InitGameStages();
-		
+	private:
 		bool m_BeginPlay;
 		float m_cleanCycleIter;
 		double m_cleanCycleStartTime;
 
 		Application* m_owningApp;
+		InputController* m_inputController;
 
 		List<shared<Actor>> m_Actors;
 		List<shared<Actor>> m_PendingActors;
@@ -58,7 +64,7 @@ namespace cart
 		shared<HUD> mHUD;
 		List<shared<GameStage>>::iterator  m_currentStage;
 		
-		virtual void AllGameStagesFinieshed();
+
 	};
 
 

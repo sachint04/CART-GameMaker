@@ -93,7 +93,7 @@ namespace cart
 
 	void TextInput::Update(float _deltaTime)
 	{
-        if (!m_active)return;
+        if (!m_visible)return;
         Rectangle textBox = GetBounds();
 
         auto typeinbetween = [&](int& c, int key, char* s, std::vector<std::pair<std::pair<int, int>, Vector2>>& r, std::vector<std::pair<std::string, Vector2>>& l, int& d)

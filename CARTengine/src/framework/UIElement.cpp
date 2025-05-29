@@ -45,6 +45,7 @@ namespace cart {
 		m_screenMask{},
 		m_texturetype{ TEXTURE_FULL },
 		m_texturesource{}
+
 	{
 		m_defaultSize = _size;
 		Actor::m_width = _size.x;
@@ -126,6 +127,7 @@ namespace cart {
 		m_textureColor = _prop.textureColor;
 		m_texturetype = _prop.texturetype;
 		m_texturesource = _prop.texturesource;
+
 		UpdateLocation();
 	}
 	

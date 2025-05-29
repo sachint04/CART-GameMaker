@@ -18,8 +18,8 @@ namespace cart {
 
 	void Text::Init()
 	{
+	
 		m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, m_fontsize);
-		m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), m_fontsize, 1);
 		UpdateLocation();
 		m_pendingUpdate = false;
 	}
@@ -30,8 +30,11 @@ namespace cart {
 	void Text::Draw(float _deltaTime)
 	{
 		if (m_visible == false)return;
-		DrawRectangle(m_location.x, m_location.y, m_width, m_height, m_background);	
+
 		m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, m_fontsize);
+		m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), m_fontsize, m_fontspacing);
+		DrawRectangle(m_location.x, m_location.y, m_width, m_height, m_background);	
+
 		DrawTextEx(*m_sharedfont, m_text.c_str(), m_calculatedLocation, m_fontsize * m_scale, 1, m_color);
 	}
 

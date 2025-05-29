@@ -97,6 +97,10 @@ namespace cart {
         bool isSelectable;
         int borderwidth = 0;
         Color bordercol = GRAY;
+        Rectangle texturesourceover;
+        Rectangle texturesourcedown;
+        Rectangle texturesourcedisable;
+       
     };
     struct Btn_Text_Properties : Btn_Properties {
     public:

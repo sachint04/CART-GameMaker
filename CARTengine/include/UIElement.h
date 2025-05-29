@@ -80,6 +80,7 @@ namespace cart {
 		Texture2D tmptex;
 		TEXTURE_TYPE  m_texturetype = TEXTURE_FULL;
 		Rectangle m_texturesource;
+
 	};
 
 }

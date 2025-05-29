@@ -34,7 +34,11 @@ namespace cart {
 		m_IsSelectable{ false },
 		m_shapeType{ SHAPE_TYPE::RECTANGLE },
 		m_borderwidth{0},
-		m_borderColor{GRAY}
+		m_borderColor{GRAY},
+		m_texturesourcedefault{},
+		m_texturesourceover{},
+		m_texturesourcedown{},
+		m_texturesourcedisable{}
 
 	{
 
@@ -66,7 +70,11 @@ namespace cart {
 		m_IsSelectable{ false },
 		m_shapeType{ _shape },
 		m_borderwidth{ 0 },
-		m_borderColor{ GRAY }
+		m_borderColor{ GRAY },
+		m_texturesourcedefault{},
+		m_texturesourceover{},
+		m_texturesourcedown{},
+		m_texturesourcedisable{}
 	{
 
 	}
@@ -97,7 +105,11 @@ namespace cart {
 		m_IsSelectable{false},
 		m_shapeType{ SHAPE_TYPE::RECTANGLE },
 		m_borderwidth{ 0 },
-		m_borderColor{ GRAY }
+		m_borderColor{ GRAY },
+		m_texturesourcedefault{},
+		m_texturesourceover{},
+		m_texturesourcedown{},
+		m_texturesourcedisable{}
         {
 				}
 
@@ -218,31 +230,18 @@ namespace cart {
 	{
 		if (!m_visible)return;
 		UIElement::Draw(_deltaTime);
+		m_font = AssetManager::Get().LoadFontAsset(m_fontstr, m_fontsize);
 		if (m_IsSelected == true) {
 			DrawRectangle(m_calculatedLocation.x - 10.f, m_calculatedLocation.y - 10.f, m_width + 20.f, m_height + 20.f, m_color);
 		}
-		if (m_text.size() > 0) {
-
-			Color calcColor = { m_textcolor.r, m_textcolor.g, m_textcolor.b, m_color.a };
-			switch (m_shapeType)
+		if (m_strTexture.size() == 0) {
+			if (m_shapeType == SHAPE_TYPE::CIRCLE)
 			{
-			case SHAPE_TYPE::CIRCLE:
 				DrawCircle(m_calculatedLocation.x + m_width / 2.f, m_calculatedLocation.y + m_width / 2.f, m_width, m_color);				
-				break;
-			default:				
-				DrawTextEx(*m_font, m_text.c_str(), m_fontLocation, m_fontsize * m_scale, m_fontspace * m_scale, calcColor);
-				break;
-			}
-		}
-		else {
-			switch (m_shapeType)
+
+			}else
 			{
-				case SHAPE_TYPE::CIRCLE:
-					DrawCircle(m_calculatedLocation.x + m_width / 2.f, m_calculatedLocation.y + m_width / 2.f, m_width, m_color);
-					break;
-				default:
-					DrawRectangle(m_calculatedLocation.x, m_calculatedLocation.y, m_width , m_height, m_textcolor);
-				break;
+				DrawRectangle(m_calculatedLocation.x, m_calculatedLocation.y, m_width, m_height, m_color);
 			}
 		}
 
@@ -252,6 +251,12 @@ namespace cart {
 			DrawRectangleLinesEx(rect, m_borderwidth, m_borderColor);
 
 		}
+		Color calcColor = { m_textcolor.r, m_textcolor.g, m_textcolor.b, m_color.a };
+		if (m_text.size() > 0) {
+			
+				DrawTextEx(*m_font, m_text.c_str(), m_fontLocation, m_fontsize * m_scale, m_fontspace * m_scale, calcColor);			
+		}
+
 	}
 
 
@@ -286,6 +291,10 @@ namespace cart {
 		m_defaulttexturecolor = _prop.textureColor;
 		m_borderwidth = _prop.borderwidth;
 		m_borderColor = _prop.bordercol;
+		m_texturesourcedefault = m_texturesource;
+		m_texturesourceover = _prop.texturesourceover;
+		m_texturesourcedown = _prop.texturesourcedown;
+		m_texturesourcedisable = _prop.texturesourcedisable;
 
 	}
 	void UIButton::SetButtonProperties(Btn_Text_Properties _prop)
@@ -379,6 +388,10 @@ namespace cart {
 		else
 			m_color = m_ButtonDownColor;
 		
+
+		if (m_texturetype == TEXTURE_PART) {
+			m_texturesource = m_texturesourcedown;
+		}
 		
 		if (m_IsSelectable == true) {
 			m_IsSelected = true;
@@ -401,9 +414,12 @@ namespace cart {
 		else
 			m_color = m_ButtonHoverColor;
 
-		if(m_strTexture.size() > 0)
-		m_textcolor = m_texthovercolor;
+		if(m_text.size() > 0)
+			m_textcolor = m_texthovercolor;
 
+		if (m_texturetype == TEXTURE_PART) {
+			m_texturesource = m_texturesourceover;
+		}
 		m_IsMouseOver = true;
 		SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
 		onButtonHover.Broadcast(GetWeakRef() );
@@ -417,7 +433,13 @@ namespace cart {
 			else
 				m_color = m_ButtonDefaultColor;
 
-			m_textcolor = m_defaulttextcolor;
+
+			if (m_texturetype == TEXTURE_PART) {
+				m_texturesource = m_texturesourcedefault;
+			}
+			if (m_text.size() > 0)
+				m_textcolor = m_defaulttextcolor;
+
 			m_IsMouseOver = false;
 			SetMouseCursor(0);
 		//	LOG("UIBUTTON  OUT!!");

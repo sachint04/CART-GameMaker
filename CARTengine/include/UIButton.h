@@ -73,6 +73,10 @@ namespace cart {
         shared<Font> m_font;
         int m_borderwidth;
         Color m_borderColor;
+        Rectangle m_texturesourcedefault;
+        Rectangle m_texturesourceover;
+        Rectangle m_texturesourcedown;
+        Rectangle m_texturesourcedisable;
 
      
 	};

@@ -17,6 +17,7 @@ namespace cart {
 		
 		UIElement(World* _owningworld, const std::string& _id, Vector2 _size);
 		UIElement(World* _owningworld, const std::string& _id);
+		UIElement(World* _owningworld, const std::string& _id, bool isExcludedFromParentAutoControl);
 
 		// UIElement virtual function
 		virtual void Init();  
@@ -44,6 +45,7 @@ namespace cart {
 		weak<UIButton> AddButton(const std::string& id, Btn_Text_Properties _btn);
 		weak<UIButton> AddButton(const std::string& id, Btn_Text_Properties _prop, SHAPE_TYPE _shape);
 		void AddChild(weak<UIElement> _btn);
+		void RemoveChild(const std::string& id);
 		bool IsPendingUpdate() { return m_pendingUpdate; };
 		void SetPendingUpdate(bool _flag);
 		void SetFlipH(bool fliph);
@@ -59,6 +61,8 @@ namespace cart {
 		Color GetTextureColor() { return m_textureColor; };
 		void SetTextureColor(Color col) { m_textureColor = col; };
 		void SetScreenMask(const Image &strmask);
+		void SetExcludeFromParentAutoControl(bool _flag);
+		bool IsExcludedFromParentAutoControl() { return m_isExcludedFromParentAutoControl; };
 	protected:
 		Vector2 m_rawlocation;	
 		Vector2 m_pivot;
@@ -80,7 +84,7 @@ namespace cart {
 		Texture2D tmptex;
 		TEXTURE_TYPE  m_texturetype = TEXTURE_FULL;
 		Rectangle m_texturesource;
-
+		bool m_isExcludedFromParentAutoControl;
 	};
 
 }

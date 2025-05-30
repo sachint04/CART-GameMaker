@@ -167,11 +167,11 @@ namespace cart
             r[r.size() - 1].first.second = c;
         };
 
-
         auto whileleftkey = [&](int& d) {
             d--;
             if (d < 0)d = 0;
         };
+        
         auto whilerightkey = [&](int& d, const int & c) {
             d++;
             if (d > c)d = c;
@@ -428,7 +428,7 @@ namespace cart
 	{
         if (!m_visible)return;
         Rectangle textBox = GetBounds();
-        DrawRectangleRec(textBox, LIGHTGRAY);
+       // DrawRectangleRec(textBox, LIGHTGRAY);
         if (m_mouseOnText) DrawRectangleLines((int)textBox.x, (int)textBox.y, (int)textBox.width, (int)textBox.height, RED);
         else DrawRectangleLines((int)textBox.x, (int)textBox.y, (int)textBox.width, (int)textBox.height, DARKGRAY);
         TextLine(m_lines);             
@@ -496,7 +496,8 @@ namespace cart
         {
             if (iter->first.size() > 0)
             {
-              DrawTextEx(*m_sharedfont, iter->first.c_str(),iter->second, m_fontsize, m_fontspacing, BLACK);
+                m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, m_fontsize);
+                DrawTextEx(*m_sharedfont, iter->first.c_str(),iter->second, m_fontsize, m_fontspacing, m_textColor);
               
             }
             ++iter;
@@ -548,7 +549,60 @@ namespace cart
     void TextInput::SetFontName(const std::string& strfnt)
     {
         Text::SetFontName(strfnt);
-        m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, m_fontsize);
+        
+        //  int &c, char * s, std::vector<std::pair<std::pair<int, int>, Vector2>>& r, std::vector<std::pair<std::string, Vector2>>& l, int &d
+  //    m_letterCount, name, m_lrange, m_lines, m_curletterindex
+        Rectangle textBox = GetBounds();
+        m_lines.clear();
+        m_lines.push_back({ std::string{},  { (float)textBox.x + m_textmargin, (float)textBox.y + 8 } });
+
+        m_lrange.clear();
+        m_lrange.push_back({ {0,0}, { (float)textBox.x + m_textmargin, (float)textBox.y + 8 } });
+
+        Vector2 fntmeasure = MeasureTextEx(*m_sharedfont, "W", (float)m_fontsize, m_fontspacing);
+        for (int i = 0; i < m_letterCount; i++)
+        {
+
+            m_lines[m_lines.size() - 1].first.append(std::string{ name[i] });
+            if (MeasureTextEx(*m_sharedfont, m_lines[m_lines.size() - 1].first.c_str(), (float)m_fontsize, m_fontspacing).x >= textBox.width - (fntmeasure.x + m_textmargin))
+            {
+                m_lines.push_back({ std::string{},  { (float)textBox.x + m_textmargin, ((float)textBox.y + 8) + (fntmeasure.y * m_lines.size() - 1) } });
+                m_lrange[m_lrange.size() - 1].first.second = i;
+                std::pair<int, int> p = { (i + 1),0 };
+                std::pair<std::pair<int, int>, Vector2> pp = { p, { (float)textBox.x + m_textmargin, ((float)textBox.y + 8) + (fntmeasure.y * m_lrange.size() - 1) } };
+                m_lrange.push_back(pp);
+            }
+        }
+        m_lrange[m_lrange.size() - 1].first.second = m_letterCount;
+    }
+    void TextInput::SetFontSize(float size)
+    {
+        Text::SetFontSize(size);
+     
+        //  int &c, char * s, std::vector<std::pair<std::pair<int, int>, Vector2>>& r, std::vector<std::pair<std::string, Vector2>>& l, int &d
+    //    m_letterCount, name, m_lrange, m_lines, m_curletterindex
+        Rectangle textBox = GetBounds();
+        m_lines.clear();
+        m_lines.push_back({ std::string{},  { (float)textBox.x + m_textmargin, (float)textBox.y + 8 } });
+
+        m_lrange.clear();
+        m_lrange.push_back({ {0,0}, { (float)textBox.x + m_textmargin, (float)textBox.y + 8 } });
+
+        Vector2 fntmeasure = MeasureTextEx(*m_sharedfont, "W", (float)m_fontsize, m_fontspacing);
+        for (int i = 0; i < m_letterCount; i++)
+        {
+
+            m_lines[m_lines.size() - 1].first.append(std::string{ name[i] });
+            if (MeasureTextEx(*m_sharedfont, m_lines[m_lines.size() - 1].first.c_str(), (float)m_fontsize, m_fontspacing).x >= textBox.width - (fntmeasure.x + m_textmargin))
+            {
+                m_lines.push_back({ std::string{},  { (float)textBox.x + m_textmargin, ((float)textBox.y + 8) + (fntmeasure.y * m_lines.size() - 1) } });
+                m_lrange[m_lrange.size() - 1].first.second = i;
+                std::pair<int, int> p = { (i + 1),0 };
+                std::pair<std::pair<int, int>, Vector2> pp = { p, { (float)textBox.x + m_textmargin, ((float)textBox.y + 8) + (fntmeasure.y * m_lrange.size() - 1) } };
+                m_lrange.push_back(pp);
+            }
+        }
+        m_lrange[m_lrange.size() - 1].first.second = m_letterCount;
     }
 #pragma endregion
 

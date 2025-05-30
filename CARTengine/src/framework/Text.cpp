@@ -12,7 +12,8 @@ namespace cart {
 		m_margin(5),
 		m_textsize{},
 		m_align{ LEFT },
-		m_background{ 0,0,0,0 }
+		m_background{ 0,0,0,0 },
+		m_textColor{BLACK}
 	{
 	}
 
@@ -35,7 +36,7 @@ namespace cart {
 		m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), m_fontsize, m_fontspacing);
 		DrawRectangle(m_location.x, m_location.y, m_width, m_height, m_background);	
 
-		DrawTextEx(*m_sharedfont, m_text.c_str(), m_calculatedLocation, m_fontsize * m_scale, 1, m_color);
+		DrawTextEx(*m_sharedfont, m_text.c_str(), m_calculatedLocation, m_fontsize * m_scale, 1, m_textColor);
 	}
 
 	void Text::UpdateLocation()
@@ -70,10 +71,13 @@ namespace cart {
 		m_color = _prop.color;	
 		m_background = _prop.textbackground;
 		m_fontspacing = _prop.fontspacing;
+		m_textColor = _prop.textcolor;
 		SetUIProperties((UI_Properties)_prop);
 	}
 	void Text::SetFontName(const std::string& strfnt)
 	{
+		m_sharedfont = AssetManager::Get().LoadFontAsset(strfnt, m_fontsize);
+		AssetManager::Get().UnloadFontAsset(m_font, m_fontsize);
 		m_font = strfnt;
 	}
 	void Text::SetFontSize(float size)
@@ -83,6 +87,11 @@ namespace cart {
 		m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, size);
 		AssetManager::Get().UnloadFontAsset(m_font, m_fontsize);
 		m_fontsize = size;
+
+	}
+	void Text::SetTextColor(Color col)
+	{
+		m_textColor = col;
 	}
 #pragma endregion
 

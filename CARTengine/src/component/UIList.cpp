@@ -20,8 +20,10 @@ namespace cart {
 		uint16_t scrH = GetScreenHeight();
 		m_listitem.clear();
 		int counter = 0;
-			std::string strfont = m_owningworld->GetApplication()->GetGameConfig()["cart"]["defaultfont"].GetString(0);
-			int fontsize = m_owningworld->GetApplication()->GetGameConfig()["cart"]["defaultfont"].GetReal(1);
+		auto& c = m_owningworld->GetApplication()->GetGameConfig()["cart"];
+		std::string fntid = c["systemfont"].GetString(0);
+		int fontsize = c["systemfont"].GetInt(1);
+		std::string strfont = c["fonts"][fntid].GetString(0);
 		if (!fnt)
 		{
 			fnt = AssetManager::Get().LoadFontAsset(strfont, fontsize);

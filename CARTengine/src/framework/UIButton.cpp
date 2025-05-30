@@ -119,9 +119,10 @@ namespace cart {
 
 		m_owningworld->GetInputController()->RegisterUI(GetWeakRef());
 
-		m_font = AssetManager::Get().LoadFontAsset(m_fontstr, m_fontsize);
+	
 		
 		if (m_text.size() > 0) {
+			m_font = AssetManager::Get().LoadFontAsset(m_fontstr, m_fontsize);
 			m_textsize = MeasureTextEx(*m_font, m_text.c_str(), m_fontsize, 2.f);
 			UpdateTextLocation();
 		}
@@ -230,7 +231,6 @@ namespace cart {
 	{
 		if (!m_visible)return;
 		UIElement::Draw(_deltaTime);
-		m_font = AssetManager::Get().LoadFontAsset(m_fontstr, m_fontsize);
 		if (m_IsSelected == true) {
 			DrawRectangle(m_calculatedLocation.x - 10.f, m_calculatedLocation.y - 10.f, m_width + 20.f, m_height + 20.f, m_color);
 		}
@@ -253,7 +253,7 @@ namespace cart {
 		}
 		Color calcColor = { m_textcolor.r, m_textcolor.g, m_textcolor.b, m_color.a };
 		if (m_text.size() > 0) {
-			
+				m_font = AssetManager::Get().LoadFontAsset(m_fontstr, m_fontsize);			
 				DrawTextEx(*m_font, m_text.c_str(), m_fontLocation, m_fontsize * m_scale, m_fontspace * m_scale, calcColor);			
 		}
 

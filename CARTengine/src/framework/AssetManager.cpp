@@ -94,6 +94,7 @@
             UnloadFont(*found->second);
             found->second.reset();
             m_fontLoadedMap.erase(found);
+            LOG("AssetManager | UnloadFont() | %s  %ld | Success!", path.c_str(), fontsize);
             return true;
         }
         LOG("AssetManager |UnloadFont()| ERROR! Failed to unload Font %s ", path.c_str());

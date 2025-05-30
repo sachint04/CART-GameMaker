@@ -17,6 +17,7 @@ namespace cart {
 		void SetText(const std::string &txt);
 		void SetFontName(const std::string& strfnt)override;
 		float GetFontSize() { return m_fontsize; };
+		void SetFontSize(float size) override;
 	private:
 		int m_charLimit;
 		int m_curletterindex;

@@ -85,6 +85,7 @@ namespace cart {
         float fontspacing = 2.f;
 		ALIGN align = ALIGN::LEFT;	
         Color textbackground;
+        Color textcolor;
 	};
 
     struct Btn_Properties :UI_Properties {

@@ -23,7 +23,8 @@ namespace cart {
 		tmptex{},
 		m_screenMask{},
 		m_texturetype{TEXTURE_FULL},
-		m_texturesource{}
+		m_texturesource{},
+		m_isExcludedFromParentAutoControl{false}
 	{
 
 	}
@@ -44,7 +45,8 @@ namespace cart {
 		tmptex{},
 		m_screenMask{},
 		m_texturetype{ TEXTURE_FULL },
-		m_texturesource{}
+		m_texturesource{},
+		m_isExcludedFromParentAutoControl{false}
 
 	{
 		m_defaultSize = _size;
@@ -52,6 +54,28 @@ namespace cart {
 		Actor::m_height = _size.y;
 	}
 
+	UIElement::UIElement(World* _owningworld, const std::string& _id, bool isExcludedFromParentAutoControl)
+		:Actor{ _owningworld,  _id },
+		m_strTexture{},
+		m_pendingUpdate{ true },
+		m_pivot{ 0, 0 },
+		m_rawlocation{},
+		m_flipH{ false },
+		m_flipV{ false },
+		m_bAspectRatio{ false },
+		m_textureScaleX{ 1.f },
+		m_textureScaleY{ 1.f },
+		m_textureColor{ WHITE },
+		m_bMasked{ false },
+		tmptex{},
+		m_screenMask{},
+		m_texturetype{ TEXTURE_FULL },
+		m_texturesource{},
+		m_isExcludedFromParentAutoControl{ isExcludedFromParentAutoControl }
+
+	{
+	
+	}
 
 #pragma endregion
 
@@ -59,7 +83,6 @@ namespace cart {
 	// VIRTUAL METHOD 
 	void UIElement::Init()
 	{
-
 		for (auto iter = m_children.begin(); iter != m_children.end(); ++iter)
 		{
 			iter->get()->Init();
@@ -94,11 +117,27 @@ namespace cart {
 
 
 #pragma region Set Properties
-	Rectangle UIElement::GetBounds() {
-	//	return{ m_location.x - m_pivot.x, m_location.y - m_pivot.y, m_width * m_scale,m_height * m_scale };
-		return{ m_calculatedLocation.x, m_calculatedLocation.y, m_width * m_scale,m_height * m_scale };
-	}
+	void UIElement::SetUIProperties(UI_Properties _prop)
+	{
+		m_location = _prop.location;
+		m_rawlocation = _prop.location;
+		m_scale = _prop.scale;
+		m_color = _prop.color;
 
+		m_strTexture = _prop.texture;
+		m_pivot = _prop.pivot;
+		m_defaultSize = _prop.size;
+		m_width = _prop.size.x,
+			m_height = _prop.size.y;
+		m_textureColor = _prop.textureColor;
+		m_texturetype = _prop.texturetype;
+		m_texturesource = _prop.texturesource;
+
+		UpdateLocation();
+	}
+#pragma endregion
+
+#pragma region  Helpers
 	void UIElement::SetSize(Vector2 _size) {
 		m_textureScaleX =  _size.x / m_defaultSize.x;
 		m_textureScaleY =  _size.y / m_defaultSize.y;
@@ -112,28 +151,19 @@ namespace cart {
 		UpdateLocation();
 	}
 
-	void UIElement::SetUIProperties(UI_Properties _prop)
-	{
-		m_location  = _prop.location;
-		m_rawlocation = _prop.location;
-		m_scale = _prop.scale;
-		m_color = _prop.color;
-
-		m_strTexture = _prop.texture;
-		m_pivot = _prop.pivot;
-		m_defaultSize = _prop.size;
-		m_width =  _prop.size.x, 
-		m_height = 	_prop.size.y ;
-		m_textureColor = _prop.textureColor;
-		m_texturetype = _prop.texturetype;
-		m_texturesource = _prop.texturesource;
-
-		UpdateLocation();
-	}
-	
 	void UIElement::SetTexture(std::string& _texture)
 	{
 		m_strTexture = _texture;
+	}
+
+	void UIElement::SetActive(bool _flag)
+	{
+		Actor::SetActive(_flag);
+		for (auto iter = m_children.begin(); iter != m_children.end(); ++iter)
+		{
+			if (!iter->get()->IsExcludedFromParentAutoControl())
+				iter->get()->SetActive(_flag);
+		}
 	}
 
 	void UIElement::SetVisible(bool _flag)
@@ -142,10 +172,16 @@ namespace cart {
 
 		for (iter = m_children.begin(); iter != m_children.end();++iter)
 		{
-			iter->get()->SetVisible(_flag);
+			if(!iter->get()->IsExcludedFromParentAutoControl())
+				iter->get()->SetVisible(_flag);
 			
 		}
 		Actor::SetVisible(_flag);
+	}
+	
+	Rectangle UIElement::GetBounds() {
+		//	return{ m_location.x - m_pivot.x, m_location.y - m_pivot.y, m_width * m_scale,m_height * m_scale };
+		return{ m_calculatedLocation.x, m_calculatedLocation.y, m_width * m_scale,m_height * m_scale };
 	}
 
 	void UIElement::Notify(const std::string& strevent)
@@ -186,9 +222,7 @@ namespace cart {
 	{
 		Actor::Offset(_location);
 	}
-#pragma endregion
 
-#pragma region  Helpers
 	void UIElement::DrawBGColor()
 	{
 		DrawRectangle(m_calculatedLocation.x, m_calculatedLocation.y, m_width * m_scale, m_height * m_scale, m_color);
@@ -278,15 +312,6 @@ namespace cart {
 	//		m_texture2d.reset();			
 	}
 
-	void UIElement::SetActive(bool _flag)
-	{
-		Actor::SetActive(_flag);
-		for (auto iter = m_children.begin(); iter != m_children.end(); ++iter)
-		{
-			iter->get()->SetActive(_flag);
-		}
-	}
-
 	void UIElement::UpdateLocation()
 	{
 		m_rawlocation = { m_location.x * m_scale, m_location.y * m_scale };
@@ -310,8 +335,10 @@ namespace cart {
 		
 	}
 
-
-
+	void UIElement::SetExcludeFromParentAutoControl(bool _flag)
+	{
+		m_isExcludedFromParentAutoControl = _flag;
+	}
 
 #pragma endregion
 	
@@ -351,6 +378,19 @@ namespace cart {
 		m_children.push_back(shared_ui);
 		shared_ui.reset();
 	
+	}
+
+	void UIElement::RemoveChild(const std::string& id)
+	{
+		for (auto iter = m_children.begin(); iter != m_children.end(); ++iter)
+		{
+			if (iter->get()->GetID().compare(id) == 0) {
+				LOG("Removing %s from child list. usecout is %ld", id.c_str(), iter->use_count());
+				iter->reset();
+				m_children.erase(iter);
+				break;
+			}
+		}
 	}
 #pragma endregion
 

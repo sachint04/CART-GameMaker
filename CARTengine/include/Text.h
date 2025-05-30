@@ -16,6 +16,7 @@ namespace cart {
 		void Destroy() override;
 		virtual void SetFontName(const std::string& strfnt);
 		virtual void SetFontSize(float size);
+		virtual void SetTextColor(Color col);
 	protected:
 		std::string m_text;
 		std::string m_font;
@@ -25,8 +26,12 @@ namespace cart {
 		float m_fontspacing;
 		int m_margin;
 		Color m_background;
+		Color m_textColor;
 		void UpdateLocation() override;
+		
+		
 		shared<Font> m_sharedfont;
+
 
 	};
 }

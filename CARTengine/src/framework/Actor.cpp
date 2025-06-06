@@ -10,7 +10,9 @@ namespace cart {
 		m_color{WHITE},
 		m_calculatedLocation{},
 		m_width{},
-		m_height{}
+		m_height{},
+		m_location3{},
+		m_zSize{}
 	{
 	}
 
@@ -29,6 +31,11 @@ namespace cart {
 	{
 		m_location = _location;
 		m_calculatedLocation = _location;
+	}
+
+	void Actor::SetLocation(Vector3 _location)
+	{
+		m_location3 = _location;
 	}
 
 	void Actor::Offset(Vector2 _location)
@@ -81,6 +88,10 @@ namespace cart {
 	{
 		return m_location;
 	}
+	Vector3 Actor::GetLocation3()
+	{
+		return m_location3;
+	}
 
 	float Actor::GetScale()
 	{
@@ -94,6 +105,19 @@ namespace cart {
 
 	void Actor::Draw(float _deltaTime)
 	{
+	}
+
+	void Actor::SetSize(Vector2 _size)
+	{
+		m_width = _size.x;
+		m_height = _size.y;
+	}
+
+	void Actor::SetSize(Vector3 _size)
+	{
+		m_width = _size.x;
+		m_height = _size.y;
+		m_zSize = _size.z;
 	}
 
 	void Actor::SetVisible(bool _flag)

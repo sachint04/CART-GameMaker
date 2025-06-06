@@ -5,6 +5,7 @@
 #include "Shape.h"
 #include "MathUtility.h"
 namespace cart {
+
 	TransformCntrl::TransformCntrl(World* _owningworld, const std::string& id, Vector2 minsize, Vector2 maxsize , Rectangle targetInitState)
 		: UIElement{ _owningworld, id },
 		 m_topleftCntrl{},
@@ -20,7 +21,10 @@ namespace cart {
 		m_tempTargetLoc{},
 		m_minSize{ minsize },
 		m_maxSize{maxsize},
-		m_targetInitState{ targetInitState }
+		m_targetInitState{ targetInitState },
+		m_aspectRatio{},
+		m_isfixedAspectRatio{},
+		m_tmpPivot{}
 	{
 		
 		m_center = { targetInitState.x + targetInitState.width/2.f,
@@ -73,8 +77,9 @@ namespace cart {
 		cntrlui.overcol = ORANGE;
 		cntrlui.downcol = ORANGE;
 		cntrlui.pivot = { cntrlhalf, cntrlhalf };
+		cntrlui.shapetype = SHAPE_TYPE::CIRCLE;
 		id = "topleft-cntrl";
-		m_topleftCntrl = AddButton(id, cntrlui,SHAPE_TYPE::CIRCLE);
+		m_topleftCntrl = AddButton(id, cntrlui);
 		m_topleftCntrl.lock()->onButtonDrag.BindAction(GetWeakRef(), &TransformCntrl::onScaleHandler);
 		m_topleftCntrl.lock()->onButtonDown.BindAction(GetWeakRef(), &TransformCntrl::onDragStart);
 		m_topleftCntrl.lock()->onButtonUp.BindAction(GetWeakRef(), &TransformCntrl::onDragEnd);
@@ -86,7 +91,7 @@ namespace cart {
 
 		id = "topright-cntrl";
 		cntrlui.location = { m_targetInitState.x + m_targetInitState.width , m_targetInitState.y  };
-		m_toprightCntrl = AddButton(id, cntrlui,SHAPE_TYPE::CIRCLE);
+		m_toprightCntrl = AddButton(id, cntrlui);
 		m_toprightCntrl.lock()->onButtonDrag.BindAction(GetWeakRef(), &TransformCntrl::onScaleHandler);
 		m_toprightCntrl.lock()->onButtonDown.BindAction(GetWeakRef(), &TransformCntrl::onDragStart);
 		m_toprightCntrl.lock()->onButtonUp.BindAction(GetWeakRef(), &TransformCntrl::onDragEnd);
@@ -95,7 +100,7 @@ namespace cart {
 	
 		id = "bottomleft-cntrl";
 		cntrlui.location = { m_targetInitState.x, m_targetInitState.y + m_targetInitState.height  };
-		m_bottomleftCntrl = AddButton(id, cntrlui,SHAPE_TYPE::CIRCLE);
+		m_bottomleftCntrl = AddButton(id, cntrlui);
 		m_bottomleftCntrl.lock()->onButtonDrag.BindAction(GetWeakRef(), &TransformCntrl::onScaleHandler);
 		m_bottomleftCntrl.lock()->onButtonDown.BindAction(GetWeakRef(), &TransformCntrl::onDragStart);
 		m_bottomleftCntrl.lock()->onButtonUp.BindAction(GetWeakRef(), &TransformCntrl::onDragEnd);
@@ -104,7 +109,7 @@ namespace cart {
 		
 		id = "bottomright-cntrl";
 		cntrlui.location = { m_targetInitState.x + m_targetInitState.width , m_targetInitState.y + m_targetInitState.height  };
-		m_bottomrightCntrl = AddButton(id, cntrlui,SHAPE_TYPE::CIRCLE);
+		m_bottomrightCntrl = AddButton(id, cntrlui);
 		m_bottomrightCntrl.lock()->onButtonDrag.BindAction(GetWeakRef(), &TransformCntrl::onScaleHandler);
 		m_bottomrightCntrl.lock()->onButtonDown.BindAction(GetWeakRef(), &TransformCntrl::onDragStart);
 		m_bottomrightCntrl.lock()->onButtonUp.BindAction(GetWeakRef(), &TransformCntrl::onDragEnd);
@@ -115,6 +120,8 @@ namespace cart {
 		cntrlui = {};
 
 	}
+	
+	
 	void TransformCntrl::onScaleHandler(weak<Object> btn, Vector2 pos)
 	{	
 		Vector2 p = m_center;
@@ -167,8 +174,6 @@ namespace cart {
 	
 		LOG("onScaleHandler() |width %.2f", width);
 	}
-	
-
 	void TransformCntrl::onDragStart(weak<Object> btn, Vector2 pos)
 	{
 		if (m_isScaling)return;
@@ -249,6 +254,17 @@ namespace cart {
 		m_translateCntrl.lock()->Destroy();
 		m_outline.lock()->Destroy();
 		SetVisible(false);
+	}
+	
+	void TransformCntrl::Destroy()
+	{
+		m_topleftCntrl.lock()->Destroy();
+		m_toprightCntrl.lock()->Destroy();
+		m_bottomleftCntrl.lock()->Destroy();
+		m_bottomrightCntrl.lock()->Destroy();
+		m_translateCntrl.lock()->Destroy();
+		m_outline.lock()->Destroy();
+		UIElement::Destroy();
 	}
 	TransformCntrl::~TransformCntrl()
 	{

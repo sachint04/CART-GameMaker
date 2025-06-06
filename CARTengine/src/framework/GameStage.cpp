@@ -3,9 +3,9 @@
 #include "Core.h"
 namespace cart
 {
-    GameStage::GameStage(World* world)
-    :Object{},
-    m_world{world},
+    GameStage::GameStage(World* owningworld, const std::string& _id)
+    :Object{_id},
+    m_owningworld{owningworld},
         m_stageFinished{false}
     {
 
@@ -33,14 +33,13 @@ namespace cart
     void GameStage::Draw(float deltaTime)
     {
     }
-    void GameStage::FinishStage()
+    /*void GameStage::FinishStage()
     {
-        m_stageFinished = true;
-        StageFinished();
-        onStageFinished.Broadcast();
-    }
+    }*/
     void GameStage::StageFinished()
     {
+        m_stageFinished = true;
+      //  StageFinished();      
         LOG("Stage Finished");
     }
 }

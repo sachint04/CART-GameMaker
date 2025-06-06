@@ -21,6 +21,7 @@ namespace  cart {
 		~TransformCntrl();
 
 		void Init() override;
+		void Destroy()override;
 		void Reset();
 		void Close();
 		Delegate<Vector2, Vector2, Vector2>onScaled;

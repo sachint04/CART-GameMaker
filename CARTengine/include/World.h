@@ -3,9 +3,6 @@
 #include <raylib.h>
 #include "Core.h"
 #include "Object.h"
-
-
-
 namespace cart
 {
 
@@ -42,6 +39,7 @@ namespace cart
 		void StartStage();
 		void NextGameStage();
 		void PreviousGameStage();
+		void JumpToGameStage(const std::string& stageid);
 
 		template<typename ActorType, typename... Args>
 		weak<ActorType> SpawnActor(Args... args);

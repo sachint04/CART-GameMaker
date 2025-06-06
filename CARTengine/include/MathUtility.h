@@ -40,6 +40,8 @@ namespace cart
 	float LERP(float _a, float _b, float _t);
 
 	Vector2 LERP(Vector2 _a, Vector2 _b, float _t);
+	
+	Vector3 LERP(Vector3 _a, Vector3 _b, float _t);
 
 	Color LERP(Color _a, Color _b, float _t , bool _alpha);
 }

@@ -7,22 +7,22 @@ namespace cart
     class GameStage :public Object
     {
         public:
-            GameStage(World * world);
-            const World * GetWorld() const{return m_world;};
+            GameStage(World * owningworld, const std::string& _id);
+            const World * GetWorld() const{return m_owningworld;};
             virtual ~GameStage();
-            World * GetWorld() {return m_world;};
+            World * GetWorld() {return m_owningworld;};
             virtual void StartStage();
             virtual void Init();
             virtual void Update(float deltaTime);
             virtual void Draw(float deltaTime);
-            void FinishStage();
+ //           void FinishStage();
             bool IsStageFinished()const {return m_stageFinished;};
 
 
             Delegate<>onStageFinished;
 
         protected:
-        World* m_world;
+        World* m_owningworld;
         bool m_stageFinished;
         virtual void StageFinished();
 

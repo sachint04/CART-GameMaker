@@ -32,7 +32,6 @@ namespace cart {
 		m_IsMouseOver{ false },
 		m_IsSelected{ false },
 		m_IsSelectable{ false },
-		m_shapeType{ SHAPE_TYPE::RECTANGLE },
 		m_borderwidth{0},
 		m_borderColor{GRAY},
 		m_texturesourcedefault{},
@@ -43,41 +42,6 @@ namespace cart {
 	{
 
 	};
-
-	UIButton::UIButton(World* _owningworld, const std::string& _id, SHAPE_TYPE _shape = SHAPE_TYPE::RECTANGLE)
-		:UIElement{ _owningworld, _id },
-		m_touch{ false },
-		tCount(0),
-		m_margin(0),
-		m_textsize{},
-		m_fontspace{2.f},
-		m_fontLocation{},
-		m_locmouse{},
-		m_fontstr{},
-		m_text{},
-		m_align{},
-		m_fontsize(),
-		m_defaulttextcolor{},
-		m_defaulttexturecolor{},
-		m_textcolor{},
-		m_texthovercolor{},
-		m_ButtonDefaultColor{},
-		m_ButtonDownColor{},
-		m_ButtonHoverColor{},
-		m_IsButtonDown{ false },
-		m_IsMouseOver{ false },
-		m_IsSelected{ false },
-		m_IsSelectable{ false },
-		m_shapeType{ _shape },
-		m_borderwidth{ 0 },
-		m_borderColor{ GRAY },
-		m_texturesourcedefault{},
-		m_texturesourceover{},
-		m_texturesourcedown{},
-		m_texturesourcedisable{}
-	{
-
-	}
 	
 	UIButton::UIButton( World* _owningworld, const std::string& _id, Vector2 _size)
 		:UIElement{ _owningworld, _id, _size },
@@ -103,7 +67,6 @@ namespace cart {
 		m_IsMouseOver{ false },
 		m_IsSelected{false},
 		m_IsSelectable{false},
-		m_shapeType{ SHAPE_TYPE::RECTANGLE },
 		m_borderwidth{ 0 },
 		m_borderColor{ GRAY },
 		m_texturesourcedefault{},
@@ -234,16 +197,22 @@ namespace cart {
 		if (m_IsSelected == true) {
 			DrawRectangle(m_calculatedLocation.x - 10.f, m_calculatedLocation.y - 10.f, m_width + 20.f, m_height + 20.f, m_color);
 		}
-		if (m_strTexture.size() == 0) {
+	/*	if (m_strTexture.size() == 0) {
 			if (m_shapeType == SHAPE_TYPE::CIRCLE)
 			{
 				DrawCircle(m_calculatedLocation.x + m_width / 2.f, m_calculatedLocation.y + m_width / 2.f, m_width, m_color);				
 
-			}else
+			}
+			else if (m_shapeType == SHAPE_TYPE::ROUNDED_RECTANGLE)
 			{
+				DrawRectangleRounded({ m_calculatedLocation.x, m_calculatedLocation.y, m_width, m_height }, 0.2f, 2, m_color);
+			}
+			else
+			{
+				
 				DrawRectangle(m_calculatedLocation.x, m_calculatedLocation.y, m_width, m_height, m_color);
 			}
-		}
+		}*/
 
 		if (m_borderwidth > 0)
 		{
@@ -336,6 +305,12 @@ namespace cart {
 	{
 		UIElement::SetLocation(_location);
 		UpdateTextLocation();
+	}
+
+	void UIButton::SetColor(Color _color)
+	{
+		m_ButtonDefaultColor = _color;
+		m_color = _color;
 	}
 
 	void UIButton::UpdateTextLocation() {

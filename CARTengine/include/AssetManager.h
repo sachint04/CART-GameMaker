@@ -19,6 +19,8 @@ namespace cart {
 
         bool UnloadTextureAsset(const std::string& path);
         bool UnloadFontAsset(const std::string& path , int fontsize);
+        void ClearTextureMap();
+        void ClearFontMap();
         ~AssetManager();
     protected:
         AssetManager();
@@ -32,8 +34,6 @@ namespace cart {
         
         Dictionary<std::string, shared<Font>> m_fontLoadedMap;
         shared<Font> LoadFontMap(const std::string& path, int fontSize, Dictionary<std::string, shared<Font>>& constainer);       
-        void  ClearTextureMap();
-        void  ClearFontMap();
 
         
     };

@@ -59,8 +59,29 @@ add_library(${CART_ENGINE_TARGET_NAME} STATIC
 	${CMAKE_CURRENT_SOURCE_DIR}/include/component/ColorPalette.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/component/ColorPalette.cpp
 	
+	${CMAKE_CURRENT_SOURCE_DIR}/include/Actor3D.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Actor3D.cpp
 
+	${CMAKE_CURRENT_SOURCE_DIR}/include/tweenray/tweenBuilderBase.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/tweenray/tweenBuilderBase.cpp
 	
+	${CMAKE_CURRENT_SOURCE_DIR}/include/tweenray/tween.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/tweenray/tween.cpp
+	
+	${CMAKE_CURRENT_SOURCE_DIR}/include/tweenray/tweenBuilder.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/tweenray/tweenBuilder.cpp
+	
+	${CMAKE_CURRENT_SOURCE_DIR}/include/tweenray/tweenMove.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/tweenray/tweenMove.cpp
+	
+	${CMAKE_CURRENT_SOURCE_DIR}/include/tweenray/tweenRotate.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/tweenray/tweenRotate.cpp
+	
+	${CMAKE_CURRENT_SOURCE_DIR}/include/tweenray/tweenScale.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/tweenray/tweenScale.cpp
+	
+	${CMAKE_CURRENT_SOURCE_DIR}/include/tweenray/tweenColor.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/tweenray/tweenColor.cpp
 )
 target_include_directories(${CART_ENGINE_TARGET_NAME} PUBLIC 
 	${CMAKE_CURRENT_SOURCE_DIR}/include

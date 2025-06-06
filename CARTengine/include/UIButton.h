@@ -9,7 +9,6 @@ namespace cart {
 	class UIButton : public UIElement{
 	public:
         UIButton(World* _owningworld, const std::string& _id);
-        UIButton(World* _owningworld, const std::string& _id, SHAPE_TYPE _shape);
         UIButton(World* _owningworld, const std::string& _id, Vector2 _size);
         void SetTextProperties(Btn_Text_Properties _prop);
 
@@ -40,6 +39,7 @@ namespace cart {
         void SetActive(bool _flag) override;
         void UpdateLocation() override;
         void SetLocation(Vector2 _location) override;
+        void SetColor(Color _color)override;
         void UpdateTextLocation();
         void SetFontName(const std::string& strfnt);
 		~UIButton();
@@ -69,7 +69,6 @@ namespace cart {
         bool m_IsMouseOver;
         bool m_IsSelected;
         bool m_IsSelectable;
-        SHAPE_TYPE m_shapeType;
         shared<Font> m_font;
         int m_borderwidth;
         Color m_borderColor;

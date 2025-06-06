@@ -51,6 +51,8 @@ namespace cart
 		AssetManager::Get().Unload();
 		AssetManager::Get().Release();
 		_CrtDumpMemoryLeaks();
+
+	
 		CloseWindow();
 	}
 
@@ -78,6 +80,8 @@ namespace cart
 	{
 		return m_resourcedir;
 	}
+
+	
 
 	std::string Application::GetResourceDisplayPath()
 	{

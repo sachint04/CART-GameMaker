@@ -24,7 +24,8 @@ namespace cart {
 		m_screenMask{},
 		m_texturetype{TEXTURE_FULL},
 		m_texturesource{},
-		m_isExcludedFromParentAutoControl{false}
+		m_isExcludedFromParentAutoControl{false},
+		m_shapeType{SHAPE_TYPE::RECTANGLE}
 	{
 
 	}
@@ -38,6 +39,7 @@ namespace cart {
 		m_flipH{ false },
 		m_flipV{ false },
 		m_bAspectRatio{ false },
+		m_defaultSize{},
 		m_textureScaleX{ 1.f },
 		m_textureScaleY{ 1.f },
 		m_textureColor{ WHITE},
@@ -46,7 +48,8 @@ namespace cart {
 		m_screenMask{},
 		m_texturetype{ TEXTURE_FULL },
 		m_texturesource{},
-		m_isExcludedFromParentAutoControl{false}
+		m_isExcludedFromParentAutoControl{false},
+		m_shapeType{ SHAPE_TYPE::RECTANGLE }
 
 	{
 		m_defaultSize = _size;
@@ -63,6 +66,7 @@ namespace cart {
 		m_flipH{ false },
 		m_flipV{ false },
 		m_bAspectRatio{ false },
+		m_defaultSize{},
 		m_textureScaleX{ 1.f },
 		m_textureScaleY{ 1.f },
 		m_textureColor{ WHITE },
@@ -71,7 +75,8 @@ namespace cart {
 		m_screenMask{},
 		m_texturetype{ TEXTURE_FULL },
 		m_texturesource{},
-		m_isExcludedFromParentAutoControl{ isExcludedFromParentAutoControl }
+		m_isExcludedFromParentAutoControl{ isExcludedFromParentAutoControl },
+		m_shapeType{ SHAPE_TYPE::RECTANGLE }
 
 	{
 	
@@ -132,6 +137,7 @@ namespace cart {
 		m_textureColor = _prop.textureColor;
 		m_texturetype = _prop.texturetype;
 		m_texturesource = _prop.texturesource;
+		m_shapeType = _prop.shapetype;
 
 		UpdateLocation();
 	}
@@ -225,7 +231,20 @@ namespace cart {
 
 	void UIElement::DrawBGColor()
 	{
-		DrawRectangle(m_calculatedLocation.x, m_calculatedLocation.y, m_width * m_scale, m_height * m_scale, m_color);
+		if (m_shapeType == SHAPE_TYPE::CIRCLE)
+		{
+			DrawCircle(m_calculatedLocation.x + m_width / 2.f, m_calculatedLocation.y + m_width / 2.f, m_width, m_color);
+
+		}
+		else if (m_shapeType == SHAPE_TYPE::ROUNDED_RECTANGLE)
+		{
+			DrawRectangleRounded({ m_calculatedLocation.x, m_calculatedLocation.y, m_width, m_height }, 0.2f, 2, m_color);
+		}
+		else 
+		{
+			DrawRectangle(m_calculatedLocation.x, m_calculatedLocation.y, m_width * m_scale, m_height * m_scale, m_color);
+			//DrawRectangle(m_calculatedLocation.x, m_calculatedLocation.y, m_width, m_height, m_color);
+		}
 	}
 
 	void UIElement::DrawBGTexture()
@@ -363,15 +382,7 @@ namespace cart {
 		AddChild(_btn);
 		return _btn;
 	}
-	weak<UIButton> UIElement::AddButton(const std::string& id, Btn_Text_Properties _prop, SHAPE_TYPE _shape = SHAPE_TYPE::RECTANGLE)
-	{
-		weak<UIButton> _btn = m_owningworld->SpawnActor<UIButton>(id, _shape);
-		_btn.lock()->SetButtonProperties(_prop);
-		_btn.lock()->SetVisible(true);
-		_btn.lock()->Init();
-		AddChild(_btn);
-		return _btn;
-	}
+
 	void UIElement::AddChild(weak<UIElement> _ui)
 	{
 		shared<UIElement> shared_ui = _ui.lock();
@@ -408,6 +419,7 @@ namespace cart {
 		m_flipV = flipv;
 	}
 	void UIElement::ClearTexture() {
+	
 		if (m_texture2d) {
 			UnloadTexture(*m_texture2d);
 			m_texture2d.reset();
@@ -416,17 +428,10 @@ namespace cart {
 	
 	void UIElement::Destroy() {
 		LOG("UIElemente | %s | Destroyed!!", m_id.c_str());
-		/*for (size_t i = 0; i < m_children.size(); i++)
-		{
-			m_children[i].lock()->SetActive(false);
-			m_children[i].lock()->SetVisible(false);
-			m_children[i].lock()->Destroy();
-		}*/
-		//		std::vector<weak<UIElement>>::iterator iter = m_children.begin();
-		
 		for (auto iter = m_children.begin(); iter != m_children.end();)
 		{
 			iter->get()->Destroy();
+			iter->get()->SetVisible(false);
 			iter = m_children.erase(iter);
 		}
 		m_children.clear();	

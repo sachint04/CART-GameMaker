@@ -66,6 +66,10 @@ namespace cart{
             {
                 return m_vContent.size();
             }
+
+            inline size_t GetVecObjectsCount() {
+                return m_vecObjects.size();
+            }
             
             inline DataFile& operator[](const std::string& name) {
                 // 

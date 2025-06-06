@@ -36,6 +36,7 @@ namespace cart {
 	void World::InitGameStages()
 	{
 		m_inputController = new InputController{ };
+		
 	}
 
     void World::AllGameStagesFinieshed()
@@ -50,7 +51,7 @@ namespace cart {
 		if (m_currentStage != m_gameStages.end())
 		{
 			m_currentStage->get()->StartStage();
-			m_currentStage->get()->onStageFinished.BindAction(GetWeakRef(), &World::NextGameStage);
+
 		}else{
 
 			AllGameStagesFinieshed();
@@ -63,10 +64,26 @@ namespace cart {
 		--m_currentStage;
 		if (m_currentStage != m_gameStages.end())
 		{
-			m_currentStage->get()->StartStage();
-			//m_currentStage->get()->onStageFinished.BindAction(GetWeakRef(), &World::NextGameStage);
+			m_currentStage->get()->StartStage();			
 		}
+		else{
+
+			LOG("NO GameStage found!");
+		}	
+	}
+
+	void World::JumpToGameStage(const std::string& stageid) {
 		
+		int counter = 0;
+		for (auto iter = m_gameStages.begin(); iter != m_gameStages.end(); ++iter)
+		{
+			if (iter->get()->GetID().compare(stageid) == 0)
+			{
+				m_currentStage = iter;
+				break;
+			}			
+		}
+		m_currentStage->get()->StartStage();
 	}
 
 	void World::AddStage(const shared<GameStage>& newStage)
@@ -80,8 +97,7 @@ namespace cart {
 		m_currentStage = m_gameStages.begin();
 		if (m_currentStage != m_gameStages.end())
 		{
-			m_currentStage->get()->StartStage();
-			m_currentStage->get()->onStageFinished.BindAction(GetWeakRef(), &World::NextGameStage);
+			m_currentStage->get()->StartStage();			
 		}
 	}
 
@@ -91,6 +107,9 @@ namespace cart {
 
 	void World::Update(float _deltaTime)
 	{
+		Camera cam = m_owningApp->GetCamera();
+		UpdateCamera(&cam, CAMERA_PERSPECTIVE);
+		
 		for (size_t i = 0; i < m_Actors.size(); i++)
 		{
 			if(m_Actors.at(i).get()->IsPendingDestroy() == false)
@@ -156,19 +175,22 @@ namespace cart {
 
 	void World::Draw(float _deltaTime)
 	{
-		ClearBackground(RAYWHITE);
-		for (auto iter = m_Actors.begin(); iter != m_Actors.end();  ++iter)
-		{
-			iter->get()->Draw(_deltaTime);
-		}
+	
+	
+			ClearBackground(RAYWHITE);
+			for (auto iter = m_Actors.begin(); iter != m_Actors.end();  ++iter)
+			{
+				iter->get()->Draw(_deltaTime);
+			}
 
-		if (mHUD)
-		{
-			if (!mHUD->HasInit())
-				mHUD->NativeInit();
+			if (mHUD)
+			{
+				if (!mHUD->HasInit())
+					mHUD->NativeInit();
 
-			mHUD->Draw(_deltaTime);
-		}
+				mHUD->Draw(_deltaTime);
+			}
+	
 	}
 	
 	

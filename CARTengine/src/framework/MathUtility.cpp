@@ -116,6 +116,11 @@ namespace cart
 		return { LERP(_a.x, _b.x, _t), LERP(_a.y, _b.y, _t) };
 	}
 
+	Vector3 LERP(Vector3 _a, Vector3 _b, float _t)
+	{
+
+		return { LERP(_a.x, _b.x, _t), LERP(_a.y, _b.y, _t), LERP(_a.z, _b.z, _t) };
+	}
 	Color LERP(Color _col1, Color _col2, float _t, bool _alpha)
 	{
 		float r = LERP(_col1.r, _col2.r, _t);

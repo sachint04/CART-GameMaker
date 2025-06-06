@@ -43,7 +43,6 @@ namespace cart {
 		void SetTexture(std::string& _texture);
 		void AddText(const std::string & id, Text_Properties _txt);
 		weak<UIButton> AddButton(const std::string& id, Btn_Text_Properties _btn);
-		weak<UIButton> AddButton(const std::string& id, Btn_Text_Properties _prop, SHAPE_TYPE _shape);
 		void AddChild(weak<UIElement> _btn);
 		void RemoveChild(const std::string& id);
 		bool IsPendingUpdate() { return m_pendingUpdate; };
@@ -84,6 +83,7 @@ namespace cart {
 		Texture2D tmptex;
 		TEXTURE_TYPE  m_texturetype = TEXTURE_FULL;
 		Rectangle m_texturesource;
+		SHAPE_TYPE m_shapeType;
 		bool m_isExcludedFromParentAutoControl;
 	};
 

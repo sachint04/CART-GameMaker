@@ -27,6 +27,7 @@ namespace cart
 		virtual std::string& GetResourcePath();
 		virtual std::string GetResourceDisplayPath();
 		virtual float GetIconSize();
+		virtual Camera GetCamera()const { return m_camera; };
 	protected:
 		
 		virtual void Draw(float deltaTime);
@@ -41,6 +42,7 @@ namespace cart
 		std::string m_resourcedir;
 		DataFile m_Model; 
 		DataFile m_gameConfig;
+		Camera m_camera;
 		//shared<World> m_PendingWorld;
 	};
 	

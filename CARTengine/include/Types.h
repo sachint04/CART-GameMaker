@@ -10,6 +10,11 @@ namespace cart {
 
 #pragma region  ENUMNS
    
+    enum VEC_TYPE {
+        Vec2D,
+        Vec3D,
+        Vec4D
+    };
 
     enum UITYPE {
         BUTTON,
@@ -40,6 +45,7 @@ namespace cart {
         RECTANGLE,
         LINE,
         CIRCLE_LINE,
+        ROUNDED_RECTANGLE
     };
 
     enum APP_STATE {
@@ -74,7 +80,7 @@ namespace cart {
         Color textureColor =  WHITE ;
         TEXTURE_TYPE texturetype = TEXTURE_TYPE::TEXTURE_FULL;
         Rectangle texturesource;
-
+        SHAPE_TYPE shapetype = SHAPE_TYPE::RECTANGLE;
     };
 
 	struct Text_Properties : UI_Properties{

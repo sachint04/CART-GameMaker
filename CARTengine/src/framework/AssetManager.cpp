@@ -201,6 +201,9 @@
     {
         for (auto iter = m_fontLoadedMap.begin(); iter != m_fontLoadedMap.end();)
         {
+
+            UnloadFont(*iter->second);
+            LOG("AssetManager | UnloadFont() | %s  | Success!", iter->first.c_str());
             iter->second.reset();
             //LOG("%s Cleared Font Map.", iter->first.c_str());
             iter = m_fontLoadedMap.erase(iter);

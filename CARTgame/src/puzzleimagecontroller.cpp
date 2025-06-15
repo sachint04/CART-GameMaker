@@ -35,19 +35,20 @@ void PuzzleImageController::Init()
     uint16_t scrW = GetScreenWidth();
     uint16_t scrH = GetScreenHeight();
 
-    float rectsize = 500.f;
-    Rectangle bgrect = { scrW / 2.f - 250.f, scrH / 2 - 200.f,  rectsize, rectsize };
+    float rectsize = 400.f;
+    Rectangle bgrect = { (scrW - rectsize) / 2.f, (scrH - rectsize) / 2.f, rectsize,rectsize };
+   // Rectangle bgrect = { scrW / 2.f - 250.f, scrH / 2 - 200.f,  rectsize, rectsize };
 
 
     uint16_t xpos = scrW / 2;// -twidth;
     uint16_t ypos = scrH / 2;// -12;
 
     UI_Properties ui = {};
-    ui.size = { (float)m_gridWidth, (float)m_gridHeight };
-    ui.location = { (float)xpos, (float)ypos };
-    ui.pivot = { (float)m_gridWidth/2, (float)m_gridHeight/2 };
+    ui.size = { rectsize, rectsize };
+    ui.location = { bgrect.x, bgrect.y};
+    ui.pivot = {0, 0};
     ui.texture = m_strImage;
-    ui.color = { 0,0,0,0 };
+    ui.color = LIGHTGRAY;
     
     
 
@@ -79,7 +80,7 @@ void PuzzleImageController::Init()
     txtbtnui.fontsize = 16;
     txtbtnui.fontspace = 1.8;
     txtbtnui.font = FONT_NAME;
-    txtbtnui.location = { scrW / 2.f - 50.f, 20.f };
+    txtbtnui.location = { bgrect.x + bgrect.width - 110.f, bgrect.y - 50.f };
     txtbtnui.textAlign = ALIGN::CENTER;
     txtbtnui.pivot = { 0, 0 };
 
@@ -91,7 +92,7 @@ void PuzzleImageController::Init()
     m_resetBtn.lock()->onButtonUp.BindAction(GetWeakRef(), &PuzzleImageController::ResetHandler);
     AddChild(m_resetBtn);
     
-    txtbtnui.location = { scrW / 2.f - (100.f + (100.f / 2.f)), 30.f};
+    txtbtnui.location = {bgrect.x + 10.f, bgrect.y - 50.f };
     txtbtnui.text = "Go Back";
     m_goBackBtn = m_owningworld->SpawnActor<UIButton>(std::string{"btngoback"});
     m_goBackBtn.lock()->SetButtonProperties(txtbtnui);

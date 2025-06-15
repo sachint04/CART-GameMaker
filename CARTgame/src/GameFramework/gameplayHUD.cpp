@@ -44,6 +44,7 @@ namespace cart {
 		extbtn.lock()->SetActive(true);
 		extbtn.lock()->Init();
 		extbtn.lock()->onButtonUp.BindAction(GetWeakRef(), &GameplayHUD::QuitButtonClicked);
+		AddChild(extbtn);
 		btnprop = {};// clear struct
 #pragma endregion
 

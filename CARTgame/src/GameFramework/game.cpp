@@ -106,10 +106,12 @@ namespace cart {
        m_imagecontrols = imagecontrols.lock();
        m_imagecontrols.get()->Init();
        m_imagecontrols.get()->SetVisible(true);
+       
        //Rectangle rect = ui.lock()->GetBounds();
 
 
       // delete txtprop;
+       imagecontrols.reset();
        m_assetsLoaded = true;
     }
 

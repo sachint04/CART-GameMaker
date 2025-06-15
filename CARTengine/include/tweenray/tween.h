@@ -21,7 +21,7 @@ namespace cart {
 
         static TweenBuilder* create(weak<Actor> actor);
         static void Update(double deltaTime);
-        static rsize_t GetTweenCount();
+        static int GetTweenCount();
         static void AddTween(int id, TweenBuilderBase* tween);
         static Dictionary <int, TweenBuilderBase*> tweenlist;
         static List<TweenBuilderBase*> pendingDeleteTween;

@@ -54,7 +54,7 @@ namespace cart {
 	}
 
 
-	rsize_t Tween::GetTweenCount()
+	int Tween::GetTweenCount()
 	{
 		return tweenlist.size();
 	}

@@ -15,7 +15,7 @@ namespace cart
 			bool HasInit() { return m_AlreadyInit; }
 			void NativeInit();
 			bool IsMouseOverUI(Vector2 _locmouse);
-			virtual void Init();
+			virtual void Init() override;
 			virtual void Update(float _deltaTime) override;
 			virtual void Draw(float deltaTime) override;
 		

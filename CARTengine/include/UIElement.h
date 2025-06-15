@@ -24,7 +24,7 @@ namespace cart {
 		virtual void Draw(float _deltaTime) override;	
 		virtual void Update(float _deltaTime) override;
 		virtual void SetUIProperties(UI_Properties _prop);
-        virtual void SetSize(Vector2 _size);		
+        virtual void SetSize(Vector2 _size) override;		
 		virtual Rectangle GetBounds();
 
 		virtual void SetScale(float _scale) override;

@@ -34,21 +34,19 @@ namespace cart {
 			double t_raw = delta / m_duration;
 			auto easingfunc = getEasingFunction(m_easing);
 			double t = easingfunc(t_raw);
+			Vector2 vec = {};
+			Vector3 vec3 = {};
 			if (t_raw <= 1.0) {
 				switch (m_vectype)
 				{
-				case cart::Vec2D:
-					Vector2 vec = LERP(m_startVec, m_targetVec, (float)t);
+				case VEC_TYPE::Vec2D:
+					vec = LERP(m_startVec, m_targetVec, (float)t);
 					m_actor.lock()->SetLocation(vec);
 					break;
-				case cart::Vec3D:
-					Vector3 vec3 = LERP(m_startVec3, m_targetVec3, (float)t);
+				case VEC_TYPE::Vec3D:
+					vec3 = LERP(m_startVec3, m_targetVec3, (float)t);
 					m_actor.lock()->SetLocation(vec3);
-					break;
-				case cart::Vec4D:
-					break;
-				default:
-					break;
+					break;						
 				}
 				//	std::string __id = m_actor.lock()->GetID();
 			
@@ -68,10 +66,6 @@ namespace cart {
 					break;
 				case cart::Vec3D:
 					m_actor.lock()->SetLocation(m_targetVec3);
-					break;
-				case cart::Vec4D:
-					break;
-				default:
 					break;
 				}
 

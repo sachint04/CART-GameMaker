@@ -28,13 +28,20 @@
 
     void AssetManager::SetAssetRootDirectory(const std::string& directory)
      {
-         m_RootDirectory = directory;
-         ChangeDirectory(m_RootDirectory.c_str());
+        m_RootDirectory = directory + "/";
+        if (ChangeDirectory(directory.c_str()))
+        {
+            LOG("Working directory changed to %s syccessfully.", directory.c_str());
+        }
+        else {
+
+            LOG("FAILED!! TO change working directory  %s.", directory.c_str());
+        }
      }
 
     shared<Texture2D> AssetManager::LoadTextureAsset(const std::string &path){  
      //   LOG("|>=-=ASSETMANAGER =-=<| LoadTextureAsset() %s", path.c_str());
-       return LoadTexture( path, m_textureLoadedMap);
+       return LoadTexture(path, m_textureLoadedMap);
     }
     
     shared<Texture2D > AssetManager::LoadTexture(const std::string &path, Dictionary<std::string, shared<Texture2D >>& constainer)
@@ -88,7 +95,7 @@
     bool AssetManager::UnloadFontAsset(const std::string& path, int fontsize)
     {
         std::string strsize = std::to_string(fontsize);
-        auto found = m_fontLoadedMap.find(path + strsize);
+        auto found = m_fontLoadedMap.find( path + strsize);
         if (found != m_fontLoadedMap.end())
         {
             UnloadFont(*found->second);
@@ -112,7 +119,7 @@
         auto found = m_fontLoadedMap.find(path + strsize);
         if (found != m_fontLoadedMap.end())
         {
-            //LOG(" font Found in memory%s ", path.c_str());
+           //LOG(" font Found in memory%s ", path.c_str());
             return found->second;
         }
       
@@ -121,9 +128,10 @@
         if(font.baseSize > 0){
             shared<Font> fontptr = std::make_shared<Font>(font);
              m_fontLoadedMap.insert({ path + strsize, fontptr});
+            LOG(" font Found %s ", path.c_str()); 
              return fontptr; 
         }
-        
+        LOG("Failed to load font %s ", path.c_str());
         return shared<Font> {nullptr};
     }
 #pragma endregion

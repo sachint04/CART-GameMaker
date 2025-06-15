@@ -50,7 +50,7 @@ namespace cart
 		AssetManager::Get().CleanCycle();
 		AssetManager::Get().Unload();
 		AssetManager::Get().Release();
-		_CrtDumpMemoryLeaks();
+		//int leak = _CrtDumpMemoryLeaks();
 
 	
 		CloseWindow();

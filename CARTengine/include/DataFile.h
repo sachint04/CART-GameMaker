@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_map>
 #include <fstream>
+#include <sstream>
 #include <functional>
 #include <stack>
 
@@ -98,7 +99,6 @@ namespace cart{
                         }
                         return sOut;
                     };
-                    bool blastVecObject = false;
                     size_t vecObjectCount = n.m_vecObjects.size();
                     size_t currentVecObject = 0;
                     for (auto property : n.m_vecObjects) {
@@ -165,8 +165,13 @@ namespace cart{
         
             inline static bool Read(DataFile& n, const std::string& sfilename, const char sListSep = ',')
             {
-                std::ifstream file(sfilename);
-                if (file.is_open())
+                 char* strm = LoadFileText(sfilename.c_str());
+                 
+                std::istringstream  file(strm);
+               // std::ifstream file(sfilename);
+              // LOG("Data file data %s", strm);
+             //   if (file.is_open())
+                if (file)
                 {
                     // These value are out side of read loop as  we will
                     // need to refer to previous iteration values in certain conditions
@@ -312,7 +317,7 @@ namespace cart{
                     }
         
         
-                    file.close();
+                   // file.close();
                     return true;
                 }
         

@@ -4,6 +4,7 @@
 #include "AssetManager.h"
 #include "Clock.h"
 #include <string>
+
 namespace cart
 {
 	Application::Application(int _winWidth, int _winHeight, const std::string& title)
@@ -16,8 +17,11 @@ namespace cart
 		hud{},
 		m_resourcedir{},
 		m_Model{},
-		m_gameConfig{}
+		m_gameConfig{},
+		m_camera{}
+		
 	{
+		net = new network{};
 	}
 
 	void Application::Init() {
@@ -50,8 +54,8 @@ namespace cart
 		AssetManager::Get().CleanCycle();
 		AssetManager::Get().Unload();
 		AssetManager::Get().Release();
+		delete net;
 		//int leak = _CrtDumpMemoryLeaks();
-
 	
 		CloseWindow();
 	}
@@ -76,6 +80,11 @@ namespace cart
 		m_exit = true;
 	}
 
+	World* Application::GetCurrentWorld()
+	{
+		return m_CurrentWorld.get();
+	}
+
 	std::string& Application::GetResourcePath()
 	{
 		return m_resourcedir;
@@ -92,5 +101,13 @@ namespace cart
 	float Application::GetIconSize() {
 		return NULL;
 	}
-
+	void Application::SetHTTPCallback(char* uid, char* response, char* data)
+	{
+		std::string id = { uid };
+		std::string res = { response };
+		std::string netdata = { data };
+		net->HTTPCallback(id, res, netdata);
+		LOG("FROM Application id %s response %s data %s ", uid, response, data);
+	}
+	
 }

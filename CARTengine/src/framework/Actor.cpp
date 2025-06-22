@@ -1,4 +1,5 @@
 #include "Actor.h"
+#include "World.h"
 namespace cart {
 	Actor::Actor( World* _owingworld, const std::string& _id ) :Object{ _id },
 		m_owningworld{_owingworld},

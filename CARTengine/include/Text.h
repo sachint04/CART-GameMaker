@@ -4,9 +4,8 @@
 
 
 namespace cart {
-
+	class World;
 	class Text : public UIElement {
-
 	public:
 		Text( World* _owningworld, const std::string& _id, Vector2 _size);
 		~Text();

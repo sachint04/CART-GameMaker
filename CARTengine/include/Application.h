@@ -2,7 +2,7 @@
 #include <raylib.h>
 #include "Core.h"
 #include "DataFile.h"
-
+#include "network/network.h"
 namespace cart
 {
 	class HUD;
@@ -23,11 +23,17 @@ namespace cart
 		bool m_exit;
 		virtual void QuitApplication();
 		virtual DataFile& GetModel() { return m_Model; };
+		virtual World* GetCurrentWorld();
+		void SetHTTPCallback(char* id, char* response, char* data);
 		DataFile& GetGameConfig(){ return m_gameConfig; };
+
+
 		virtual std::string& GetResourcePath();
 		virtual std::string GetResourceDisplayPath();
 		virtual float GetIconSize();
 		virtual Camera GetCamera()const { return m_camera; };
+
+		network* GetNet() { return net; };
 	protected:
 		
 		virtual void Draw(float deltaTime);
@@ -43,6 +49,7 @@ namespace cart
 		DataFile m_Model; 
 		DataFile m_gameConfig;
 		Camera m_camera;
+		network* net;
 		//shared<World> m_PendingWorld;
 	};
 	

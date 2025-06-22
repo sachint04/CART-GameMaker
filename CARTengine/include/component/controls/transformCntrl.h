@@ -14,6 +14,7 @@ namespace  cart {
 	class UIButton;
 	class World;
 	class Shape;
+	class World;
 	class TransformCntrl : public UIElement {
 
 	public:

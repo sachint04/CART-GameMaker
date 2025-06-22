@@ -1,9 +1,8 @@
 #pragma once
 #include <raylib.h>
 #include "Object.h"
-#include "World.h"
 namespace cart {
-
+	class World;
 	class Actor : public Object {
 
 	public:

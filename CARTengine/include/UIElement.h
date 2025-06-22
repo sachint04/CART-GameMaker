@@ -9,8 +9,6 @@ namespace cart {
 	class World;
 	class UIButton;
     class Text;
-
-
 	class UIElement : public Actor {
 		
 	public:

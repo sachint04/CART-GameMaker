@@ -26,8 +26,6 @@ namespace cart {
 	}
 
 	void World::Init() {
-
-
 		m_cleanCycleStartTime = Clock::Get().ElapsedTime();
 		InitGameStages();
 		StartStage();
@@ -86,6 +84,8 @@ namespace cart {
 		m_currentStage->get()->StartStage();
 	}
 
+	
+
 	void World::AddStage(const shared<GameStage>& newStage)
 	{
 		m_gameStages.push_back(newStage);
@@ -105,6 +105,7 @@ namespace cart {
 #pragma endregion
 
 
+#pragma region LOOP
 	void World::Update(float _deltaTime)
 	{
 		Camera cam = m_owningApp->GetCamera();
@@ -192,14 +193,31 @@ namespace cart {
 			}
 	
 	}
-	
-	
-	
+#pragma endregion
+
+#pragma region Helper
 
 	Vector2 World::GetAppWindowSize() const
 	{		
 		return m_owningApp->GetWindowSize();
 	}
+
+	long World::GetSizeOfPendingActors() {
+
+		long memsize = sizeof(Actor);
+		long arrsize = sizeof(m_PendingActors);
+		long countarry = m_PendingActors.size();
+		long totalmem = memsize * countarry;
+		return totalmem;
+
+	}
+
+	
+
+
+#pragma endregion
+	
+#pragma region CleanUp
 
 	void World::CleanCycle() {
 	//	LOG("(- WORLD -) CleanCycle() ");
@@ -225,7 +243,6 @@ namespace cart {
 	
 	}
 
-
 	void World::Unload()
 	{
 		for (auto iter = m_Actors.begin(); iter != m_Actors.end();)
@@ -234,20 +251,9 @@ namespace cart {
 			++iter;
 		}
 	}
-
-	long World::GetSizeOfPendingActors() {
-
-		long memsize = sizeof(Actor);
-		long arrsize = sizeof(m_PendingActors);
-		long countarry = m_PendingActors.size();
-		long totalmem = memsize * countarry;
-		return totalmem;
-	
-	}
-	
 	World::~World() {
 		
 	}
-
+#pragma endregion
 	
 }

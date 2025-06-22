@@ -4,7 +4,7 @@
 #include "UIElement.h"
 
 namespace cart {
-
+	class World;
 	class Shape : public UIElement {
 	public:
 		Shape(World* _owningworld, const std::string& _id, Vector2 _location, int width, int height, Color color, SHAPE_TYPE shape , int linewidth);

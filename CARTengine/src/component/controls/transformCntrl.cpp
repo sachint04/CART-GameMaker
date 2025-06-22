@@ -4,6 +4,7 @@
 #include "UIButton.h"
 #include "Shape.h"
 #include "MathUtility.h"
+#include "World.h"
 namespace cart {
 
 	TransformCntrl::TransformCntrl(World* _owningworld, const std::string& id, Vector2 minsize, Vector2 maxsize , Rectangle targetInitState)
@@ -172,7 +173,7 @@ namespace cart {
 		m_translateCntrl.lock()->SetLocation({ m_topleftCntrl.lock()->GetLocation().x ,  m_topleftCntrl.lock()->GetLocation().y });
 		m_translateCntrl.lock()->SetSize({ width,  height });	
 	
-		LOG("onScaleHandler() |width %.2f", width);
+		//LOG("onScaleHandler() |width %.2f", width);
 	}
 	void TransformCntrl::onDragStart(weak<Object> btn, Vector2 pos)
 	{

@@ -40,13 +40,13 @@ void PuzzleImageController::Init()
    // Rectangle bgrect = { scrW / 2.f - 250.f, scrH / 2 - 200.f,  rectsize, rectsize };
 
 
-    uint16_t xpos = scrW / 2;// -twidth;
-    uint16_t ypos = scrH / 2;// -12;
+    float xpos = scrW / 2;// -twidth;
+    float ypos = scrH / 2;// -12;
 
     UI_Properties ui = {};
     ui.size = { rectsize, rectsize };
-    ui.location = { bgrect.x, bgrect.y};
-    ui.pivot = {0, 0};
+    ui.location = { xpos, ypos};
+    ui.pivot = { rectsize/2.f, rectsize /2.f};
     ui.texture = m_strImage;
     ui.color = LIGHTGRAY;
     

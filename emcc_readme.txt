@@ -1,0 +1,12 @@
+ Got to  web folder in terminal
+ 
+  Make sure "raylib.web.a" in "web"  folder
+  
+  Add missing/new cpp files in this project - IMP do not include any raylib source here
+ run below command
+ 
+  emcc -o web/index.html CARTengine/src/framework/Application.cpp CARTengine/src/framework/Delegate.cpp CARTengine/src/framework/AssetManager.cpp CARTengine/src/framework/Object.cpp CARTengine/src/framework/Actor.cpp CARTengine/src/framework/Clock.cpp CARTengine/src/framework/Core.cpp CARTengine/src/framework/World.cpp CARTengine/src/framework/Sprite.cpp CARTengine/src/framework/Shape.cpp CARTengine/src/framework/MathUtility.cpp CARTengine/src/framework/UIButton.cpp CARTengine/src/framework/UIElement.cpp CARTengine/src/framework/Text.cpp CARTengine/src/framework/HUD.cpp CARTengine/src/framework/easing.cpp CARTengine/src/component/controls/transformCntrl.cpp CARTengine/src/framework/GameStage.cpp CARTengine/src/framework/TextInput.cpp CARTengine/src/component/UIList.cpp CARTengine/src/component/InputController.cpp CARTengine/src/component/ColorPalette.cpp CARTengine/src/framework/Actor3D.cpp CARTengine/src/tweenray/tweenBuilderBase.cpp CARTengine/src/tweenray/tween.cpp CARTengine/src/tweenray/tweenBuilder.cpp CARTengine/src/tweenray/tweenMove.cpp CARTengine/src/tweenray/tweenRotate.cpp CARTengine/src/tweenray/tweenScale.cpp CARTengine/src/tweenray/tweenColor.cpp CARTengine/src/network/network.cpp CARTgame/src/GameFramework/main.cpp CARTgame/src/GameFramework/game.cpp CARTgame/src/GameFramework/gameplayHUD.cpp CARTgame/src/puzzleimagecontroller.cpp -ICARTengine/include -ICARTgame/include  -I build/_deps/raylib-src/src -I build/_deps/raylib-src/src/external  raylib.web.a -DPLATFORM_WEB -s 'EXPORTED_FUNCTIONS=["_free","_malloc","_main"]' -s EXPORTED_RUNTIME_METHODS='["ccall","UTF8ToString"]' --js-library webmerge.js  --shell-file shell.html  -std=c++20 -sASYNCIFY -sTOTAL_MEMORY=67108864 -O1 --preload-file CARTgame/assets/fonts@assets/fonts --preload-file CARTgame/assets/gameconfig.txt@assets/gameconfig.txt  --preload-file CARTgame/assets/cartengine.png@assets/cartengine.png  -sUSE_GLFW=3 
+ 
+ 
+ #Use this shell file if compiling html
+ --shell-file shell.html 

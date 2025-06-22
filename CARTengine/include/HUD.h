@@ -1,17 +1,18 @@
 #pragma once
 #include <string>
 #include <raylib.h>
-#include "Object.h"
 #include "Core.h"
 #include "UIElement.h"
-#include "UIButton.h"
 namespace cart
 {
 	class World;
+	class Object;
+	class UIButton;
 	class HUD: public UIElement
 	{
 		public: 
 			HUD(World* _owningworld, const std::string& _id);
+
 			bool HasInit() { return m_AlreadyInit; }
 			void NativeInit();
 			bool IsMouseOverUI(Vector2 _locmouse);

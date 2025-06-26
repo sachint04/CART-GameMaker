@@ -30,6 +30,8 @@ namespace cart {
 		InitGameStages();
 		StartStage();
 	}
+
+
 #pragma region GAME STAGE MANAGEMENT
 	void World::InitGameStages()
 	{
@@ -83,9 +85,7 @@ namespace cart {
 		}
 		m_currentStage->get()->StartStage();
 	}
-
 	
-
 	void World::AddStage(const shared<GameStage>& newStage)
 	{
 		m_gameStages.push_back(newStage);
@@ -100,10 +100,7 @@ namespace cart {
 			m_currentStage->get()->StartStage();			
 		}
 	}
-
-
 #pragma endregion
-
 
 #pragma region LOOP
 	void World::Update(float _deltaTime)

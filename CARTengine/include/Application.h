@@ -3,6 +3,9 @@
 #include "Core.h"
 #include "DataFile.h"
 #include "network/network.h"
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 namespace cart
 {
 	class HUD;
@@ -14,10 +17,7 @@ namespace cart
 		virtual void Init();
 		virtual void BeginPlay();
 		virtual void Run();
-
 		Vector2 GetWindowSize() const ;
-
-
 		template<typename WorldType>
 		weak<WorldType> LoadWorld();
 		bool m_exit;
@@ -26,16 +26,14 @@ namespace cart
 		virtual World* GetCurrentWorld();
 		void SetHTTPCallback(char* id, char* response, char* data);
 		DataFile& GetGameConfig(){ return m_gameConfig; };
-
-
+		json& GetGameConfigJSON() { return m_config_json; };
 		virtual std::string& GetResourcePath();
 		virtual std::string GetResourceDisplayPath();
 		virtual float GetIconSize();
 		virtual Camera GetCamera()const { return m_camera; };
-
 		network* GetNet() { return net; };
-	protected:
 		
+	protected:
 		virtual void Draw(float deltaTime);
 		virtual void Update(float deltaTime);
 		int m_winWidth;
@@ -48,6 +46,7 @@ namespace cart
 		std::string m_resourcedir;
 		DataFile m_Model; 
 		DataFile m_gameConfig;
+		json m_config_json;
 		Camera m_camera;
 		network* net;
 		//shared<World> m_PendingWorld;

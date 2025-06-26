@@ -38,7 +38,7 @@ CopyLibDirToTarget(${CART_ENGINE_TARGET_NAME} ${CART_GAME_TARGET_NAME})
 CopyLibDirToTarget(raylib ${CART_GAME_TARGET_NAME})
 
 # Link required libraries to the native application
-target_link_libraries(${CART_GAME_TARGET_NAME}  PUBLIC raylib)
+target_link_libraries(${CART_GAME_TARGET_NAME}  PUBLIC raylib nlohmann_json::nlohmann_json)
 
 
 

@@ -18,7 +18,8 @@ namespace cart
 		m_resourcedir{},
 		m_Model{},
 		m_gameConfig{},
-		m_camera{}
+		m_camera{},
+		m_config_json{}
 		
 	{
 		net = new network{};

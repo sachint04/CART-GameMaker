@@ -29,4 +29,10 @@ SET(BUILD_EXAMPLES OFF CACHE INTERNAL "")
 FetchContent_MakeAvailable(raylib)
 
 
-
+SET(JSON_VERSION v3.12.0)
+FetchContent_Declare(
+	nlohmann_json
+	GIT_REPOSITORY https://github.com/nlohmann/json.git
+	GIT_TAG   ${JSON_VERSION}     
+)
+FetchContent_MakeAvailable(nlohmann_json)

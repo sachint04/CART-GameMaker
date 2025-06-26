@@ -162,14 +162,25 @@ namespace cart{
         
                 return false;
            }        
-        
-            inline static bool Read(DataFile& n, const std::string& sfilename, const char sListSep = ',')
+            
+            
+            inline static bool LoadLocalConfig(DataFile& n, const std::string& sfilename, const char sListSep = ',')
             {
-                 char* strm = LoadFileText(sfilename.c_str());
-                 
+                char* strm = LoadFileText(sfilename.c_str());
+                if (strm) {
+                  
+                    DataFile::Read(n, strm);
+                    return true;
+                }
+                return false;
+            }
+
+
+            inline static bool Read(DataFile& n, char* strm, const char sListSep = ',')
+            {       
                 std::istringstream  file(strm);
                // std::ifstream file(sfilename);
-              // LOG("Data file data %s", strm);
+              LOG("Data file data %s", strm);
              //   if (file.is_open())
                 if (file)
                 {

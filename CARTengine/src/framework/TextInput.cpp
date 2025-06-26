@@ -5,7 +5,7 @@
 #include "MathUtility.h"
 #include "Application.h"
 #include "World.h"
-#include "DataFile.h"
+#include "CARTjson.h"
 #include "component/InputController.h"
 namespace cart
 {
@@ -33,7 +33,8 @@ namespace cart
         m_isRightKey{ false },
         m_isDeleteKey{ false }
 	{
-     
+        Text::m_fontsize = 14.f;
+        Text::m_fontspacing = 2.f;
 	}
 
     void TextInput::Init()
@@ -45,9 +46,10 @@ namespace cart
         m_lines.push_back({ std::string{},  { (float)textBox.x + m_textmargin, (float)textBox.y + 8 } });
 
         m_lrange.push_back({ {0,0}, { (float)textBox.x + m_textmargin, (float)textBox.y + 8 } });
-
-        infofnt = AssetManager::Get().LoadFontAsset(m_owningworld->GetApplication()->GetGameConfig()["cart"]["fonts"]["verdana"].GetString(), 14);
-        Vector2 fntmeasure = MeasureTextEx(*m_sharedfont, "W", (float)m_fontsize, m_fontspacing);
+        json& data = CARTjson::GetAppData();
+        std::string strfont = data["cart"]["font"]["verdana"]["path"];
+        infofnt = AssetManager::Get().LoadFontAsset(strfont, 14);
+        Vector2 fntmeasure = MeasureTextEx(*m_sharedfont, "W", GetFontSize(), 2.f);
 
         size_t n = (m_text.size() < m_charLimit) ? m_text.size() : m_charLimit;
 
@@ -55,7 +57,7 @@ namespace cart
         {
             name[i] = m_text.at(i);
             m_lines[m_lines.size() - 1].first.append(std::string{ name[i] });
-            if (MeasureTextEx(*m_sharedfont, m_lines[m_lines.size() - 1].first.c_str(), (float)m_fontsize, m_fontspacing).x >= textBox.width - (fntmeasure.x + m_textmargin))
+            if (MeasureTextEx(*m_sharedfont, m_lines[m_lines.size() - 1].first.c_str(), GetFontSize(), 2.f).x >= textBox.width - (fntmeasure.x + m_textmargin))
             {
                 m_lines.push_back({ std::string{},  { (float)textBox.x + m_textmargin, ((float)textBox.y + 8) + (fntmeasure.y * m_lines.size() - 1) } });            
                 
@@ -519,9 +521,9 @@ namespace cart
             m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, m_fontsize);
 
         if(!infofnt)
-        infofnt = AssetManager::Get().LoadFontAsset(m_owningworld->GetApplication()->GetGameConfig()["cart"]["fonts"]["verdana"].GetString(), 14);
+        infofnt = AssetManager::Get().LoadFontAsset(CARTjson::GetAppData()["cart"]["font"]["verdana"]["path"], 14);
         
-        Vector2 fntmeasure = MeasureTextEx(*m_sharedfont, "W", (float)m_fontsize, m_fontspacing);
+        Vector2 fntmeasure = MeasureTextEx(*m_sharedfont, "W", m_fontsize, m_fontspacing);
 
 
         m_text = txt;

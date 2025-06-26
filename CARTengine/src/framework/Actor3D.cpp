@@ -1,4 +1,3 @@
-#include <raylib.h>
 #include "Actor3D.h"
 #include "AssetManager.h"
 namespace cart
@@ -36,7 +35,6 @@ namespace cart
 		if (!m_visible)return;
 		Actor::Update(_deltaTime);
 	}
-
 	void Actor3D::Update3D(float _deltaTime, const Camera& camera)
 	{
 		if (!m_visible)return;

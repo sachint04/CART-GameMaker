@@ -25,6 +25,7 @@ namespace  cart {
 		void Destroy()override;
 		void Reset();
 		void Close();
+		Rectangle GetBounds() override;
 		Delegate<Vector2, Vector2, Vector2>onScaled;
 		Delegate<float>onRotated;
 		Delegate<Vector2> onMoved;

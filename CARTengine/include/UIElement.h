@@ -49,6 +49,7 @@ namespace cart {
 		void SetFlipV(bool flipv);
 		bool GetFlipH() { return m_flipH; };
 		bool GetFlipV() { return m_flipV; };
+		Image GetBGImage();
 		void MaintainAspectRatio(bool _flag) { m_bAspectRatio = _flag; };
 		bool IsAspectRatio() { return m_bAspectRatio; };
 		Vector2 GetPivot();
@@ -58,6 +59,7 @@ namespace cart {
 		Color GetTextureColor() { return m_textureColor; };
 		void SetTextureColor(Color col) { m_textureColor = col; };
 		void SetScreenMask(const Image &strmask);
+		Image GetMaskImage(Rectangle rect);
 		void SetExcludeFromParentAutoControl(bool _flag);
 		bool IsExcludedFromParentAutoControl() { return m_isExcludedFromParentAutoControl; };
 	protected:

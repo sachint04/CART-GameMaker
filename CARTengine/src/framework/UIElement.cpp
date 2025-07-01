@@ -293,8 +293,6 @@ namespace cart {
 					//UnloadTexture(*m_texture2d);
 					UnloadImage(*tmpImage);
 					delete tmpImage;
-
-
 				}
 				else
 				{
@@ -355,6 +353,7 @@ namespace cart {
 		
 	}
 
+	
 	void UIElement::SetExcludeFromParentAutoControl(bool _flag)
 	{
 		m_isExcludedFromParentAutoControl = _flag;
@@ -418,6 +417,10 @@ namespace cart {
 	void UIElement::SetFlipV(bool flipv)
 	{
 		m_flipV = flipv;
+	}
+	Image UIElement::GetBGImage()
+	{
+		return LoadImageFromTexture(*m_texture2d);
 	}
 	void UIElement::ClearTexture() {
 	

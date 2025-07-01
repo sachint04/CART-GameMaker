@@ -49,7 +49,7 @@
         auto found = constainer.find(path);
         if (found != constainer.end())
         {
-           LOG("|>=-=ASSETMANAGER =-=<| %s Texture Found in Memory!", path.c_str());
+        //   LOG("|>=-=ASSETMANAGER =-=<| %s Texture Found in Memory!", path.c_str());
           //  shared<Texture2D> weak_texture = found->second;
             return found->second;
         }
@@ -58,7 +58,7 @@
         Texture2D texture = LoadTextureFromImage(image);         // Image converted to texture, GPU memory (VRAM)       
         UnloadImage(image);// Loaded in CPU memory (RAM)
         
-        LOG("IO %s Texture Loaded!", path.c_str());
+     //   LOG("IO %s Texture Loaded!", path.c_str());
         try {
             constainer.insert({ path, std::make_shared<Texture2D>(texture) });
            // shared<Texture2D> t = constainer.find(path)->second;
@@ -88,7 +88,7 @@
             m_textureLoadedMap.erase(found);
             return true;
         }
-        LOG("AssetManager |UnloadTextureAsset()| ERROR! Failed to unload Texture %s ", path.c_str());
+   //     LOG("AssetManager |UnloadTextureAsset()| ERROR! Failed to unload Texture %s ", path.c_str());
         return false;
     }
    
@@ -128,10 +128,10 @@
         if(font.baseSize > 0){
             shared<Font> fontptr = std::make_shared<Font>(font);
              m_fontLoadedMap.insert({ path + strsize, fontptr});
-            LOG(" font Found %s ", path.c_str()); 
+       //     LOG(" font Found %s ", path.c_str()); 
              return fontptr; 
         }
-        LOG("Failed to load font %s ", path.c_str());
+   //     LOG("Failed to load font %s ", path.c_str());
         return shared<Font> {nullptr};
     }
 #pragma endregion

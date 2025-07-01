@@ -6,6 +6,8 @@
 #include "MathUtility.h"
 #include "World.h"
 namespace cart {
+#pragma region  Constructor & Init
+
 
 	TransformCntrl::TransformCntrl(World* _owningworld, const std::string& id, Vector2 minsize, Vector2 maxsize , Rectangle targetInitState)
 		: UIElement{ _owningworld, id },
@@ -122,16 +124,15 @@ namespace cart {
 
 	}
 	
-	
+#pragma endregion
+#pragma region Event Handler
+
+
 	void TransformCntrl::onScaleHandler(weak<Object> btn, Vector2 pos)
 	{	
 		Vector2 p = m_center;
 		Vector2 dir  = Direction(m_center, pos );
 		double len =  GetRawVectorLength(dir);
-		
-	
-		
-
 
 		if (len < 0)return;
 		float tlxpos = p.x + cos(DegreesToRadians(135.f)) * len;
@@ -151,7 +152,7 @@ namespace cart {
 		float width = GetVectorLength(Direction({ tlxpos, tlypos }, { trxpos, trypos }));
 		float height = GetVectorLength(Direction({ blxpos, blypos }, { tlxpos, tlypos }));
 
-		if (width < m_minSize.x || height < m_minSize.y)return;
+		if (width < m_minSize.x || height < m_minSize.y || width > m_maxSize.x || height > m_maxSize.y)return;
 
 		m_topleftCntrl.lock()->SetLocation({ tlxpos, tlypos });
 		m_toprightCntrl.lock()->SetLocation({ trxpos, trypos});
@@ -227,7 +228,9 @@ namespace cart {
 	{
 		onButtonUp.Broadcast(pos);
 	}
+#pragma endregion
 
+#pragma region  Helper
 	bool TransformCntrl::IsActiveCtrl(std::string _cntrl) {
 
 		return curDragCntrl  == _cntrl;
@@ -242,7 +245,6 @@ namespace cart {
 		m_tempTargetLoc = { m_targetInitState.x , m_targetInitState.y };
 	
 	}
-
 	void TransformCntrl::Close()
 	{
 
@@ -256,7 +258,16 @@ namespace cart {
 		m_outline.lock()->Destroy();
 		SetVisible(false);
 	}
-	
+	Rectangle TransformCntrl::GetBounds() 
+	{
+		Vector2 lt = m_topleftCntrl.lock()->GetLocation();
+		Vector2 br = m_bottomrightCntrl.lock()->GetLocation();
+		return { lt.x , lt.y,  br.x - lt.x , br.y - lt.y };
+
+	} 
+#pragma endregion
+
+#pragma region CleanUp
 	void TransformCntrl::Destroy()
 	{
 		m_topleftCntrl.lock()->Destroy();
@@ -271,4 +282,5 @@ namespace cart {
 	{
 		LOG("Transfrom Control Destroyed");
 	}
+#pragma endregion
 }

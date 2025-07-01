@@ -33,6 +33,7 @@ namespace cart
 		virtual Camera GetCamera()const { return m_camera; };
 		network* GetNet() { return net; };
 		
+		
 	protected:
 		virtual void Draw(float deltaTime);
 		virtual void Update(float deltaTime);

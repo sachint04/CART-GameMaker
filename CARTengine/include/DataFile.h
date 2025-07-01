@@ -10,7 +10,7 @@
 
 namespace cart{
     
-    struct PuzzleMakerData {
+   /* struct PuzzleMakerData {
         int stagewidth = 500;
         int stageheight = 500;
         std::string tmpimg = "treasure-stone.png";
@@ -24,7 +24,7 @@ namespace cart{
             "m7.png","m8.png" ,"m9.png" ,"m10.png" ,"m11.png" , "m12.png",
             "m13.png","m14.png" ,"m15.png" ,"m16.png"  };
     };
-    
+    */
 
 
 

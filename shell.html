@@ -340,10 +340,12 @@ jwE50AGjLCVuS8Yt4H7OgZLKK5EKOsLviEWJSL/+0uMi7gLUSBseYwqEbXvSHCec1CJvZPyHCmYQffaB
         }
     </script>
 	<script type="text/javascript">
-		function HTTPGetRequest(id, url)
+	/* LOAD APP DATA REQUEST */
+		function JSHTTPGetRequest(id, url)
 		{
 		  loadSetting(id, url); 
 		}
+		
 		var loadSetting = function(_id, _url){
 			$.ajax({
 				url: _url,
@@ -363,6 +365,69 @@ jwE50AGjLCVuS8Yt4H7OgZLKK5EKOsLviEWJSL/+0uMi7gLUSBseYwqEbXvSHCec1CJvZPyHCmYQffaB
 				}
 			});
 		}
+	/* -------------------- END ------------------------- */
+	
+	/* UPLOAD IMAGE TO SERVER */
+	function JSUploadImage(id, url, imageData, filename)
+	{
+			console.log(id, url, w, h, fname);
+
+			const imageDataArray = new Uint8Array(imageData, w * h * 4);
+			// let imageBlob = new Blob([imageDataArray], {type: 'image/png'});
+			
+			let filename = 'myImage.png'; // Desired filename
+			
+			// let imageFile = new File([imageBlob], filename, { type: fileType });
+			
+			let canvas = document.createElement('canvas');
+			canvas.width = w; // Set the desired width of the image
+			canvas.height = h; // Set the desired height of the image
+			const ctx = canvas.getContext('2d');
+			//let imagearr = new ImageData(imageDataArray, width, height, { colorSpace: "display-p3" });
+			const arr = new Uint8ClampedArray(w*h*4);
+			for (let i = 0; i < imageData.length; i += 4) {
+				arr[i + 0] = imageData[i]; // R value
+				arr[i + 1] = imageData[i + 1]; // G value
+				arr[i + 2] = imageData[i + 2]; // B value
+				arr[i + 3] = imageData[i + 3]; // A value
+			}
+			
+			console.log("end of loop ", i*4);
+			let imageDatafroarr = new ImageData(arr, w);
+			// console.log("imageData  arr length", imageData.length, arr.length);
+			ctx.putImageData(imageDatafroarr, 0, 0); // (0,0) are the x,y coordinates to draw at
+			
+ 			// document.querySelector('#main').append(canvas);
+			
+			//let file = new File([imageBlob],'image.png',{type:'image/png'});
+			 let imageBlob = new Blob([arr], {type: 'image/png'});
+		 	 let fileType = imageBlob.type; // Get the MIME type from the Blob
+		     let imageFile = new File([imageBlob], filename, { type: fileType });
+			let u = canvas.toDataURL();//URL.createObjectURL(imageFile);
+			let a = document.createElement('a');
+			a.href = u;
+			a.download = filename;
+			a.textContent = "Download Image _ " +filename;
+			document.querySelector('#main').append(a);
+			// $.ajax({
+			// 	url: url,
+			// 	type: "POST",
+			// 	data: form_data,
+			// 	contentType: false,
+			// 	processData: false,
+			// 	success: function(response) {
+			// 		console.log("JSUploadImage success - ",response);//$("#message").html(response);
+			// 		 GetHTTPCallback(id, "ok", "Image upload complete");
+			// 	},
+			// 	error: function(xhr, status, error) {
+			// 		console.log("JSUploadImage Error! ", status, error);
+			// 		$("#message").html("Error uploading file: " + error);
+			// 	}
+			// });
+
+	}
+		
+	/* ------------------- END ------------------------- */
 		function GetHTTPCallback(id, response, data)
 		{
 		  const isValid = Module.ccall('GetHTTPCallback',

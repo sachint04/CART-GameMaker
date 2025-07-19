@@ -15,10 +15,13 @@ namespace cart
 
 			static json& GetAppData() { return m_config; };
 			static json& GetUserData();
+			static json& GetSessionData();
 			static void UpdateUserData(const json& data);
+			~CARTjson();
 		private:
 			static json m_config;
 			static json m_userdata;
+			static json m_sessiondata;
 	};
 
 }

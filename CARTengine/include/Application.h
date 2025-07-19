@@ -35,8 +35,9 @@ namespace cart
 		
 		
 	protected:
-		virtual void Draw(float deltaTime);
 		virtual void Update(float deltaTime);
+		virtual void Draw(float deltaTime);
+		virtual void LateUpdate(float deltaTime);
 		int m_winWidth;
 		int m_winHeight;
 		std::string m_title;

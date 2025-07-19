@@ -108,6 +108,10 @@ namespace cart {
 	{
 	}
 
+	void Actor::LateUpdate(float _deltaTime)
+	{
+	}
+
 	void Actor::SetSize(Vector2 _size)
 	{
 		m_width = _size.x;

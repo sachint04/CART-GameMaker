@@ -4,6 +4,7 @@ namespace cart
 {
 	json CARTjson::m_config = {};
 	json CARTjson::m_userdata = {};
+	json CARTjson::m_sessiondata = {};
 
 	void CARTjson::readAPPData(const char* _file)
 	{
@@ -32,8 +33,20 @@ namespace cart
 	json& CARTjson::GetUserData() { 
 		return m_userdata;
 	}
+
+	json& CARTjson::GetSessionData()
+	{
+		return m_sessiondata;
+	}
 	
 	void CARTjson::UpdateUserData(const json& json) {
 		m_userdata = json;
+	}
+
+	CARTjson::~CARTjson()
+	{
+		m_userdata.clear();
+		m_sessiondata.clear();
+		m_config.clear();
 	}
 }

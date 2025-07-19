@@ -128,6 +128,9 @@ namespace cart
 	{
 		m_animations = animations;		
 		m_animcount = count;
+		m_currentAnimation = 0;
+	/*	ModelAnimation anim = m_animations[0];
+		UpdateModelAnimation(m_model, anim, m_currentFrame);*/
 	}
 	void Actor3D::PlayHoverAnim()
 	{
@@ -179,6 +182,8 @@ namespace cart
 	}
 	Actor3D::~Actor3D()
 	{		
+		if (m_animations)delete m_animations;
+
 		UnloadModel(m_model);
 	}
 #pragma endregion

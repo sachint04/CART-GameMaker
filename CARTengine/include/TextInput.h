@@ -8,7 +8,7 @@ namespace cart {
 	{
 		
 	public:
-		TextInput(World* _owningworld, const std::string& _id, Vector2 _size);
+		TextInput(World* _owningworld, const std::string& _id);
 		~TextInput();
 		void Init()override;
 		void Update(float _deltaTime)override;

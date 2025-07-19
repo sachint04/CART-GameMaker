@@ -47,7 +47,7 @@ namespace cart
 			BeginDrawing();
 			Draw(deltaTime);
 			EndDrawing();
-
+			LateUpdate(deltaTime);
 			if (WindowShouldClose())m_exit = true;
 		}
 		Clock::Get().Release();
@@ -75,6 +75,9 @@ namespace cart
 		m_CurrentWorld->Draw(deltaTime);
 	}
 
+	void Application::LateUpdate(float deltaTime) {
+		m_CurrentWorld->LateUpdate(deltaTime);
+	}
 
 	void Application::QuitApplication()
 	{

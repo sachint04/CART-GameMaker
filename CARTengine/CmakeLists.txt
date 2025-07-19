@@ -25,6 +25,8 @@ set(ENGINE_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/MathUtility.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/UIButton.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/UIButton.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/include/Sprite2D.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Sprite2D.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/UIElement.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/UIElement.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/Text.h

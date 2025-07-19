@@ -8,13 +8,14 @@ namespace cart {
 	
 #pragma region  INIT
 	
-	UIButton::UIButton(World* _owningworld, const std::string& _id)
-		:UIElement{ _owningworld, _id },
+	
+	UIButton::UIButton(World* _owningworld, const std::string& _id, bool isExcludedFromParentAutoControl)
+		:Sprite2D{ _owningworld, _id, isExcludedFromParentAutoControl },
 		m_touch{ false },
 		tCount(0),
 		m_margin(0),
 		m_textsize{},
-		m_fontspace{2.f},
+		m_fontspace{ 2.f },
 		m_fontLocation{},
 		m_locmouse{},
 		m_fontstr{},
@@ -22,9 +23,9 @@ namespace cart {
 		m_align{},
 		m_fontsize(),
 		m_defaulttextcolor{},
+		m_defaulttexturecolor{},
 		m_textcolor{},
 		m_texthovercolor{},
-		m_defaulttexturecolor{},
 		m_ButtonDefaultColor{},
 		m_ButtonDownColor{},
 		m_ButtonHoverColor{},
@@ -32,49 +33,14 @@ namespace cart {
 		m_IsMouseOver{ false },
 		m_IsSelected{ false },
 		m_IsSelectable{ false },
-		m_borderwidth{0},
-		m_borderColor{GRAY},
-		m_texturesourcedefault{},
-		m_texturesourceover{},
-		m_texturesourcedown{},
-		m_texturesourcedisable{}
-
-	{
-
-	};
-	
-	UIButton::UIButton( World* _owningworld, const std::string& _id, Vector2 _size)
-		:UIElement{ _owningworld, _id, _size },
-		m_touch{false},
-		tCount(0),
-		m_margin(0),
-		m_textsize{},
-		m_fontspace{2.f},
-		m_fontLocation{},
-		m_locmouse{},
-		m_fontstr{},
-		m_text{},
-		m_align{},
-		m_fontsize(),
-		m_defaulttextcolor{},
-		m_defaulttexturecolor{},
-		m_textcolor{},
-		m_texthovercolor{},
-		m_ButtonDefaultColor{},
-		m_ButtonDownColor{},
-		m_ButtonHoverColor{},
-		m_IsButtonDown{false},
-		m_IsMouseOver{ false },
-		m_IsSelected{false},
-		m_IsSelectable{false},
 		m_borderwidth{ 0 },
 		m_borderColor{ GRAY },
 		m_texturesourcedefault{},
 		m_texturesourceover{},
 		m_texturesourcedown{},
 		m_texturesourcedisable{}
-        {
-				}
+	{
+	}
 
 	void UIButton::Init()
 	{
@@ -82,8 +48,6 @@ namespace cart {
 
 		m_owningworld->GetInputController()->RegisterUI(GetWeakRef());
 
-	
-		
 		if (m_text.size() > 0) {
 			m_font = AssetManager::Get().LoadFontAsset(m_fontstr, m_fontsize);
 			m_textsize = MeasureTextEx(*m_font, m_text.c_str(), m_fontsize, 2.f);
@@ -144,7 +108,8 @@ namespace cart {
 		}
 
 #else
-		if (m_active == true) {
+		if (m_active == true) 
+		{
 			Vector2 tPos = { (float)GetMouseX(), (float)GetMouseY() };
 			bool mouseonBtn = m_owningworld->GetInputController()->IsMouseOver(GetWeakRef());
 
@@ -438,6 +403,7 @@ namespace cart {
 
 UIButton::~UIButton()
 	{
+	SetMouseCursor(0);
 	m_font.reset();
 		//LOG("%s UIButton Deleted ", m_id.c_str());
 	}

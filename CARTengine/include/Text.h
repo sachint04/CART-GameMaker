@@ -7,7 +7,7 @@ namespace cart {
 	class World;
 	class Text : public UIElement {
 	public:
-		Text( World* _owningworld, const std::string& _id, Vector2 _size);
+		Text( World* _owningworld, const std::string& _id);
 		~Text();
 		void SetTextProperties(Text_Properties _props);
 		void Init() override;
@@ -16,12 +16,14 @@ namespace cart {
 		virtual void SetFontName(const std::string& strfnt);
 		virtual void SetFontSize(float size);
 		virtual void SetTextColor(Color col);
+		virtual void UpdateText(const std::string& str);
 	protected:
 		std::string m_text;
 		std::string m_font;
 		float m_fontsize;
 		ALIGN m_align;
 		Vector2 m_textsize;
+		Vector2 m_textLocation;
 		float m_fontspacing;
 		int m_margin;
 		Color m_background;

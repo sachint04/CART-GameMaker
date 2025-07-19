@@ -18,11 +18,9 @@ namespace cart {
             {
                 if ((iter->second)(response, data))
                 {
-                    ++iter;
-                }
-                else
-                {
-                    iter = mCallbacks.erase(iter);
+                    mCallbacks.erase(iter);
+                    LOG("HTTPCallback with id %s executed ", uid.c_str());
+                    break;
                 }
             }
         }

@@ -12,8 +12,8 @@ namespace cart
 #pragma region Construction & Initialization
 
 
-    TextInput::TextInput(World* _owningworld, const std::string& _id, Vector2 _size)
-        :Text{ _owningworld, _id, _size },
+    TextInput::TextInput(World* _owningworld, const std::string& _id)
+        :Text{ _owningworld, _id },
         m_charLimit{ 200 },
         m_letterCount{ 0 },
         m_mouseOnText{ false },

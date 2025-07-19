@@ -20,6 +20,7 @@ namespace cart
 		virtual void Init();
 		virtual void Update(float _deltaTime);
 		virtual void Draw(float _deltaTime);
+		virtual void LateUpdate(float _deltaTime);
 		virtual void AddStage(const shared<GameStage>& newStage);
 		virtual void AllGameStagesFinieshed();
 

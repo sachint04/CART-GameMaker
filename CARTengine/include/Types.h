@@ -3,7 +3,8 @@
 #include <vector>
 #include <raylib.h>
 #include "easing.h"
-    
+#include "Core.h"
+
 namespace cart {
 
       
@@ -65,6 +66,15 @@ namespace cart {
         TEXTURE_PART,
     };
 
+    enum TEXTURE_DATA_STATUS {
+        UNLOCKED,
+        LOCKED
+    };
+
+    typedef struct {
+        shared<Texture2D> texture;
+        TEXTURE_DATA_STATUS status;
+    }TextureData;
 #pragma endregion
 
 #pragma region STRUCTS
@@ -78,9 +88,12 @@ namespace cart {
         float rotation;
         std::string texture;
         Color textureColor =  WHITE ;
+        TEXTURE_DATA_STATUS texturestatus = TEXTURE_DATA_STATUS::UNLOCKED;
         TEXTURE_TYPE texturetype = TEXTURE_TYPE::TEXTURE_FULL;
         Rectangle texturesource;
         SHAPE_TYPE shapetype = SHAPE_TYPE::RECTANGLE;
+        int linewidth = 0;
+
     };
 
 	struct Text_Properties : UI_Properties{

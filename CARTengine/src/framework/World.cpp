@@ -46,10 +46,12 @@ namespace cart {
 
     void World::NextGameStage()
 	{
+		void* sessiondata = m_currentStage->get()->GetOutPut();
 		//m_currentStage = m_gameStages.erase(m_currentStage);
 		++m_currentStage;
 		if (m_currentStage != m_gameStages.end())
 		{
+			m_currentStage->get()->SetInutPut(sessiondata);
 			m_currentStage->get()->StartStage();
 
 		}else{
@@ -100,6 +102,7 @@ namespace cart {
 			m_currentStage->get()->StartStage();			
 		}
 	}
+
 #pragma endregion
 
 #pragma region LOOP
@@ -113,35 +116,6 @@ namespace cart {
 			if(m_Actors.at(i).get()->IsPendingDestroy() == false)
 				m_Actors.at(i).get()->Update(_deltaTime);
 		}
-		//if (m_Actors.size() > 0) {
-		//	List<shared<Actor>>::iterator iter = m_Actors.begin();
-		//	
-		//	LOG("(> WORLD <) Update() %d", &iter);
-		//	for (auto iter = m_Actors.begin(); iter != m_Actors.end(); ++iter)
-		//	{
-		//		if (!iter->get()->IsPendingDestroy()) {
-		//			iter->get()->Update(_deltaTime);
-		//		}
-		//	}
-		//}
-
-		/*
-		*/
-//		for (auto iter = m_Actors.begin(); iter != m_Actors.end();)
-//		{
-//			iter->get()->Update(_deltaTime);
-		//		++iter;
-			//if (iter->get()->IsPendingDestroy() == true) {
-			//	m_PendingActors.push_back(std::move(*iter));
-			//	iter = m_Actors.erase(iter);											
-			//}
-			//else 
-			//{
-			//	++iter;
-			//}				
-	//	}
-
-
 		if(m_currentStage != m_gameStages.end())
 		{
 			m_currentStage->get()->Update(_deltaTime);
@@ -173,8 +147,6 @@ namespace cart {
 
 	void World::Draw(float _deltaTime)
 	{
-	
-	
 			ClearBackground(RAYWHITE);
 			for (auto iter = m_Actors.begin(); iter != m_Actors.end();  ++iter)
 			{
@@ -190,6 +162,23 @@ namespace cart {
 			}
 	
 	}
+	void World::LateUpdate(float _deltaTime)
+	{
+		for (size_t i = 0; i < m_Actors.size(); i++)
+		{
+			if (m_Actors.at(i).get()->IsPendingDestroy() == false)
+				m_Actors.at(i).get()->LateUpdate(_deltaTime);
+		}
+
+#pragma region Update HUD
+
+		if (mHUD)
+		{
+			mHUD->LateUpdate(_deltaTime);
+		}
+#pragma endregion
+	}
+
 #pragma endregion
 
 #pragma region Helper
@@ -208,9 +197,6 @@ namespace cart {
 		return totalmem;
 
 	}
-
-	
-
 
 #pragma endregion
 	

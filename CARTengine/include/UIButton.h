@@ -1,15 +1,15 @@
 #pragma once
 #include <raylib.h>
 #include "Delegate.h"
-#include "UIElement.h"
+#include "Sprite2D.h"
 #include "Types.h"
 
 namespace cart {
 
-	class UIButton : public UIElement{
+	class UIButton : public Sprite2D{
 	public:
-        UIButton(World* _owningworld, const std::string& _id);
-        UIButton(World* _owningworld, const std::string& _id, Vector2 _size);
+    
+        UIButton(World* _owningworld, const std::string& _id, bool isExcludedFromParentAutoControl = false);
         void SetTextProperties(Btn_Text_Properties _prop);
 
         bool TestMouseOver(Vector2 _point);

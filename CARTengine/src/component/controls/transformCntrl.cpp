@@ -17,10 +17,11 @@ namespace cart {
 		m_bottomrightCntrl{},
 		m_outline{},
 		m_translateCntrl{},
-		cntrlsize{ 8.f },
+		cntrlsize{ 6.f },
 		cntrlhalf{ cntrlsize /2},
 		curDragCntrl{""},
 		m_isScaling{false},
+		m_isTranslating{false},
 		m_tempTargetLoc{},
 		m_minSize{ minsize },
 		m_maxSize{maxsize},
@@ -50,13 +51,13 @@ namespace cart {
 
 		std::string btnid = "translate-btn";
 		Btn_Text_Properties btnprop = {};
-		btnprop.location = { m_location.x + cntrlsize, m_location.y + cntrlsize };
+		btnprop.location = { m_location.x , m_location.y };
 		btnprop.size = { m_targetInitState.width, m_targetInitState.height };
-		btnprop.color = {0};
+		btnprop.color = { 0};
 		btnprop.btncol = {0};
 		btnprop.overcol = {0};
 		btnprop.downcol = {0};
-		btnprop.size = { m_targetInitState.width - cntrlsize *2 , m_targetInitState.height - cntrlsize * 2 };
+		btnprop.size = { m_targetInitState.width   , m_targetInitState.height};
 
 		m_translateCntrl = AddButton(btnid, btnprop);
 		m_translateCntrl.lock()->onButtonDown.BindAction(GetWeakRef(), &TransformCntrl::onTranslateStart);
@@ -67,8 +68,14 @@ namespace cart {
 
 
 		std::string id = "outline-cntrl";
-
-		m_outline = m_owningworld->SpawnActor<Shape>(id, m_location, m_targetInitState.width, m_targetInitState.height, BLUE, SHAPE_TYPE::LINE, 2);
+		UI_Properties lnui = {};
+		lnui.location = m_location;
+		lnui.size = { m_targetInitState.width, m_targetInitState.height};
+		lnui.color = BLUE;
+		lnui.shapetype = SHAPE_TYPE::LINE;
+		lnui.linewidth = 1;
+		m_outline = m_owningworld->SpawnActor<Shape>(id);
+		m_outline.lock()->SetUIProperties(lnui);
 		m_outline.lock()->SetVisible(true);
 		m_outline.lock()->Init();
 		AddChild(m_outline);
@@ -201,6 +208,7 @@ namespace cart {
 	void TransformCntrl::onTranslateStart(weak<Object>, Vector2 pos) {
 		if (m_isScaling)return;
 		m_tempTargetLoc = pos;
+		m_isTranslating = true;
 		//LOG("Translate Control Start");
 	}
 	void TransformCntrl::onTranslateContinue(weak<Object>, Vector2 pos) {
@@ -222,6 +230,7 @@ namespace cart {
 	}
 	void TransformCntrl::onTranslateEnd(weak<Object>) {
 	//	LOG("Translate Control End");
+		m_isTranslating = false;
 		onStop.Broadcast();
 	}
 	void TransformCntrl::onButtonClick(weak<Object> btn, Vector2 pos)
@@ -264,9 +273,32 @@ namespace cart {
 		Vector2 br = m_bottomrightCntrl.lock()->GetLocation();
 		return { lt.x , lt.y,  br.x - lt.x , br.y - lt.y };
 
-	} 
-#pragma endregion
+	}
 
+#pragma endregion
+#pragma region  Loop
+
+
+	void TransformCntrl::Update(float _deltaTime)
+	{
+		if (m_isScaling || m_isTranslating) {
+			m_outline.lock()->SetColor(SKYBLUE);
+			m_bottomrightCntrl.lock()->SetColor(SKYBLUE);
+			m_topleftCntrl.lock()->SetColor(SKYBLUE);
+			m_toprightCntrl.lock()->SetColor(SKYBLUE);
+			m_bottomleftCntrl.lock()->SetColor(SKYBLUE);
+		}
+		else {
+			Color c = { 102, 191, 255, 100 };
+			m_outline.lock()->SetColor(c);
+			m_bottomrightCntrl.lock()->SetColor(c);
+			m_topleftCntrl.lock()->SetColor(c);
+			m_toprightCntrl.lock()->SetColor(c);
+			m_bottomleftCntrl.lock()->SetColor(c);
+			c = {};
+		}
+	}
+#pragma endregion
 #pragma region CleanUp
 	void TransformCntrl::Destroy()
 	{

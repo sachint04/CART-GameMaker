@@ -3,10 +3,11 @@
 #include <iostream>
 #include  <raylib.h>
 #include "Core.h"
-
+#include "Types.h"
 namespace cart {
 
-// asset manager 
+
+    // asset manager 
     class AssetManager {
     public:
         static AssetManager& Get();
@@ -14,13 +15,16 @@ namespace cart {
         void Unload();
         void CleanCycle();
         void SetAssetRootDirectory(const std::string& directory);
-        shared<Texture2D> LoadTextureAsset(const std::string &path);
+        shared<Texture2D> LoadTextureAsset(const std::string &path, TEXTURE_DATA_STATUS status = TEXTURE_DATA_STATUS::UNLOCKED);
         shared<Font> LoadFontAsset(const std::string& path, int fontSize);
-
-        bool UnloadTextureAsset(const std::string& path);
+        shared<Texture2D> AddTexture( Image image, std::string& path, TEXTURE_DATA_STATUS status = TEXTURE_DATA_STATUS::UNLOCKED);
+        bool UpdateTextureFromImage(const std::string& path, Image img);
+        Image* GetImage(std::string& path);
+        bool UnloadTextureAsset(const std::string& path);        
         bool UnloadFontAsset(const std::string& path , int fontsize);
         void ClearTextureMap();
         void ClearFontMap();
+        void SetTextureStatus(const std::string& path, TEXTURE_DATA_STATUS status = TEXTURE_DATA_STATUS::UNLOCKED );
         ~AssetManager();
     protected:
         AssetManager();
@@ -28,8 +32,9 @@ namespace cart {
     private:
         std::string m_RootDirectory;
         static unique<AssetManager> assetManager;
-        Dictionary<std::string, shared<Texture2D>> m_textureLoadedMap;
-        shared<Texture2D> LoadTexture(const std::string& path, Dictionary<std::string, shared<Texture2D>>& constainer);
+        Dictionary<std::string, TextureData> m_textureLoadedMap;
+        Dictionary<std::string, Image*> m_imageLoadedMap;
+        shared<Texture2D> LoadTexture(const std::string& path, Dictionary<std::string, TextureData>& constainer, TEXTURE_DATA_STATUS status);
         List<Font> fonts= { };
         
         Dictionary<std::string, shared<Font>> m_fontLoadedMap;

@@ -20,6 +20,7 @@ namespace cart {
 		virtual void SetColor(Color _color);
 		virtual void Update(float _deltaTime);
 		virtual void Draw(float _deltaTime);
+		virtual void LateUpdate(float _deltaTime);
 		virtual void SetSize(Vector2 _size);
 		virtual void SetSize(Vector3 _size);
 		float GetRotation();

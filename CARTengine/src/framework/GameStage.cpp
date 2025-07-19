@@ -23,6 +23,7 @@ namespace cart
 
     void GameStage::Init()
     {
+        m_stageFinished = false;
         LOG("Initialize Game Stage");
     }
     void GameStage::Update(float deltaTime)
@@ -33,6 +34,16 @@ namespace cart
     void GameStage::Draw(float deltaTime)
     {
     }
+    void* GameStage::GetOutPut()
+    {
+        return m_sessionData;
+    }
+
+    void GameStage::SetInutPut(void* data)
+    {
+        m_sessionData = data;
+    }
+
     /*void GameStage::FinishStage()
     {
     }*/

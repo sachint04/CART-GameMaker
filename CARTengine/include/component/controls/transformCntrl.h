@@ -26,6 +26,7 @@ namespace  cart {
 		void Reset();
 		void Close();
 		Rectangle GetBounds() override;
+		void Update(float _deltaTime) override;
 		Delegate<Vector2, Vector2, Vector2>onScaled;
 		Delegate<float>onRotated;
 		Delegate<Vector2> onMoved;
@@ -59,6 +60,7 @@ namespace  cart {
 		float m_aspectRatio;
 		std::string curDragCntrl;
 		bool m_isScaling;
+		bool m_isTranslating;
 		bool m_isfixedAspectRatio;
 		Vector2 m_tmpPivot;
 		Vector2 m_tempTargetLoc;

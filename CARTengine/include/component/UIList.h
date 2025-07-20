@@ -1,6 +1,5 @@
 #pragma once
 #include "UIElement.h"
-#include "Core.h"
 #include "Delegate.h"
 namespace cart
 {

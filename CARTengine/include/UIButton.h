@@ -1,8 +1,6 @@
 #pragma once
-#include <raylib.h>
 #include "Delegate.h"
 #include "Sprite2D.h"
-#include "Types.h"
 
 namespace cart {
 

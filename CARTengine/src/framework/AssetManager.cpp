@@ -133,14 +133,15 @@
 
         if (found != m_textureLoadedMap.end())
         {   
+            LOG("AssetManager UnloadTextureAsset() Texture  %s ", found->first.c_str());
             UnloadTexture(*found->second.texture);
             found->second.texture.reset();
             m_textureLoadedMap.erase(found);
         }
-        
        auto foundimg = m_imageLoadedMap.find(path);
         
         if (foundimg  != m_imageLoadedMap.end()) {
+            LOG("AssetManager UnloadTextureAsset() Image  %s ", foundimg->first.c_str());
             UnloadImage(*foundimg->second);
             delete foundimg->second;
             m_imageLoadedMap.erase(foundimg);
@@ -224,7 +225,7 @@
        //         LOG("TextureMap  %s User Count  %lu ", iter->first.c_str(), iter->second.use_count());
             if (iter->second.texture.use_count() == 1 && iter->second.status == TEXTURE_DATA_STATUS::UNLOCKED) {
 
-         //       LOG("Cleaning TextureMap  %s", iter->first.c_str());
+                LOG("AssetManager CleanCycle()  Texture  %s", iter->first.c_str());
                 UnloadTexture(*iter->second.texture);
                 iter->second.texture.reset();
                 
@@ -268,6 +269,7 @@
     {
         for (auto iter = m_textureLoadedMap.begin(); iter != m_textureLoadedMap.end();)
         {
+            LOG("AssetManager ClearTextureMap()  Texture %s", iter->first.c_str());
             UnloadTexture(*iter->second.texture);
              iter->second.texture.reset();
              //LOG("%s Cleared Texture Map.", iter->first.c_str());
@@ -282,7 +284,7 @@
         {
 
             UnloadFont(*iter->second);
-            LOG("AssetManager | UnloadFont() | %s  | Success!", iter->first.c_str());
+            LOG("AssetManager | ClearFontMap() | %s  | Success!", iter->first.c_str());
             iter->second.reset();
             //LOG("%s Cleared Font Map.", iter->first.c_str());
             iter = m_fontLoadedMap.erase(iter);

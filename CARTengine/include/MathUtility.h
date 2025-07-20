@@ -4,7 +4,7 @@
 
 namespace cart
 {
-	Vector2 RotationToVector(float rotation);
+	Vector2 AngleToVector(float rotation);
 
 	float VectorToRotation(Vector2 vec1, Vector2 vec2);
 

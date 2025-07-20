@@ -1,6 +1,5 @@
 #include "Text.h"
 #include "AssetManager.h"
-#include "Types.h"
 #include "World.h"
 namespace cart {
 

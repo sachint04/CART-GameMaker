@@ -47,7 +47,10 @@ namespace cart {
 					vec3 = LERP(m_startVec3, m_targetVec3, (float)t);
 					m_actor.lock()->SetLocation(vec3);
 					break;						
-				}
+				case VEC_TYPE::Vec4D:				
+					break;
+					
+				}	
 				//	std::string __id = m_actor.lock()->GetID();
 			
 				//std::cout <<  __id <<" -> Actor Moved percent  -> "<< t << std::endl;
@@ -66,6 +69,9 @@ namespace cart {
 					break;
 				case cart::Vec3D:
 					m_actor.lock()->SetLocation(m_targetVec3);
+					break;
+				case cart::Vec4D:
+
 					break;
 				}
 

@@ -1,7 +1,5 @@
 #pragma once
 #include <string>
-#include <raylib.h>
-#include "Core.h"
 #include "UIElement.h"
 namespace cart
 {
@@ -23,7 +21,6 @@ namespace cart
 			~HUD();
 
 		protected:
-			HUD();
 			virtual void RestartButtonClicked(weak<Object> obj, Vector2 pos);
 			virtual void QuitButtonClicked(weak<Object> obj, Vector2 pos);
 		private:

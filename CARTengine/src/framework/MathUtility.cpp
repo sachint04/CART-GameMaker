@@ -7,7 +7,7 @@
 namespace cart
 {
 
-	Vector2 RotationToVector(float rotation) {
+	Vector2 AngleToVector(float rotation) {
 		float radians = DegreesToRadians(rotation);
 		Vector2 vec {std::cos(radians), std::sin(radians)};
 		return vec;

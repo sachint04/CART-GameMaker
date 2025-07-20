@@ -1,7 +1,6 @@
 #pragma once
 
 #include <raylib.h>
-#include "Core.h"
 #include "Object.h"
 
 namespace cart

@@ -1,6 +1,5 @@
 #pragma once
 #include "Text.h"
-#include "Core.h"
 #define MAX_INPUT_CHARS     200
 namespace cart {
 

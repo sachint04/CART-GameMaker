@@ -20,7 +20,6 @@ namespace cart {
 		m_locmouse{},
 		m_fontstr{},
 		m_text{},
-		m_align{},
 		m_fontsize(),
 		m_defaulttextcolor{},
 		m_defaulttexturecolor{},
@@ -44,8 +43,8 @@ namespace cart {
 
 	void UIButton::Init()
 	{
-		UIElement::Init();
 
+		Sprite2D::Init();
 		m_owningworld->GetInputController()->RegisterUI(GetWeakRef());
 
 		if (m_text.size() > 0) {
@@ -58,7 +57,7 @@ namespace cart {
 
 	void UIButton::SetScale(float _scale)
 	{
-		UIElement::SetScale(_scale);
+		Sprite2D::SetScale(_scale);
 		UpdateTextLocation();
 	}
 
@@ -71,7 +70,7 @@ namespace cart {
 	void UIButton::Update(float _deltaTime)
 	{
 
-		if (!m_visible)return;
+		if (!m_active || !m_visible || m_pendingUpdate)return;
 
 #if defined(PLATFORM_ANDROID)
 		tCount = GetTouchPointCount();
@@ -158,7 +157,7 @@ namespace cart {
 	void UIButton::Draw(float  _deltaTime)
 	{
 		if (!m_visible)return;
-		UIElement::Draw(_deltaTime);
+		Sprite2D::Draw(_deltaTime);
 		if (m_IsSelected == true) {
 			DrawRectangle(m_calculatedLocation.x - 10.f, m_calculatedLocation.y - 10.f, m_width + 20.f, m_height + 20.f, m_color);
 		}
@@ -202,7 +201,7 @@ namespace cart {
 
 	void UIButton::SetActive(bool _flag)
 	{
-		UIElement::SetActive(_flag);		
+		Sprite2D::SetActive(_flag);		
 		if (_flag == false) {
 			m_IsSelected = false;
 		}
@@ -216,7 +215,7 @@ namespace cart {
 	
 	void UIButton::SetButtonProperties(Btn_Properties _prop)
 	{
-		UIElement::SetUIProperties(_prop);
+		Sprite2D::SetUIProperties(_prop);
 		SetColor(_prop.btncol);
 		m_ButtonDefaultColor = _prop.btncol;
 		m_ButtonHoverColor = _prop.overcol;
@@ -240,7 +239,7 @@ namespace cart {
 
 	void UIButton::SetUIProperties(UI_Properties _prop)
 	{
-		UIElement::SetUIProperties(_prop);
+		Sprite2D::SetUIProperties(_prop);
 	}
 
 	void UIButton::SetTextProperties(Btn_Text_Properties _prop)
@@ -262,13 +261,13 @@ namespace cart {
 
 	void UIButton::UpdateLocation()
 	{
-		UIElement::UpdateLocation();
+		Sprite2D::UpdateLocation();
 
 	}
 
 	void UIButton::SetLocation(Vector2 _location)
 	{
-		UIElement::SetLocation(_location);
+		Sprite2D::SetLocation(_location);
 		UpdateTextLocation();
 	}
 

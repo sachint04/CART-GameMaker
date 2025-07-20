@@ -37,7 +37,6 @@ namespace cart {
 		if (!m_visible || m_pendingUpdate)return;
 		UIElement::Update(_deltaTime);
 		if (m_strTexture.size() > 0) {
-			m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
 			m_textureLocation = m_calculatedLocation;
 			if (m_bAspectRatio)
 			{
@@ -52,7 +51,8 @@ namespace cart {
 	{
 		if (!m_visible || m_pendingUpdate)return;
 		UIElement::Draw(_deltaTime);
-		if (m_texture2d) {
+		if (m_strTexture.size() > 0) {
+			m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
 			if (m_texturetype == TEXTURE_PART) {// Render PART OF TEXTURE			
 				DrawTextureRec(*m_texture2d, m_texturesource, m_textureLocation, m_textureColor);
 			}
@@ -66,9 +66,9 @@ namespace cart {
 	{
 		if (!m_visible || m_pendingUpdate)return;
 		UIElement::LateUpdate(_deltaTime);
-		if ((m_ImgCopy.data != NULL)) {
+		/*if ((m_ImgCopy.data != NULL)) {
 			UnloadImage(m_ImgCopy);		
-		};
+		};*/
 	}
 	
 	
@@ -120,7 +120,7 @@ namespace cart {
 		return{ m_textLoc.x, m_textLoc.y, m_texture2d->width * m_textureScaleX,  m_texture2d->height * m_textureScaleX };
 	}
 	void Sprite2D::UpdateMask(){
-
+		m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
 		float tmpscale = std::min((float)m_width / (float)m_texture2d.get()->width, (float)m_height / (float)m_texture2d.get()->height);
 
 		Image* imageref = AssetManager::Get().GetImage(m_strTexture);
@@ -148,9 +148,12 @@ namespace cart {
 			}
 		}
 		UpdateTexture(*m_texture2d, imagepixel);
+		delete imagepixel;
+		UnloadImage(m_ImgCopy);
 	}
 	void Sprite2D::UpdateAspectRatio()
 	{
+		m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
 		float tmpscale = std::min((float)m_width / (float)m_texture2d.get()->width, (float)m_height / (float)m_texture2d.get()->height);
 		m_textureScaleX = tmpscale;
 		m_textureScaleY = tmpscale;		

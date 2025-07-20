@@ -1,6 +1,4 @@
 #pragma once
-#include <raylib.h>
-#include "Types.h"
 #include "UIElement.h"
 
 namespace cart {
@@ -12,7 +10,7 @@ namespace cart {
 		void Init() override;
 		void Update(float _deltaTime)  override;
 		void Draw(float _deltaTime)  override;
-		virtual void SetUIProperties(UI_Properties _prop);
+		virtual void SetUIProperties(UI_Properties _prop) override;
 
 	protected:
 		

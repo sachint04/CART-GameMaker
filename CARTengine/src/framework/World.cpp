@@ -46,12 +46,9 @@ namespace cart {
 
     void World::NextGameStage()
 	{
-		void* sessiondata = m_currentStage->get()->GetOutPut();
-		//m_currentStage = m_gameStages.erase(m_currentStage);
 		++m_currentStage;
 		if (m_currentStage != m_gameStages.end())
-		{
-			m_currentStage->get()->SetInutPut(sessiondata);
+		{			
 			m_currentStage->get()->StartStage();
 
 		}else{

@@ -1,5 +1,4 @@
 #pragma once
-#include <raylib.h>
 #include "Actor.h"
 #include "Delegate.h"
 namespace cart

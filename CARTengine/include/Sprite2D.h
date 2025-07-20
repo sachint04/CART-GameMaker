@@ -1,6 +1,5 @@
 #pragma once
 #include "UIElement.h"
-#include <raylib.h>
 namespace cart {
 
 	class Sprite2D : public UIElement

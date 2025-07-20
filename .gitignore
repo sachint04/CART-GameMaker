@@ -401,3 +401,5 @@ FodyWeavers.xsd
 
 # depeneeneies
 build/
+assets/userdata/
+CARTgame/assets/userdata/

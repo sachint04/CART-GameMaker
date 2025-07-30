@@ -1,16 +1,14 @@
 #include <memory>
-#include "UIButton.h"
-#include  "AssetManager.h"
+#include "ImageButton.h"
+#include "AssetManager.h"
 #include "Core.h"
 #include "component/InputController.h"
 #include "World.h"
 namespace cart {
 	
 #pragma region  INIT
-	
-	
-	UIButton::UIButton(World* _owningworld, const std::string& _id, bool isExcludedFromParentAutoControl)
-		:UIElement{ _owningworld, _id, isExcludedFromParentAutoControl },
+	ImageButton::ImageButton(World* _owningworld, const std::string& _id, bool isExcludedFromParentAutoControl)
+		:Sprite2D{ _owningworld, _id, isExcludedFromParentAutoControl },
 		m_touch{ false },
 		tCount(0),
 		m_margin(0),
@@ -41,10 +39,9 @@ namespace cart {
 	{
 	}
 
-	void UIButton::Init()
+	void ImageButton::Init()
 	{
-
-		UIElement::Init();
+		Sprite2D::Init();
 		m_owningworld->GetInputController()->RegisterUI(GetWeakRef());
 
 		if (m_text.size() > 0) {
@@ -55,9 +52,9 @@ namespace cart {
 		
 	}
 
-	void UIButton::SetScale(float _scale)
+	void ImageButton::SetScale(float _scale)
 	{
-		UIElement::SetScale(_scale);
+		Sprite2D::SetScale(_scale);
 		UpdateTextLocation();
 	}
 
@@ -67,12 +64,12 @@ namespace cart {
 
 #pragma region LOOP
 	
-	void UIButton::Update(float _deltaTime)
+	void ImageButton::Update(float _deltaTime)
 	{
 
 		if (!m_active || !m_visible || m_pendingUpdate)return;
 
-		UIElement::Update(_deltaTime);
+		Sprite2D::Update(_deltaTime);
 #if defined(PLATFORM_ANDROID)
 		tCount = GetTouchPointCount();
 		/*
@@ -155,10 +152,10 @@ namespace cart {
 #endif
 	}
 
-	void UIButton::Draw(float  _deltaTime)
+	void ImageButton::Draw(float  _deltaTime)
 	{
 		if (!m_visible)return;
-		UIElement::Draw(_deltaTime);
+		Sprite2D::Draw(_deltaTime);
 		if (m_IsSelected == true) {
 			DrawRectangle(m_calculatedLocation.x - 10.f, m_calculatedLocation.y - 10.f, m_width + 20.f, m_height + 20.f, m_color);
 		}
@@ -195,14 +192,14 @@ namespace cart {
 
 
 
-	void UIButton::SetSelected(bool _flag)
+	void ImageButton::SetSelected(bool _flag)
 	{
 		m_IsSelected = _flag;
 	}
 
-	void UIButton::SetActive(bool _flag)
+	void ImageButton::SetActive(bool _flag)
 	{
-		UIElement::SetActive(_flag);		
+		Sprite2D::SetActive(_flag);		
 		if (_flag == false) {
 			m_IsSelected = false;
 		}
@@ -214,9 +211,9 @@ namespace cart {
 	
 #pragma region Helpers
 	
-	void UIButton::SetButtonProperties(Btn_Properties _prop)
+	void ImageButton::SetButtonProperties(Btn_Properties _prop)
 	{
-		UIElement::SetUIProperties(_prop);
+		Sprite2D::SetUIProperties(_prop);
 		SetColor(_prop.btncol);
 		m_ButtonDefaultColor = _prop.btncol;
 		m_ButtonHoverColor = _prop.overcol;
@@ -225,21 +222,25 @@ namespace cart {
 		m_defaulttexturecolor = _prop.textureColor;
 		m_borderwidth = _prop.borderwidth;
 		m_borderColor = _prop.bordercol;
+		m_texturesourcedefault = m_texturesource;
+		m_texturesourceover = _prop.texturesourceover;
+		m_texturesourcedown = _prop.texturesourcedown;
+		m_texturesourcedisable = _prop.texturesourcedisable;
 
 	}
-	void UIButton::SetButtonProperties(Btn_Text_Properties _prop)
+	void ImageButton::SetButtonProperties(Btn_Text_Properties _prop)
 	{
 		SetTextProperties(_prop);	
 		m_IsSelectable = _prop.isSelectable;
 
 	}
 
-	void UIButton::SetUIProperties(UI_Properties _prop)
+	void ImageButton::SetUIProperties(UI_Properties _prop)
 	{
-		UIElement::SetUIProperties(_prop);
+		Sprite2D::SetUIProperties(_prop);
 	}
 
-	void UIButton::SetTextProperties(Btn_Text_Properties _prop)
+	void ImageButton::SetTextProperties(Btn_Text_Properties _prop)
 	{
 		SetUIProperties(_prop);
 		SetButtonProperties((Btn_Properties)_prop);
@@ -256,25 +257,25 @@ namespace cart {
 
 	}
 
-	void UIButton::UpdateLocation()
+	void ImageButton::UpdateLocation()
 	{
-		UIElement::UpdateLocation();
+		Sprite2D::UpdateLocation();
 
 	}
 
-	void UIButton::SetLocation(Vector2 _location)
+	void ImageButton::SetLocation(Vector2 _location)
 	{
-		UIElement::SetLocation(_location);
+		Sprite2D::SetLocation(_location);
 		UpdateTextLocation();
 	}
 
-	void UIButton::SetColor(Color _color)
+	void ImageButton::SetColor(Color _color)
 	{
 		m_ButtonDefaultColor = _color;
 		m_color = _color;
 	}
 
-	void UIButton::UpdateTextLocation() {
+	void ImageButton::UpdateTextLocation() {
 		if (m_text.size() == 0)return;
 		if (m_textsize.x < m_width) {
 			float margin_x = ((m_width *  m_scale) - (m_textsize.x * m_scale))* 0.5f;
@@ -287,13 +288,13 @@ namespace cart {
 		}
 	}
 
-	void UIButton::SetFontName(const std::string &strfnt)
+	void ImageButton::SetFontName(const std::string &strfnt)
 	{
 		m_fontstr = strfnt;
 	}
 
 
-	bool UIButton::TestMouseOver(Vector2 _point)
+	bool ImageButton::TestMouseOver(Vector2 _point)
 	{
 		return CheckCollisionPointRec(_point, GetBounds());
 	}
@@ -304,56 +305,81 @@ namespace cart {
 #pragma endregion
 
 #pragma region  UI EVENTS
-	void UIButton::ButtonUp(Vector2 pos)
+	void ImageButton::ButtonUp(Vector2 pos)
 	{
 		m_IsButtonDown = false;
-		m_color = m_ButtonDefaultColor;		
+		if (m_strTexture.size() > 0)
+			m_textureColor = m_defaulttexturecolor;
+		else
+			m_color = m_ButtonDefaultColor;
+		
 		onButtonUp.Broadcast(GetWeakRef(),  pos);
-		//LOG("UIBUTTON  RELEASE!!");
+		//LOG("ImageButton  RELEASE!!");
 	}
 	
-	void UIButton::ButtonDown(Vector2 pos)
+	void ImageButton::ButtonDown(Vector2 pos)
 	{
-		m_IsButtonDown = true;		
-		m_color = m_ButtonDownColor;
+		m_IsButtonDown = true;
+		if (m_strTexture.size() > 0)
+			m_textureColor = m_ButtonDownColor;
+		else
+			m_color = m_ButtonDownColor;
+		
+
+		if (m_texturetype == TEXTURE_PART) {
+			m_texturesource = m_texturesourcedown;
+		}
 		
 		if (m_IsSelectable == true) {
 			m_IsSelected = true;
 		}
 		onButtonDown.Broadcast(GetWeakRef(), pos);
-		//LOG("UIBUTTON  DOWN!!");
+		//LOG("ImageButton  DOWN!!");
 	}
 
 
-	void UIButton::ButtonDrag(Vector2 pos) {
+	void ImageButton::ButtonDrag(Vector2 pos) {
 		//LOG("button dragging");
 		onButtonDrag.Broadcast(GetWeakRef(), pos);
 	}
 
 
-	void UIButton::MouseHovered()
+	void ImageButton::MouseHovered()
 	{
-		m_color = m_ButtonHoverColor;
+		if (m_strTexture.size() > 0)
+			m_textureColor = m_ButtonHoverColor;
+		else
+			m_color = m_ButtonHoverColor;
 
 		if(m_text.size() > 0)
 			m_textcolor = m_texthovercolor;
 
-		
+		if (m_texturetype == TEXTURE_PART) {
+			m_texturesource = m_texturesourceover;
+		}
 		m_IsMouseOver = true;
 		SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
 		onButtonHover.Broadcast(GetWeakRef() );
-	//	LOG("UIBUTTON  HOVER!!");
+	//	LOG("ImageButton  HOVER!!");
 	}
-	void UIButton::MouseOut()
+	void ImageButton::MouseOut()
 	{
 		if(m_IsMouseOver == true){
-			m_color = m_ButtonDefaultColor;
+			if (m_strTexture.size() > 0)
+				m_textureColor = m_defaulttexturecolor;
+			else
+				m_color = m_ButtonDefaultColor;
+
+
+			if (m_texturetype == TEXTURE_PART) {
+				m_texturesource = m_texturesourcedefault;
+			}
 			if (m_text.size() > 0)
 				m_textcolor = m_defaulttextcolor;
 
 			m_IsMouseOver = false;
 			SetMouseCursor(0);
-		//	LOG("UIBUTTON  OUT!!");
+		//	LOG("ImageButton  OUT!!");
 			m_IsButtonDown = false;
 			SetMouseCursor(MOUSE_CURSOR_ARROW);
 			onButtonOut.Broadcast(GetWeakRef() );
@@ -365,17 +391,17 @@ namespace cart {
 
 #pragma region BUTTON STATE
 	
-	Rectangle UIButton::GetBounds() 
+	Rectangle ImageButton::GetBounds() 
 	{	
 		return { m_calculatedLocation.x, m_calculatedLocation.y, (float)m_width, (float)m_height };
 	}
 
 #pragma endregion
 
-UIButton::~UIButton()
+ImageButton::~ImageButton()
 	{
 	SetMouseCursor(0);
 	m_font.reset();
-		//LOG("%s UIButton Deleted ", m_id.c_str());
+		//LOG("%s ImageButton Deleted ", m_id.c_str());
 	}
 }

@@ -3,11 +3,11 @@
 #include "Sprite2D.h"
 
 namespace cart {
-
-	class UIButton : public UIElement{
-	public:
-    
-        UIButton(World* _owningworld, const std::string& _id, bool isExcludedFromParentAutoControl = false);
+ 
+	class ImageButton : public Sprite2D
+    {
+	public:    
+        ImageButton(World* _owningworld, const std::string& _id, bool isExcludedFromParentAutoControl = false);
         void SetTextProperties(Btn_Text_Properties _prop);
 
         bool TestMouseOver(Vector2 _point);
@@ -40,7 +40,7 @@ namespace cart {
         void SetColor(Color _color)override;
         void UpdateTextLocation();
         void SetFontName(const std::string& strfnt);
-		~UIButton();
+		~ImageButton();
         
     protected:
         bool m_touch;

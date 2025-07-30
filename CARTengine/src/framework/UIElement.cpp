@@ -66,12 +66,8 @@ namespace cart {
 
 		m_pivot = _prop.pivot;
 		m_defaultSize = _prop.size;
-		m_width = _prop.size.x,
-			m_height = _prop.size.y;
-	
+		SetSize(_prop.size);
 		m_shapeType = _prop.shapetype;
-
-		UpdateLocation();
 	}
 #pragma endregion
 

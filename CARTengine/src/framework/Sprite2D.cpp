@@ -8,18 +8,17 @@ namespace cart {
 	Sprite2D::Sprite2D(World* _owningworld, const std::string& _id, bool isExcludedFromParentAutoControl)
 		:UIElement{_owningworld, _id, isExcludedFromParentAutoControl },
 		m_strTexture{},
-		m_bAspectRatio{ false },
-		m_textureScaleX{ 1.f },
-		m_textureScaleY{ 1.f },
+		m_bAspectRatio{ false },	
 		m_textureColor{ WHITE },
 		m_bMasked{ false },
 		m_screenMask{},
 		m_texturetype{ TEXTURE_FULL },
 		m_texturesource{},
 		m_textureStatus{},
-		m_textLoc{},
-		m_ImgCopy{},
-		m_textureLocation{}
+		m_textureLocation{},
+		m_ImgCopy{NULL, 0,0},
+		m_textureSize{},
+		m_bIsScaling{false}
 	{
 	}
 
@@ -36,30 +35,41 @@ namespace cart {
 	{
 		if (!m_visible || m_pendingUpdate)return;
 		UIElement::Update(_deltaTime);
+
 		if (m_strTexture.size() > 0) {
 			m_textureLocation = m_calculatedLocation;
+		
+			m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
+				
 			if (m_bAspectRatio)
 			{
 				UpdateAspectRatio();
 			}
-			if (m_bMasked) {
-				UpdateMask();
+			else {
+				
+				ResizeImage();
 			}
 		}
-	}
+		if (m_bMasked && !m_bIsScaling) {
+			UpdateMask();
+		}
+		m_bIsScaling = false;
+ 	}
 	void Sprite2D::Draw(float _deltaTime)
 	{
 		if (!m_visible || m_pendingUpdate)return;
 		UIElement::Draw(_deltaTime);
 		if (m_strTexture.size() > 0) {
-			m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
+			
+			
 			if (m_texturetype == TEXTURE_PART) {// Render PART OF TEXTURE			
 				DrawTextureRec(*m_texture2d, m_texturesource, m_textureLocation, m_textureColor);
 			}
 			else {
+				
 				DrawTextureEx(*m_texture2d, m_textureLocation, m_rotation, 1.f, m_textureColor);
 			}
-		}		
+		}
 	}
 
 	void Sprite2D::LateUpdate(float _deltaTime)
@@ -67,11 +77,11 @@ namespace cart {
 		if (!m_visible || m_pendingUpdate)return;
 		UIElement::LateUpdate(_deltaTime);
 		/*if ((m_ImgCopy.data != NULL)) {
-			UnloadImage(m_ImgCopy);		
+			UnloadImage(m_ImgCopy);
 		};*/
 	}
-	
-	
+
+
 #pragma endregion
 
 #pragma region Helper
@@ -92,6 +102,12 @@ namespace cart {
 
 		m_texture2d = _tex;
 	}
+	void Sprite2D::ReEvaluteTexture()
+	{
+		
+		//ImageResize(imageref, m_textureSize.x, m_textureSize.y);
+	}
+
 	void Sprite2D::SetTexture(std::string& _texture)
 	{
 		if (m_texture2d) {
@@ -102,9 +118,20 @@ namespace cart {
 
 	}
 	void Sprite2D::SetSize(Vector2 _size) {
-		m_textureScaleX = _size.x / m_defaultSize.x;
-		m_textureScaleY = _size.y / m_defaultSize.y;
 		UIElement::SetSize(_size);
+		AssetManager::Get().ResizeImage(m_strTexture, _size.x, _size.y);
+		m_textureSize = _size;
+		m_bIsScaling = true;
+	}
+	
+	void Sprite2D::SetLocation(Vector2 _location)
+	{
+		UIElement::SetLocation(_location);
+	}
+	void Sprite2D::UpdateLocation()
+	{
+		UIElement::UpdateLocation();
+
 	}
 	void Sprite2D::SetUIProperties(UI_Properties _prop)
 	{
@@ -117,55 +144,80 @@ namespace cart {
 	}
 	Rectangle Sprite2D::GetTextureBounds() {
 		//	return{ m_location.x - m_pivot.x, m_location.y - m_pivot.y, m_width * m_scale,m_height * m_scale };
-		return{ m_textLoc.x, m_textLoc.y, m_texture2d->width * m_textureScaleX,  m_texture2d->height * m_textureScaleX };
+		return{ m_textureLocation.x, m_textureLocation.y, m_textureSize.x,  m_textureSize.y };
 	}
-	void Sprite2D::UpdateMask(){
-		m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
-		float tmpscale = std::min((float)m_width / (float)m_texture2d.get()->width, (float)m_height / (float)m_texture2d.get()->height);
+	void Sprite2D::UpdateMask() {
 
 		Image* imageref = AssetManager::Get().GetImage(m_strTexture);
 		m_ImgCopy = ImageCopy(*imageref);
-		if ((m_ImgCopy.data == NULL) || (m_ImgCopy.width == 0) || (m_ImgCopy.height == 0)) { LOG("ERROR! MASKED ELEMENT REQUIRED BASE IMAGE POINTER!"); return; };
-
-		Color* imagepixel = LoadImageColors(m_ImgCopy);
-
+		ImageResize(&m_ImgCopy, m_textureSize.x, m_textureSize.y);
 		ImageFormat(&m_ImgCopy, 7);
-		ImageResize(&m_ImgCopy, m_ImgCopy.width * tmpscale, m_ImgCopy.height * tmpscale);
+		
+		if ((m_ImgCopy.data == NULL) || (m_ImgCopy.width == 0) || (m_ImgCopy.height == 0)) {
+			
+			LOG("ERROR! MASKED ELEMENT REQUIRED BASE IMAGE POINTER!"); return; 
+		
+		};
 
 
-		for (int i = 0, k = 3; i < m_ImgCopy.width * m_ImgCopy.height; i++, k += 4)
-		{
-			//if (i == image.width * image.height - 1) {
-			int y = m_textLoc.y + ceil(i / m_ImgCopy.width);
-			int x = m_textLoc.x + (i % m_ImgCopy.width);
+		if (m_screenMask.width != GetScreenWidth() || m_screenMask.height != GetScreenHeight())
+			LOG("ERROR! Screen Mask size does not match with screen size.");
+		
+		if(imagepixel)delete imagepixel;
 
-			if (x >= 0 && x < GetScreenWidth() && y >= 0 && y < GetScreenHeight() - 1)
-			{
+		if (maskpixels)delete maskpixels;
 
-				Color maskcol = GetImageColor(m_screenMask, x, y);
-				imagepixel[i].a = maskcol.a;
-				//	imagepixel[i].a = ((unsigned char*)m_screenMask.data)[(m_screenMask.width * y + x) * 4];
-			}
+		imagepixel = LoadImageColors(m_ImgCopy);
+		maskpixels = LoadImageColors(m_screenMask);
+
+		Rectangle rect = GetBounds();
+		for (int i = 0; i < m_ImgCopy.width * m_ImgCopy.height; i++) {
+			int y = ceil(i / m_ImgCopy.width);
+			int x = (i % (int)m_ImgCopy.width) + 1;
+			int screenx = m_textureLocation.x + x;
+			int screeny = m_textureLocation.y + y;
+			if (screenx < 0 || screenx >= GetScreenWidth() || screeny < 0 || screeny >= GetScreenHeight())continue;
+
+			int index = (screeny * GetScreenWidth()) + screenx;
+			Color maskcol = maskpixels[index - 1];
+			imagepixel[i].a = maskcol.a;
 		}
-		UpdateTexture(*m_texture2d, imagepixel);
-		delete imagepixel;
-		UnloadImage(m_ImgCopy);
+		
+		AssetManager::Get().UpdateTextureFromImage(m_strTexture, {0,0, (float)m_ImgCopy.width, (float)m_ImgCopy.height }, imagepixel);
+		
+		
+		UnloadImage(m_ImgCopy);		
+		
+	}
+	void Sprite2D::ResizeImage() {
+		m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
+
+		float tmpscalex = (float)m_width / (float)m_texture2d.get()->width;
+		float tmpscaley = (float)m_height / (float)m_texture2d.get()->height;
+
+		if (tmpscalex == 1 && tmpscaley == 1)return;
+
+		float width = (m_texture2d.get()->width * tmpscalex);
+		float height = (m_texture2d.get()->height * tmpscaley);
+		AssetManager::Get().ResizeImage(m_strTexture, width, height);
+		m_textureSize = { width, height };
 	}
 	void Sprite2D::UpdateAspectRatio()
 	{
 		m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
 		float tmpscale = std::min((float)m_width / (float)m_texture2d.get()->width, (float)m_height / (float)m_texture2d.get()->height);
-		m_textureScaleX = tmpscale;
-		m_textureScaleY = tmpscale;		
 		
-		float width = (m_texture2d.get()->width * m_textureScaleX);
-		float height = (m_texture2d.get()->height * m_textureScaleY);
+		if (tmpscale == 1)return;
 
-		
-		m_texture2d.get()->width = width;
-		m_texture2d.get()->height = height;
-		m_textureLocation = { ((m_location.x + m_width / 2.f) - (m_texture2d.get()->width * tmpscale) / 2.f) - m_pivot.x,
-							((m_location.y + m_height / 2.f) - (m_texture2d.get()->height * tmpscale) / 2.f) - m_pivot.y };
+		float width = (m_texture2d.get()->width * tmpscale);
+		float height = (m_texture2d.get()->height * tmpscale);
+		AssetManager::Get().ResizeImage(m_strTexture, width, height);
+
+		m_textureSize = { width, height };
+		//m_texture2d.get()->width = width;
+		//m_texture2d.get()->height = height;
+		m_textureLocation = { ((m_location.x + m_width / 2.f) - (width  / 2.f)) - m_pivot.x,
+							((m_location.y + m_height / 2.f) - (height / 2.f)) - m_pivot.y };
 
 	}
 #pragma endregion

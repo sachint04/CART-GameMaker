@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "World.h"
 #include "UIButton.h"
+#include "ImageButton.h"
 #include "AssetManager.h"
 namespace cart {
 
@@ -52,7 +53,7 @@ namespace cart {
 		{
 			counter++;
 
-			weak<UIButton> item = m_owningworld->SpawnActor<UIButton>(iter->id);		
+			weak<ImageButton> item = m_owningworld->SpawnActor<ImageButton>(iter->id);
 			weak<UIElement> icon = m_owningworld->SpawnActor<UIElement>(iter->id + std::string{"icon"});
 			// Set Item properties
 			Vector2 tsize = MeasureTextEx(*fnt, iter->label.c_str(), fontsize, 2.f);

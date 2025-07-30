@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include <stdexcept>
+
  namespace cart {
 
 #pragma region CONSTRUCTOR & INIT
@@ -54,11 +55,12 @@
         auto found = constainer.find(path);
         if (found != constainer.end())
         {
-        //   LOG("|>=-=ASSETMANAGER =-=<| %s Texture Found in Memory!", path.c_str());       
+         //  LOG("|>=-=ASSETMANAGER =-=<| %s Texture Found in Memory! %s ", path.c_str());       
             return found->second.texture;
         }
        
         Image* image = new Image{ LoadImage(path.c_str()) };     // Loaded in CPU memory (RAM)
+        ImageFormat(image, 7);
         Texture2D texture = LoadTextureFromImage(*image);         // Image converted to texture, GPU memory (VRAM)       
         if (status == TEXTURE_DATA_STATUS::LOCKED) {
             auto imgfound = m_imageLoadedMap.find(path);
@@ -74,7 +76,7 @@
         try {           
             constainer.insert({ path,  { std::make_shared<Texture2D>(texture) , status } });
            // shared<Texture2D> t = constainer.find(path)->second;
-         //   LOG("|>=-=ASSETMANAGER =-=<| Creating  TextureMap  %s User Count  %lu ", path.c_str(), constainer.find(path)->second.use_count());
+            LOG("ASSETMANAGER | LoadTexture() found %s ", path.c_str());
             return constainer.find(path)->second.texture;
 
         }
@@ -102,24 +104,57 @@
         return shared<Texture2D >{nullptr};
     }
 
-    bool AssetManager::UpdateTextureFromImage(const std::string &path, Image img)
-    {
+    bool AssetManager::UpdateTextureFromImage(const std::string& path, Rectangle rect, Color* pixels)
+    {           
         auto found = m_textureLoadedMap.find(path);
         if (found != m_textureLoadedMap.end())
-        {
-            Color* pixels = LoadImageColors(img);
-            UpdateTexture(*found->second.texture, pixels);
-            delete pixels;
-            return true;
+        {                   
+            UpdateTextureRec(*found->second.texture, rect, pixels);
+           return true;
         }
         return false;
     }
+
+    bool AssetManager::ResizeImage(const std::string& path, int width, int height)
+    {
+       
+        auto foundimg = m_imageLoadedMap.find(path);
+        if (foundimg != m_imageLoadedMap.end())
+        {
+            Image copy = ImageCopy(*foundimg->second);
+
+            ImageResize(&copy, width, height);
+            
+            if ((copy.data == NULL) || (copy.width == 0) || (copy.height == 0)) {
+
+                LOG("ERROR! MASKED ELEMENT REQUIRED BASE IMAGE POINTER!"); return false;
+
+            };
+            auto found = m_textureLoadedMap.find(path);
+            if (found != m_textureLoadedMap.end())
+            {
+                UnloadTexture(*found->second.texture);
+                found->second.texture.reset();
+                Texture2D texture = LoadTextureFromImage(copy);
+                found->second.texture = std::make_shared<Texture2D>(texture);
+            }
+            UnloadImage(copy);
+            return true;
+        }
+
+        return false;
+    }
    
-    Image* AssetManager::GetImage(std::string& path) {
+    Image* AssetManager::GetImage(const std::string& path) {
         auto found = m_imageLoadedMap.find(path);
-        if (found != m_imageLoadedMap.end()) {            
-            return found->second;
+        if (found != m_imageLoadedMap.end()) {               
+            return found->second;// Image found in list
         }        
+        shared<Texture2D> tex = LoadTexture(path, m_textureLoadedMap, TEXTURE_DATA_STATUS::LOCKED);// try to load fresh image
+        if (tex) {
+            tex.reset();
+            return GetImage(path);
+        }
         return nullptr;
     }
 

@@ -18,8 +18,9 @@ namespace cart {
         shared<Texture2D> LoadTextureAsset(const std::string &path, TEXTURE_DATA_STATUS status = TEXTURE_DATA_STATUS::UNLOCKED);
         shared<Font> LoadFontAsset(const std::string& path, int fontSize);
         shared<Texture2D> AddTexture( Image image, std::string& path, TEXTURE_DATA_STATUS status = TEXTURE_DATA_STATUS::UNLOCKED);
-        bool UpdateTextureFromImage(const std::string& path, Image img);
-        Image* GetImage(std::string& path);
+        bool UpdateTextureFromImage(const std::string& path, Rectangle rect, Color* pixels);
+        bool ResizeImage(const std::string& path, int width, int height);
+        Image* GetImage(const std::string& path);
         bool UnloadTextureAsset(const std::string& path);        
         bool UnloadFontAsset(const std::string& path , int fontsize);
         void ClearTextureMap();
@@ -34,7 +35,7 @@ namespace cart {
         static unique<AssetManager> assetManager;
         Dictionary<std::string, TextureData> m_textureLoadedMap;
         Dictionary<std::string, Image*> m_imageLoadedMap;
-        shared<Texture2D> LoadTexture(const std::string& path, Dictionary<std::string, TextureData>& constainer, TEXTURE_DATA_STATUS status);
+        shared<Texture2D> LoadTexture(const std::string& path, Dictionary<std::string, TextureData>& constainer, TEXTURE_DATA_STATUS status = TEXTURE_DATA_STATUS::UNLOCKED);
         List<Font> fonts= { };
         
         Dictionary<std::string, shared<Font>> m_fontLoadedMap;

@@ -118,8 +118,7 @@ namespace cart {
 
 	}
 	void Sprite2D::SetSize(Vector2 _size) {
-		UIElement::SetSize(_size);
-		AssetManager::Get().ResizeImage(m_strTexture, _size.x, _size.y);
+		UIElement::SetSize(_size);	
 		m_textureSize = _size;
 		m_bIsScaling = true;
 	}
@@ -197,23 +196,27 @@ namespace cart {
 
 		if (tmpscalex == 1 && tmpscaley == 1)return;
 
-		float width = (m_texture2d.get()->width * tmpscalex);
-		float height = (m_texture2d.get()->height * tmpscaley);
+		int width = (m_texture2d.get()->width * tmpscalex);
+		int height = (m_texture2d.get()->height * tmpscaley);
+
 		AssetManager::Get().ResizeImage(m_strTexture, width, height);
-		m_textureSize = { width, height };
+	
+		m_textureSize = { (float)width, (float)height };
 	}
 	void Sprite2D::UpdateAspectRatio()
 	{
 		m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
-		float tmpscale = std::min((float)m_width / (float)m_texture2d.get()->width, (float)m_height / (float)m_texture2d.get()->height);
+		float tmpscale = std::min(m_textureSize.x / m_texture2d.get()->width, m_textureSize.y / m_texture2d.get()->height);
 		
-		if (tmpscale == 1)return;
+		if (tmpscale == 1.f)return;
 
-		float width = (m_texture2d.get()->width * tmpscale);
-		float height = (m_texture2d.get()->height * tmpscale);
-		AssetManager::Get().ResizeImage(m_strTexture, width, height);
+		int width = (m_texture2d.get()->width * tmpscale);
+		int height = (m_texture2d.get()->height * tmpscale);
 
-		m_textureSize = { width, height };
+
+	AssetManager::Get().ResizeImage(m_strTexture, width, height);
+
+		m_textureSize = { (float)width, (float)height };
 		//m_texture2d.get()->width = width;
 		//m_texture2d.get()->height = height;
 		m_textureLocation = { ((m_location.x + m_width / 2.f) - (width  / 2.f)) - m_pivot.x,

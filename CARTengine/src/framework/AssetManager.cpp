@@ -60,30 +60,33 @@
         }
        
         Image* image = new Image{ LoadImage(path.c_str()) };     // Loaded in CPU memory (RAM)
+        if (image->data == NULL || image->width == 0 || image->height == 0) {
+            LOG("ERROR!! cannot recognize file data , might be corrupted. Try another Image ");
+            return shared<Texture2D> {nullptr};
+        }
         ImageFormat(image, 7);
         Texture2D texture = LoadTextureFromImage(*image);         // Image converted to texture, GPU memory (VRAM)       
-        if (status == TEXTURE_DATA_STATUS::LOCKED) {
-            auto imgfound = m_imageLoadedMap.find(path);
-            if (imgfound == m_imageLoadedMap.end()) {
-                m_imageLoadedMap.insert( {path, image} );
-            }
-        }
-        else {
-            UnloadImage(*image);// Loaded in CPU memory (RAM)
-        }
-        
-     //   LOG("IO %s Texture Loaded!", path.c_str());
         try {           
             constainer.insert({ path,  { std::make_shared<Texture2D>(texture) , status } });
-           // shared<Texture2D> t = constainer.find(path)->second;
             LOG("ASSETMANAGER | LoadTexture() found %s ", path.c_str());
-            return constainer.find(path)->second.texture;
-
         }
         catch(const std::runtime_error& e){
             LOG("ERROR!! cannot fine Image with path %s", path.c_str());
         }
-        return shared<Texture2D >{nullptr};
+        if (status == TEXTURE_DATA_STATUS::LOCKED) {
+            auto imgfound = m_imageLoadedMap.find(path);
+            if (imgfound == m_imageLoadedMap.end()) {
+                m_imageLoadedMap.insert({ path, image });
+            }
+            else {
+                UnloadImage(*image);// Unload from CPU memory (RAM)
+            }
+        }
+        else {
+            UnloadImage(*image);// Unload from CPU memory (RAM)
+         }
+       return constainer.find(path)->second.texture;
+
     }
 
     shared<Texture2D> AssetManager::AddTexture( Image image, std::string& path, TEXTURE_DATA_STATUS status)
@@ -162,27 +165,29 @@
     {
         auto found = m_textureLoadedMap.find(path);
         if (found == m_textureLoadedMap.end() || found->second.status == TEXTURE_DATA_STATUS::LOCKED) {
-            LOG("AssetManage | UnloadTextureAsset() ERROR! Failed to unloded Texture %s , \n Asset Not found or is LOCKED.", path.c_str());
+            LOG("AssetManage | UnloadTextureAsset() ERROR! Failed to unloded Texture  %s , \n Asset Not found or is LOCKED.", path.c_str());
             return false;
         }
 
         if (found != m_textureLoadedMap.end())
         {   
             LOG("AssetManager UnloadTextureAsset() Texture  %s ", found->first.c_str());
+
+            auto foundimg = m_imageLoadedMap.find(path);
+            if (foundimg != m_imageLoadedMap.end()) {
+                LOG("AssetManager UnloadTextureAsset() Image  %s ", foundimg->first.c_str());
+                UnloadImage(*foundimg->second);
+                delete foundimg->second;
+                m_imageLoadedMap.erase(foundimg);
+            }
+
             UnloadTexture(*found->second.texture);
             found->second.texture.reset();
             m_textureLoadedMap.erase(found);
-        }
-       auto foundimg = m_imageLoadedMap.find(path);
-        
-        if (foundimg  != m_imageLoadedMap.end()) {
-            LOG("AssetManager UnloadTextureAsset() Image  %s ", foundimg->first.c_str());
-            UnloadImage(*foundimg->second);
-            delete foundimg->second;
-            m_imageLoadedMap.erase(foundimg);
-        }
+      
             return true;
- 
+        }
+        return false;
     }
 #pragma endregion
    
@@ -259,19 +264,17 @@
         {
        //         LOG("TextureMap  %s User Count  %lu ", iter->first.c_str(), iter->second.use_count());
             if (iter->second.texture.use_count() == 1 && iter->second.status == TEXTURE_DATA_STATUS::UNLOCKED) {
+                auto foundimg = m_imageLoadedMap.find(iter->first);
+                if (foundimg != m_imageLoadedMap.end()) {
+                    UnloadImage(*foundimg->second);
+                  foundimg->second = nullptr;
+                    m_imageLoadedMap.erase(foundimg);  
+                }
 
                 LOG("AssetManager CleanCycle()  Texture  %s", iter->first.c_str());
                 UnloadTexture(*iter->second.texture);
                 iter->second.texture.reset();
-                
                 iter = m_textureLoadedMap.erase(iter);
-
-                auto foundimg = m_imageLoadedMap.find(iter->first);
-                if (foundimg != m_imageLoadedMap.end()) {
-                    delete foundimg->second;
-                    m_imageLoadedMap.erase(foundimg);
-                    
-                }
             }
             else {
                 ++iter;

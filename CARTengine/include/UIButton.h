@@ -41,7 +41,7 @@ namespace cart {
         void UpdateTextLocation();
         void SetFontName(const std::string& strfnt);
 		~UIButton();
-        
+        void Destroy()override;
     protected:
         bool m_touch;
         int tCount;

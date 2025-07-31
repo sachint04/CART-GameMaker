@@ -1,6 +1,6 @@
 #include "Sprite2D.h"
+#include <memory>
 #include "AssetManager.h"
-
 namespace cart {
 #pragma region Constructor & Init
 
@@ -36,11 +36,13 @@ namespace cart {
 		if (!m_visible || m_pendingUpdate)return;
 		UIElement::Update(_deltaTime);
 
-		if (m_strTexture.size() > 0) {
-			m_textureLocation = m_calculatedLocation;
+		if (m_strTexture.size() > 0 ) {
+			//m_textureLocation = m_calculatedLocation;
 		
 			m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
-				
+			
+			if (m_texture2d == nullptr) return;
+
 			if (m_bAspectRatio)
 			{
 				UpdateAspectRatio();
@@ -57,11 +59,17 @@ namespace cart {
  	}
 	void Sprite2D::Draw(float _deltaTime)
 	{
+		
+
 		if (!m_visible || m_pendingUpdate)return;
 		UIElement::Draw(_deltaTime);
+
 		if (m_strTexture.size() > 0) {
 			
-			
+			m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
+
+			if (m_texture2d == nullptr) return;
+
 			if (m_texturetype == TEXTURE_PART) {// Render PART OF TEXTURE			
 				DrawTextureRec(*m_texture2d, m_texturesource, m_textureLocation, m_textureColor);
 			}
@@ -95,7 +103,7 @@ namespace cart {
 	}
 	void Sprite2D::SetTexture(shared<Texture2D> _tex)
 	{
-		if (m_texture2d) {
+		if (m_texture2d != nullptr) {
 			UnloadTexture(*m_texture2d);
 			m_texture2d.reset();
 		}
@@ -112,7 +120,7 @@ namespace cart {
 	{
 		if (m_texture2d) {
 			AssetManager::Get().UnloadTextureAsset(m_strTexture);
-			m_texture2d = NULL;
+			m_texture2d = nullptr;
 		}
 		m_strTexture = _texture;
 
@@ -194,33 +202,40 @@ namespace cart {
 		float tmpscalex = (float)m_width / (float)m_texture2d.get()->width;
 		float tmpscaley = (float)m_height / (float)m_texture2d.get()->height;
 
+		m_textureLocation = m_calculatedLocation;
+
 		if (tmpscalex == 1 && tmpscaley == 1)return;
 
 		int width = (m_texture2d.get()->width * tmpscalex);
 		int height = (m_texture2d.get()->height * tmpscaley);
 
-		AssetManager::Get().ResizeImage(m_strTexture, width, height);
-	
 		m_textureSize = { (float)width, (float)height };
+		if (m_textureStatus == LOCKED) {
+			AssetManager::Get().ResizeImage(m_strTexture, width, height);
+		}
+		else {
+			m_texture2d.get()->width = width;
+			m_texture2d.get()->height = height;
+		}
+	
 	}
 	void Sprite2D::UpdateAspectRatio()
 	{
 		m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
-		float tmpscale = std::min(m_textureSize.x / m_texture2d.get()->width, m_textureSize.y / m_texture2d.get()->height);
-		
-		if (tmpscale == 1.f)return;
+		float tmpscale = std::min(m_width / m_texture2d.get()->width, m_height / m_texture2d.get()->height);
 
 		int width = (m_texture2d.get()->width * tmpscale);
 		int height = (m_texture2d.get()->height * tmpscale);
+		
+		if (tmpscale != 1.f) {
+			AssetManager::Get().ResizeImage(m_strTexture, width, height);
+		}
 
 
-	AssetManager::Get().ResizeImage(m_strTexture, width, height);
 
-		m_textureSize = { (float)width, (float)height };
-		//m_texture2d.get()->width = width;
-		//m_texture2d.get()->height = height;
-		m_textureLocation = { ((m_location.x + m_width / 2.f) - (width  / 2.f)) - m_pivot.x,
-							((m_location.y + m_height / 2.f) - (height / 2.f)) - m_pivot.y };
+		m_textureSize = { (float)width, (float)height };	
+		m_textureLocation = { (GetBounds().x + GetBounds().width / 2.f) - (width / 2.f),
+							(GetBounds().y + GetBounds().height  / 2.f) - (height / 2.f)};
 
 	}
 #pragma endregion
@@ -229,7 +244,8 @@ namespace cart {
 #pragma region CLEAN UP
 
 	void Sprite2D::Destroy()
-	{
+	{		
+		m_texture2d.reset();
 		UIElement::Destroy();
 	}
 

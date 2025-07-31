@@ -372,10 +372,34 @@ namespace cart {
 
 #pragma endregion
 
-UIButton::~UIButton()
-	{
-	SetMouseCursor(0);
-	m_font.reset();
-		//LOG("%s UIButton Deleted ", m_id.c_str());
+#pragma region CleanUp
+
+	void UIButton::Destroy() {
+		m_textsize = {};
+		m_fontLocation = {};
+		m_locmouse = {};
+		m_defaulttextcolor = {};
+		m_defaulttexturecolor = {};
+		m_textcolor = {};
+		m_texthovercolor = {};
+		m_ButtonDefaultColor = {};
+		m_ButtonDownColor = {};
+		m_ButtonHoverColor = {};
+		m_borderColor = {};
+		m_texturesourcedefault = {};
+		m_texturesourceover = {};
+		m_texturesourcedown = {};
+		m_texturesourcedisable = {};
+		m_font.reset();
+		SetMouseCursor(0);
+		UIElement::Destroy();
 	}
+
+
+	UIButton::~UIButton()
+	{
+
+		LOG("%s UIButton Deleted ", m_id.c_str());
+	}
+#pragma endregion
 }

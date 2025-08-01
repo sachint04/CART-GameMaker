@@ -3,21 +3,10 @@
 #include <iostream>
 #include <vector>
 #include <string>
-
 #include <raylib.h>
-
 #include "Application.h"
 #include "Core.h"
-#include "Object.h"
-#include "Delegate.h"
-#include "Actor.h"
-#include "HUD.h"
-#include "UIButton.h"
-#include "Clock.h"
-#include "UIElement.h"
 #include "Types.h"
-#include "World.h"
-#include "Sprite.h"
 
 #define REPLAY_ANIM replay_anim
 //using namespace std;
@@ -27,7 +16,7 @@ using namespace std::chrono;
 namespace cart {
 
     class PuzzleImageController;
-
+    class HUD;
     class Game :public Application 
     {
        

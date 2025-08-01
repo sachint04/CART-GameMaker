@@ -38,6 +38,8 @@ namespace cart {
         void UpdateLocation() override;
         void SetLocation(Vector2 _location) override;
         void SetColor(Color _color)override;
+        virtual void SetHoverColor(Color _color);
+        virtual void SetDownColor(Color _color);
         void UpdateTextLocation();
         void SetFontName(const std::string& strfnt);
 		~UIButton();

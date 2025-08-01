@@ -273,6 +273,15 @@ namespace cart {
 		m_ButtonDefaultColor = _color;
 		m_color = _color;
 	}
+	
+	void UIButton::SetHoverColor(Color _color)
+	{
+		m_ButtonHoverColor = _color;
+	}
+	void UIButton::SetDownColor(Color _color)
+	{
+		m_ButtonDownColor = _color;
+	}
 
 	void UIButton::UpdateTextLocation() {
 		if (m_text.size() == 0)return;

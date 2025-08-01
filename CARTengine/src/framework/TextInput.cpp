@@ -96,6 +96,7 @@ namespace cart
 	void TextInput::Update(float _deltaTime)
 	{
         if (!m_visible)return;
+        Text::Update(_deltaTime);
         Rectangle textBox = GetBounds();
 
         auto typeinbetween = [&](int& c, int key, char* s, std::vector<std::pair<std::pair<int, int>, Vector2>>& r, std::vector<std::pair<std::string, Vector2>>& l, int& d)
@@ -429,6 +430,7 @@ namespace cart
 	void TextInput::Draw(float _deltaTime)
 	{
         if (!m_visible)return;
+        UIElement::Draw(_deltaTime);
         Rectangle textBox = GetBounds();
        // DrawRectangleRec(textBox, LIGHTGRAY);
         if (m_mouseOnText) DrawRectangleLines((int)textBox.x, (int)textBox.y, (int)textBox.width, (int)textBox.height, RED);

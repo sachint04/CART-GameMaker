@@ -107,7 +107,7 @@
         return shared<Texture2D >{nullptr};
     }
 
-    bool AssetManager::UpdateTextureFromImage(const std::string& path, Rectangle rect, Color* pixels)
+    bool AssetManager::UpdateTextureFromData(const std::string& path, Rectangle rect, Color* pixels)
     {           
         auto found = m_textureLoadedMap.find(path);
         if (found != m_textureLoadedMap.end())

@@ -39,7 +39,7 @@ namespace cart {
 		btnprop.textcolor = BLACK;
 		std::string exitbtnid = "exitbtn";
 
-		weak<UIButton> extbtn = m_owningworld->SpawnActor<UIButton>(exitbtnid, btnprop.size);
+		weak<UIButton> extbtn = m_owningworld->SpawnActor<UIButton>(exitbtnid);
 		extbtn.lock()->SetTextProperties(btnprop);
 		extbtn.lock()->SetVisible(true);
 		extbtn.lock()->SetActive(true);

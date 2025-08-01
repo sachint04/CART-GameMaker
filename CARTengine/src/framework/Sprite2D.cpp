@@ -43,17 +43,22 @@ namespace cart {
 			
 			if (m_texture2d == nullptr) return;
 
-			if (m_bAspectRatio)
-			{
-				UpdateAspectRatio();
-			}
-			else {
+			if (m_texturetype == TEXTURE_FULL) {
+				if (m_bAspectRatio)
+				{
+					UpdateAspectRatio();
+				}
+				else {
 				
-				ResizeImage();
+					ResizeImage();
+				}
+				if (m_bMasked && !m_bIsScaling) {
+					UpdateMask();
+				}
 			}
-		}
-		if (m_bMasked && !m_bIsScaling) {
-			UpdateMask();
+			else if (m_texturetype == TEXTURE_PART) {
+				m_textureLocation = m_calculatedLocation;
+			}
 		}
 		m_bIsScaling = false;
  	}
@@ -101,28 +106,24 @@ namespace cart {
 		//	LOG("mask width %d height %d", m_screenMask.width, m_screenMask.height);
 
 	}
-	void Sprite2D::SetTexture(shared<Texture2D> _tex)
-	{
-		if (m_texture2d != nullptr) {
-			UnloadTexture(*m_texture2d);
-			m_texture2d.reset();
-		}
-
-		m_texture2d = _tex;
-	}
 	void Sprite2D::ReEvaluteTexture()
 	{
 		
 		//ImageResize(imageref, m_textureSize.x, m_textureSize.y);
 	}
-
 	void Sprite2D::SetTexture(std::string& _texture)
 	{
-		if (m_texture2d) {
-			AssetManager::Get().UnloadTextureAsset(m_strTexture);
+		/*if (m_texture2d) {
+			if (m_textureStatus == LOCKED) {
+				AssetManager::Get().SetTextureStatus(m_strTexture, UNLOCKED);
+				AssetManager::Get().UnloadTextureAsset(m_strTexture);
+			}
 			m_texture2d = nullptr;
-		}
+		}*/
 		m_strTexture = _texture;
+		if (m_strTexture.size() > 0 && !m_pendingUpdate && m_visible ) {
+			m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
+		}
 
 	}
 	void Sprite2D::SetSize(Vector2 _size) {
@@ -130,7 +131,6 @@ namespace cart {
 		m_textureSize = _size;
 		m_bIsScaling = true;
 	}
-	
 	void Sprite2D::SetLocation(Vector2 _location)
 	{
 		UIElement::SetLocation(_location);
@@ -190,7 +190,7 @@ namespace cart {
 			imagepixel[i].a = maskcol.a;
 		}
 		
-		AssetManager::Get().UpdateTextureFromImage(m_strTexture, {0,0, (float)m_ImgCopy.width, (float)m_ImgCopy.height }, imagepixel);
+		AssetManager::Get().UpdateTextureFromData(m_strTexture, {0,0, (float)m_ImgCopy.width, (float)m_ImgCopy.height }, imagepixel);
 		
 		
 		UnloadImage(m_ImgCopy);		
@@ -237,6 +237,9 @@ namespace cart {
 		m_textureLocation = { (GetBounds().x + GetBounds().width / 2.f) - (width / 2.f),
 							(GetBounds().y + GetBounds().height  / 2.f) - (height / 2.f)};
 
+	}
+	void Sprite2D::TransformIntrupted() {
+		m_bIsScaling = false;
 	}
 #pragma endregion
 

@@ -1,11 +1,12 @@
 #pragma once
 #include "UIElement.h"
-#include "World.h"
-#include "component/controls/transformCntrl.h"
 #include "Core.h"
 namespace cart
 {
     class UIButton;
+    class Sprite2D;
+    class World;
+    class TransformCntrl;
     class PuzzleImageController: public UIElement
     {
     private:
@@ -24,7 +25,7 @@ namespace cart
     int m_gridWidth;
     int m_gridHeight;
     std::string m_strImage;
-    weak<UIElement> m_target; 
+    weak<Sprite2D> m_target; 
     weak<TransformCntrl> m_control;
     weak<UIButton> m_resetBtn;
     weak<UIButton> m_goBackBtn;

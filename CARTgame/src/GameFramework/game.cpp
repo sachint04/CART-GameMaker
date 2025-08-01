@@ -7,7 +7,6 @@
 #include "AssetManager.h"
 #include "MathUtility.h"
 #include "TextUtils.h"
-#include "Core.h"
 #include "Object.h"
 #include "HUD.h"
 #include "Text.h"

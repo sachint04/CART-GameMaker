@@ -3,6 +3,8 @@
 #include "Types.h"
 #include "GameStage.h"
 #include "UIButton.h"
+#include "Sprite2D.h"
+#include "World.h"
 #include "component/controls/transformCntrl.h"
 
 
@@ -52,7 +54,7 @@ void PuzzleImageController::Init()
     
     
 
-    m_target = m_owningworld->SpawnActor<UIElement>(std::string{"imgeditor"});
+    m_target = m_owningworld->SpawnActor<Sprite2D>(std::string{"imgeditor"});
     m_target.lock()->SetUIProperties(ui);
     m_target.lock()->MaintainAspectRatio(true);
     m_target.lock()->Init();

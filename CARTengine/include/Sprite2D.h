@@ -24,16 +24,15 @@ namespace cart {
 		void ReEvaluteTexture();
 		std::string GetTexturePath()const { return m_strTexture; };
 		void SetTexture(std::string& _texture);
-		void SetTexture(shared<Texture2D> _tex);
 		virtual Rectangle GetTextureBounds();
 		void SetScreenMask(const Image& strmask);
+		void TransformIntrupted();
 
 
 	protected:
 		void UpdateMask();
 		void ResizeImage();
 		void UpdateAspectRatio();
-
 		TEXTURE_TYPE  m_texturetype = TEXTURE_FULL;
 		std::string m_imgstr;
 		std::string m_strTexture;

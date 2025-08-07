@@ -31,7 +31,7 @@ namespace cart
 		virtual std::string GetResourceDisplayPath();
 		virtual float GetIconSize();
 		virtual Camera GetCamera()const { return m_camera; };
-		network* GetNet() { return net; };
+		static unique<network> net;
 		
 		
 	protected:
@@ -50,7 +50,6 @@ namespace cart
 		DataFile m_gameConfig;
 		json m_config_json;
 		Camera m_camera;
-		network* net;
 		//shared<World> m_PendingWorld;
 	};
 	

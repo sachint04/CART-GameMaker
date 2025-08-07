@@ -6,9 +6,9 @@ mergeInto(LibraryManager.library, {
   {
     JSHTTPGetRequest(Module.UTF8ToString(id), Module.UTF8ToString( url));
   
-  },POSTHTTP:function(id, data,  url)
+  },PostHTTP:function(id,url,data)
   {
-    JSHTTPGetRequest(id, Module.UTF8ToString(id), Module.UTF8ToString(data), Module.UTF8ToString( url));
+    JSHTTPostRequest(Module.UTF8ToString(id), Module.UTF8ToString( url), Module.UTF8ToString(data));
   
   },Upload:function(_id, _url, imageDataPtr, w, h, filenamePtr) 
    {

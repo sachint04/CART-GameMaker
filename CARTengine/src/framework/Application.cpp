@@ -7,6 +7,8 @@
 
 namespace cart
 {
+	unique<network> Application::net{ nullptr };
+
 	Application::Application(int _winWidth, int _winHeight, const std::string& title)
 		:m_winWidth{ _winWidth },
 		m_winHeight{ _winHeight },
@@ -22,11 +24,11 @@ namespace cart
 		m_config_json{}
 		
 	{
-		net = new network{};
 	}
 
 	void Application::Init() {
 		m_Model = {};
+		net = unique<network>{ new network };
 		InitWindow(m_winWidth, m_winHeight, m_title.c_str());
 		SetTargetFPS(m_targetFrameRate);
 	}
@@ -55,7 +57,7 @@ namespace cart
 		AssetManager::Get().CleanCycle();
 		AssetManager::Get().Unload();
 		AssetManager::Get().Release();
-		delete net;
+		 net = nullptr;
 		//int leak = _CrtDumpMemoryLeaks();
 	
 		CloseWindow();
@@ -110,8 +112,8 @@ namespace cart
 		std::string id = { uid };
 		std::string res = { response };
 		std::string netdata = { data };
+		LOG("FROM Application id %s response %s data %s \n", uid, response, data);
 		net->HTTPCallback(id, res, netdata);
-		LOG("FROM Application id %s response %s data %s ", uid, response, data);
 	}
 	
 }

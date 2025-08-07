@@ -17,7 +17,7 @@ namespace cart
             virtual void Draw(float deltaTime);
             virtual void* GetOutPut();
             virtual void SetInutPut(void* data);
-
+            virtual void Destroy() override;
  //           void FinishStage();
             bool IsStageFinished()const {return m_stageFinished;};
 

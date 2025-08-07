@@ -11,7 +11,10 @@ namespace cart
 
 
     }
-    
+    void GameStage::Destroy()
+    {
+
+    }
      GameStage::~GameStage()
     {
     }

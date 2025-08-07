@@ -43,6 +43,10 @@ namespace cart
 		m_userdata = json;
 	}
 
+	std::string CARTjson::GetUserDataString() {
+		return m_userdata.dump();
+	}
+
 	CARTjson::~CARTjson()
 	{
 		m_userdata.clear();

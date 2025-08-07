@@ -241,6 +241,7 @@ namespace cart {
 	void Sprite2D::TransformIntrupted() {
 		m_bIsScaling = false;
 	}
+
 #pragma endregion
 
 

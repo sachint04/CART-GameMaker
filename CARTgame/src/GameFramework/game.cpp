@@ -30,7 +30,6 @@ namespace cart {
         m_framesCounter(0),
         m_assetsLoaded(false),
         m_debug{ false },
-        m_DebugData{},
         m_touch{ false },
         m_locMouseDown{},
         m_gameover{ false },
@@ -38,7 +37,8 @@ namespace cart {
         m_locmouse{},
         m_APP_STATE{ TITLE },
         m_defaultWidth(_winWidth),
-        m_defaultHeight(_winHeight)
+        m_defaultHeight(_winHeight),
+        logger{nullptr}
         
     {
       
@@ -54,6 +54,8 @@ namespace cart {
         // CREATE NEW WORLD
         weak<World> newWorld = LoadWorld<World>();
         m_CurrentWorld->Init(); // INIT WORLD
+
+      
 
         // SET APP SCALE
         APP_SCALE = (m_winWidth < m_winHeight) ? (float)m_winWidth / (float)m_winHeight : (float)m_winHeight / (float)m_winWidth;
@@ -96,8 +98,24 @@ namespace cart {
 #pragma endregion
 
 #pragma region Create HUD
-       std::string hudid = "hud-main";
-       m_GameplayHUD = m_CurrentWorld->SpawnHUD<GameplayHUD>(hudid);
+       // Set HUD 
+        GameplayHUD hud = { newWorld.lock().get(), std::string{"HUD"} };
+        Application::SetHUD(std::make_shared<GameplayHUD>(hud));
+
+        // SET LOGGER
+        logger = Logger::Get();
+        Rectangle loggerRect = { 25.0f, 25.0f, 200.f, 400.f };
+        int maxlinecount = 50;
+        logger->SetRect(loggerRect);
+        logger->SetMaxLogCount(maxlinecount);
+#ifdef __LOGGER__
+        logger->Show();
+#else
+        logger->Hide();
+#endif // __LOGGER__
+
+        Logger::Get()->Push("Hello  CART ENGINE!");
+
 #pragma endregion
         int scrW = GetScreenWidth();
       int scrH = GetScreenHeight();
@@ -216,17 +234,14 @@ namespace cart {
 #pragma region CLEAN UP
     void Game::CleanDebugData() {
 
-        size_t linesize = m_DebugData.size();
-        if (linesize == 0)return;
-
-        m_DebugData.clear();
-
+        Application::Destroy();
+        delete logger;
     }
 
 
     Game::~Game() {
 
-        hud.reset();
+
 
     }
 

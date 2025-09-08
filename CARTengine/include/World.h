@@ -31,8 +31,6 @@ namespace cart
 		virtual void InitGameStages();
 		virtual ~World();
 
-
-
 		Vector2 GetAppWindowSize() const;
 		long GetSizeOfPendingActors();
 		void CleanCycle();
@@ -42,6 +40,9 @@ namespace cart
 		void PreviousGameStage();
 		void JumpToGameStage(const std::string& stageid);
 		
+		void SetSessionData(void* data);
+		void* GetSessionData() { return m_sessionData; };
+
 
 	
 		template<typename ActorType, typename... Args>
@@ -50,6 +51,7 @@ namespace cart
 		template<typename HUDType, typename... Args>
 		weak<HUDType> SpawnHUD(Args... args);
 
+		void* m_sessionData = nullptr;
 		
 	private:
 		bool m_BeginPlay;

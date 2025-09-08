@@ -15,7 +15,7 @@ namespace cart
 	}
 
 	Object::~Object()  {
-		//LOG("%s Object Destroyed ", m_id.c_str());
+		
 	}
 
 	weak<Object> Object::GetWeakRef()

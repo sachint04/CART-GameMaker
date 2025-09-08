@@ -314,7 +314,7 @@ namespace cart {
 			m_color = m_ButtonDefaultColor;
 		
 		onButtonUp.Broadcast(GetWeakRef(),  pos);
-		//LOG("ImageButton  RELEASE!!");
+		
 	}
 	
 	void ImageButton::ButtonDown(Vector2 pos)
@@ -334,12 +334,11 @@ namespace cart {
 			m_IsSelected = true;
 		}
 		onButtonDown.Broadcast(GetWeakRef(), pos);
-		//LOG("ImageButton  DOWN!!");
 	}
 
 
 	void ImageButton::ButtonDrag(Vector2 pos) {
-		//LOG("button dragging");
+		
 		onButtonDrag.Broadcast(GetWeakRef(), pos);
 	}
 
@@ -360,7 +359,7 @@ namespace cart {
 		m_IsMouseOver = true;
 		SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
 		onButtonHover.Broadcast(GetWeakRef() );
-	//	LOG("ImageButton  HOVER!!");
+	
 	}
 	void ImageButton::MouseOut()
 	{
@@ -379,7 +378,7 @@ namespace cart {
 
 			m_IsMouseOver = false;
 			SetMouseCursor(0);
-		//	LOG("ImageButton  OUT!!");
+		
 			m_IsButtonDown = false;
 			SetMouseCursor(MOUSE_CURSOR_ARROW);
 			onButtonOut.Broadcast(GetWeakRef() );
@@ -402,6 +401,6 @@ ImageButton::~ImageButton()
 	{
 	SetMouseCursor(0);
 	m_font.reset();
-		//LOG("%s ImageButton Deleted ", m_id.c_str());
+		
 	}
 }

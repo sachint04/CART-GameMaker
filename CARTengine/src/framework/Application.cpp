@@ -1,9 +1,13 @@
+#include <string>
 #include "Application.h"
 #include "Core.h"
 #include "World.h"
 #include "AssetManager.h"
 #include "Clock.h"
-#include <string>
+#include "Logger.h"
+#include "HUD.h"
+#include "Logger.h"
+
 
 namespace cart
 {
@@ -14,9 +18,9 @@ namespace cart
 		m_winHeight{ _winHeight },
 		m_title{ title },
 		m_CurrentWorld{ nullptr },
+		m_HUD{nullptr},
 		m_targetFrameRate{ 60 },
 		m_exit{ false },
-		hud{},
 		m_resourcedir{},
 		m_Model{},
 		m_gameConfig{},
@@ -31,6 +35,7 @@ namespace cart
 		net = unique<network>{ new network };
 		InitWindow(m_winWidth, m_winHeight, m_title.c_str());
 		SetTargetFPS(m_targetFrameRate);
+
 	}
 
 	void Application::BeginPlay()
@@ -45,11 +50,16 @@ namespace cart
 			ClearBackground(RAYWHITE);
 			Clock::Get().Tick();
 			double deltaTime = Clock::Get().DeltaTime();
+			Logger::Get()->Update(deltaTime);
 			Update(deltaTime);
 			BeginDrawing();
 			Draw(deltaTime);
+			Logger::Get()->Draw(deltaTime);
 			EndDrawing();
 			LateUpdate(deltaTime);
+
+
+
 			if (WindowShouldClose())m_exit = true;
 		}
 		Clock::Get().Release();
@@ -62,7 +72,6 @@ namespace cart
 	
 		CloseWindow();
 	}
-
 
 	Vector2 Application::GetWindowSize() const
 	{
@@ -81,6 +90,11 @@ namespace cart
 		m_CurrentWorld->LateUpdate(deltaTime);
 	}
 
+	weak<HUD> Application::GetHUD()
+	{
+		return m_HUD;
+	}
+
 	void Application::QuitApplication()
 	{
 		m_exit = true;
@@ -96,8 +110,6 @@ namespace cart
 		return m_resourcedir;
 	}
 
-	
-
 	std::string Application::GetResourceDisplayPath()
 	{
 		std::string path = "";
@@ -107,12 +119,28 @@ namespace cart
 	float Application::GetIconSize() {
 		return NULL;
 	}
+	void Application::SetHUD(shared<HUD> hud)
+	{
+		m_HUD = hud;
+	}
+
+	void Application::Destroy() {
+		m_CurrentWorld.get()->Unload();
+		m_CurrentWorld.get()->Destroy();
+		m_CurrentWorld.reset();
+		m_HUD.get()->Destroy();
+		m_HUD.reset();
+	}
+	Application::~Application()
+	{
+		std::cout << "Application Ended." << std::endl;
+	}
 	void Application::SetHTTPCallback(char* uid, char* response, char* data)
 	{
 		std::string id = { uid };
 		std::string res = { response };
 		std::string netdata = { data };
-		LOG("FROM Application id %s response %s data %s \n", uid, response, data);
+	//	Logger::Get()->Push(std::format("FROM Application id {} response {} data {} ", uid, response, data));
 		net->HTTPCallback(id, res, netdata);
 	}
 	

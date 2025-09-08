@@ -12,6 +12,7 @@
 #include <functional>
 #include "Core.h"
 #include <memory>
+#include "Logger.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -22,8 +23,8 @@ extern "C" {
 #endif
 
 #ifdef __EMSCRIPTEN__
-    extern void GetHTTP(const char* uid, const char* url);
-    extern void PostHTTP(const char* uid,  const char* url, const char* data );
+    extern void GetHTTP(const char* uid, const char* url, const char* where);
+    extern void PostHTTP(const char* uid,  const char* url, const char* data, const char* where );
     extern void Upload(const char* uid, const char* url, const uintptr_t* imageData, int w, int h, const char* filename);
 #endif
 
@@ -42,10 +43,10 @@ namespace cart {
         std::string GetUID();
 
         template<typename ClassName>
-        std::string GET(std::string url, weak<Object> obj, void(ClassName::* callback)(std::string, std::string));
+        std::string GET(std::string url, std::string where, weak<Object> obj, void(ClassName::* callback)(std::string, std::string));
 
         template<typename ClassName>
-        std::string POST(std::string url, std::string data, weak<Object> obj, void(ClassName::* callback)(std::string, std::string));
+        std::string POST(std::string url, std::string data, std::string where, weak<Object> obj, void(ClassName::* callback)(std::string, std::string));
 
         template<typename ClassName>
         std::string UploadImage(std::string url, const uintptr_t* imageData, int width, int height, std::string filename, weak<Object> obj, void(ClassName::* callback)(std::string, std::string));
@@ -57,7 +58,7 @@ namespace cart {
 
 
     template<typename ClassName>
-    std::string network::GET(std::string url, weak<Object> obj, void(ClassName::* callback)(std::string, std::string))
+    std::string network::GET(std::string url, std::string where, weak<Object> obj, void(ClassName::* callback)(std::string, std::string))
     {
         std::function<bool(std::string, std::string)> callbackFunc = [obj, callback](std::string response, std::string data)->bool
         {
@@ -74,13 +75,14 @@ namespace cart {
 #ifdef __EMSCRIPTEN__
         const char* urlptr = url.c_str();
         const char* idptr = uid.c_str();
-        GetHTTP(idptr, urlptr);
+        const char* conptr = where.c_str();
+        GetHTTP(idptr, urlptr, conptr);
         mCallbacks.insert({ uid, callbackFunc });
 #endif
         return uid;
     }
     template<typename ClassName>
-    std::string network::POST(std::string url, std::string data, weak<Object> obj, void(ClassName::* callback)(std::string, std::string))
+    std::string network::POST(std::string url,std::string data, std::string where, weak<Object> obj, void(ClassName::* callback)(std::string, std::string))
     {
 
         std::function<bool(std::string, std::string)> callbackFunc = [obj, callback](std::string response, std::string data)->bool
@@ -99,7 +101,8 @@ namespace cart {
          const char* idptr = uid.c_str();
          const char* urlptr = url.c_str();
          const char* dataptr = data.c_str();
-         PostHTTP(idptr, urlptr, dataptr);
+         const char* conptr = where.c_str();
+         PostHTTP(idptr, urlptr, dataptr, conptr);
         mCallbacks.insert({ uid, callbackFunc });
 #endif
         return uid;
@@ -125,16 +128,6 @@ namespace cart {
         const char* idptr = uid.c_str();
         Upload(idptr, urlptr, imageData, width, height, filename.c_str());
         mCallbacks.insert({ uid, callbackFunc });
-#endif
-
-#ifdef _WIN32
-        std::string dummyres = "Desktop Mode - Fake Upload Done";
-        std::string dummydata = "";
-        if ((callbackFunc)(dummyres, dummydata))
-        {
-            LOG("Call back returned with dummy data on desktop mode.");
-        }
-
 #endif
         return uid;
 

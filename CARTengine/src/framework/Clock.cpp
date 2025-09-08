@@ -59,8 +59,20 @@ namespace cart {
 		m_previousTime = steady_clock::now();
 		m_elapsedTime = m_previousTime - m_startTime;
 	}
+
+	uint64_t Clock::getCurrentTimeMillis() {
+		// Get the current time point from the system clock
+		auto now = std::chrono::system_clock::now();
+
+		// Calculate the duration since the epoch (usually January 1, 1970)
+		auto duration_since_epoch = now.time_since_epoch();
+
+		// Cast the duration to milliseconds and get the count
+		return std::chrono::duration_cast<std::chrono::milliseconds>(duration_since_epoch).count();
+	}
+
 	Clock::~Clock()
 	{
-		//LOG("Clock Deleted!");
+		
 	}
 }

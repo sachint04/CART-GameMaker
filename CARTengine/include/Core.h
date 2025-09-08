@@ -1,4 +1,5 @@
 #pragma once
+
 #include <iostream>
 #include <string>
 #include <memory>
@@ -6,9 +7,15 @@
 #include <unordered_map>
 #include <unordered_set>
 
+
+
+
 extern float APP_SCALE;
 extern int FONT_SIZE;
 extern std::string FONT_NAME;
+
+
+
 namespace cart {
     template<typename T>
     using unique = std::unique_ptr<T>;
@@ -34,6 +41,8 @@ namespace cart {
     using uint8 = unsigned char;
 
     // a macro
-#define LOG(M, ...) printf(M "\n", ##__VA_ARGS__)
+    
+  //  #define LOG(M, ...) printf(M "\n", ##__VA_ARGS__)
+
 
 }

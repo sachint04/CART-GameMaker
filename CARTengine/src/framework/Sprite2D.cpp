@@ -1,6 +1,7 @@
 #include "Sprite2D.h"
 #include <memory>
 #include "AssetManager.h"
+#include "Logger.h"
 namespace cart {
 #pragma region Constructor & Init
 
@@ -103,8 +104,6 @@ namespace cart {
 		m_screenMask = strmask;
 		m_bMasked = true;
 
-		//	LOG("mask width %d height %d", m_screenMask.width, m_screenMask.height);
-
 	}
 	void Sprite2D::ReEvaluteTexture()
 	{
@@ -161,14 +160,17 @@ namespace cart {
 		ImageFormat(&m_ImgCopy, 7);
 		
 		if ((m_ImgCopy.data == NULL) || (m_ImgCopy.width == 0) || (m_ImgCopy.height == 0)) {
-			
-			LOG("ERROR! MASKED ELEMENT REQUIRED BASE IMAGE POINTER!"); return; 
+		//	std::string log_str = "ERROR! MASKED ELEMENT REQUIRED BASE IMAGE POINTER!";
+		//	Logger::Get()->Push(log_str); return;
 		
 		};
 
 
 		if (m_screenMask.width != GetScreenWidth() || m_screenMask.height != GetScreenHeight())
-			LOG("ERROR! Screen Mask size does not match with screen size.");
+		{
+			//std::string log_str = "ERROR! Screen Mask size does not match with screen size.";
+			//Logger::Get()->Push(log_str);
+		}
 		
 		if(imagepixel)delete imagepixel;
 

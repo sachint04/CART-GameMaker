@@ -5,6 +5,8 @@
 #include "Shape.h"
 #include "MathUtility.h"
 #include "World.h"
+#include "Logger.h"
+
 namespace cart {
 #pragma region  Constructor & Init
 
@@ -167,10 +169,6 @@ namespace cart {
 		m_bottomrightCntrl.lock()->SetLocation({ brxpos, brypos });
 		
 
-	//	LOG("OnDragTopLeft() width %.2f  height %.2f m_center x %.2f  y %.2f", width, height, m_center.x , m_center.y);
-		//m_target.lock()->SetSize({width,height});
-		//m_target.lock()->SetPivot({width/2.f,height/2.f});
-
 		m_center = { m_topleftCntrl.lock()->GetLocation().x + width / 2.f,  m_topleftCntrl.lock()->GetLocation().y + height / 2.f };
 		//m_target.lock()->SetLocation(m_center);
 		onScaled.Broadcast(m_center, { width, height }, { width / 2.f, height / 2.f });
@@ -181,18 +179,18 @@ namespace cart {
 		m_translateCntrl.lock()->SetLocation({ m_topleftCntrl.lock()->GetLocation().x ,  m_topleftCntrl.lock()->GetLocation().y });
 		m_translateCntrl.lock()->SetSize({ width,  height });	
 	
-		LOG("onScaleHandler() |width %.2f", width);
+		//	Logger::Get()->Push(std::format("onScaleHandler() |width {}", width));
 	}
 	void TransformCntrl::onDragStart(weak<Object> btn, Vector2 pos)
 	{
 		if (m_isScaling)return;
-		//LOG("Active Control %s ", btn.lock()->GetID().c_str());
+		//Logger::Get()->Push("Active Control {} ", btn.lock()->GetID());
 		m_isScaling = true;	
 		curDragCntrl = btn.lock()->GetID();
 	}
 	void TransformCntrl::onDragEnd(weak<Object> btn, Vector2 pos)
 	{
-		//LOG("Drag ended %s ", btn.lock()->GetID().c_str());
+		//Logger::Get()->Push("Drag ended {} ", btn.lock()->GetID());
 		m_isScaling = false;
 		curDragCntrl = "";
 		onButtonUp.Broadcast(pos);
@@ -200,7 +198,6 @@ namespace cart {
 	}
 	void TransformCntrl::onDragOut(weak<Object> btn)
 	{
-		//LOG("Drag out end %s ", btn.lock()->GetID().c_str());
 		m_isScaling = false;
 		curDragCntrl = "";
 		onStop.Broadcast();
@@ -209,7 +206,7 @@ namespace cart {
 		if (m_isScaling)return;
 		m_tempTargetLoc = pos;
 		m_isTranslating = true;
-		//LOG("Translate Control Start");
+		//Logger::Get()->Push("Translate Control Start");
 	}
 	void TransformCntrl::onTranslateContinue(weak<Object>, Vector2 pos) {
 
@@ -220,7 +217,8 @@ namespace cart {
 		float width = GetVectorLength(Direction(m_toprightCntrl.lock()->GetLocation(), m_topleftCntrl.lock()->GetLocation()));
 		float height = GetVectorLength(Direction(m_bottomleftCntrl.lock()->GetLocation(), m_topleftCntrl.lock()->GetLocation()));
 		m_center = { m_topleftCntrl.lock()->GetLocation().x + width / 2.f,  m_topleftCntrl.lock()->GetLocation().y + height / 2.f };
-	//	LOG("onTranslateContinue() | offset x %.2f y %.2f  | width %.2f  height %.2f | center x %.2f  y %.2f", offset.x, offset.y, width, height, m_center.x, m_center.y);
+	//	Logger::Get()->Push("onTranslateContinue() | offset x %.2f y %.2f  | width %.2f  height %.2f | center x %.2f  y %.2f", offset.x, offset.y, width, height, m_center.x, m_center.y);
+	//	Logger::Get()->Push("onTranslateContinue() | offset x {0:.2f	} y {1:.2f}  | width {2:.2f}  height %.2f | center x {3:.2f}  y {4:.2f}", offset.x, offset.y, width, height, m_center.x, m_center.y);
 		
 		//m_target.lock()->SetLocation(m_center);
 		m_outline.lock()->SetLocation({ m_topleftCntrl.lock()->GetLocation().x ,  m_topleftCntrl.lock()->GetLocation().y });
@@ -229,7 +227,7 @@ namespace cart {
 		m_tempTargetLoc = pos;
 	}
 	void TransformCntrl::onTranslateEnd(weak<Object>) {
-	//	LOG("Translate Control End");
+	//	Logger::Get()->Push("Translate Control End");
 		m_isTranslating = false;
 		onStop.Broadcast();
 	}
@@ -312,7 +310,8 @@ namespace cart {
 	}
 	TransformCntrl::~TransformCntrl()
 	{
-		LOG("Transfrom Control Destroyed");
+		std::string log_str = "Transfrom Control Destroyed";
+	//	Logger::Get()->Push(log_str);
 	}
 #pragma endregion
 }

@@ -4,30 +4,51 @@ namespace cart
 {
 	json CARTjson::m_config = {};
 	json CARTjson::m_userdata = {};
+	json CARTjson::m_templateinfo = {};
 	json CARTjson::m_sessiondata = {};
 
-	void CARTjson::readAPPData(const char* _file)
+	json& CARTjson::readAPPData(const char* _file)
 	{
 		char* strm = LoadFileText(_file);
 		m_config = json::parse(strm);
 		delete strm;
+		return m_config;
+
 	}
 
-	void CARTjson::readAPPData(const std::string& strm)
+	json& CARTjson::readAPPData(const std::string& strm)
 	{
 		m_config = json::parse(strm);
+		return m_config;
 	}
 
-	void CARTjson::readUserData(const char* _file)
+	json& CARTjson::readUserData(const char* _file)
 	{
 		char* strm = LoadFileText(_file);
 		m_userdata = json::parse(strm);
 		delete strm;
+		return m_userdata;
 	}
 
-	void CARTjson::readUserData(const std::string& strm)
+	json& CARTjson::readUserData(const std::string& strm)
 	{
 		m_userdata = json::parse(strm);
+		return m_userdata;
+	}
+
+	json& CARTjson::readTemplateInfo(const std::string& strm)
+	{
+
+		m_templateinfo = json::parse(strm);
+		return m_templateinfo;
+
+	}
+	json& CARTjson::readTemplateInfo(const char* _file)
+	{
+		char* strm = LoadFileText(_file);
+		m_templateinfo = json::parse(strm);
+		delete strm;
+		return m_templateinfo;
 	}
 
 	json& CARTjson::GetUserData() { 
@@ -41,6 +62,13 @@ namespace cart
 	
 	void CARTjson::UpdateUserData(const json& json) {
 		m_userdata = json;
+	}
+
+
+
+	json& CARTjson::GetTemplateInfo()
+	{
+		return m_templateinfo;
 	}
 
 	std::string CARTjson::GetUserDataString() {

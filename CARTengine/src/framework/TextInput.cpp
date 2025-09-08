@@ -284,7 +284,7 @@ namespace cart
                                 if (iter->second.x + MeasureTextEx(*m_sharedfont, nr.c_str(), (float)m_fontsize, m_fontspacing).x >= m_touchendpos.x)
                                 {
                                     m_curletterindex = tmpLtrCount + nr.size();
-                                   //LOG("Cursor at letter count %d\n  word %s\n", m_letterCount, nr.c_str());
+                                   
                                     break;
                                 }
                                 chr++;
@@ -437,7 +437,7 @@ namespace cart
         else DrawRectangleLines((int)textBox.x, (int)textBox.y, (int)textBox.width, (int)textBox.height, DARKGRAY);
         TextLine(m_lines);             
 
-        DrawTextEx(*infofnt, TextFormat("INPUT CHARS: %i/%i", m_letterCount, MAX_INPUT_CHARS), { (float)textBox.x , (float)textBox.y + textBox.height }, 14, 1.f, DARKGRAY);
+       // DrawTextEx(*infofnt, TextFormat("INPUT CHARS: %i/%i", m_letterCount, MAX_INPUT_CHARS), { (float)textBox.x , (float)textBox.y + textBox.height }, 14, 1.f, DARKGRAY);
 
 
         if (m_mouseOnText)
@@ -465,8 +465,7 @@ namespace cart
                         if (chrcount > rem) {
                             chrs =  rem;
                             std::string st = iter->first.substr(0, chrs);
-                         //   LOG("chars in line %d", chrcount);
-                       //     LOG("Cursor moved to row %d col %d char %s\n", lc, chrs, st.c_str());
+                     
                             fntmeasure = MeasureTextEx(*m_sharedfont, st.c_str(), (float)m_fontsize, m_fontspacing);
                             break;
                         } 
@@ -608,6 +607,21 @@ namespace cart
         }
         m_lrange[m_lrange.size() - 1].first.second = m_letterCount;
     }
+    std::string TextInput::GetInputText()
+    {
+        auto iter = m_lines.begin();
+        std::string message = "";
+        while (iter != m_lines.end())
+        {
+            if (iter->first.size() > 0)
+            {
+                message += {iter->first};
+            }
+            ++iter;
+        }
+        return message;
+    }
+
 #pragma endregion
 
 }

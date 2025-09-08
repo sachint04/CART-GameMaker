@@ -43,6 +43,10 @@ namespace cart
 			}
 		}
 
+		inline void Destroy()
+		{
+			mCallbacks.clear();
+		}
 		
 		
 	private:

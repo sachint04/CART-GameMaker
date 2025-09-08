@@ -3,8 +3,9 @@
 #include "Core.h"
 #include "Actor.h"
 #include "tweenray/tweenBuilder.h"
-
 #include "Clock.h"
+#include "Logger.h"
+
 namespace cart {
 
 
@@ -74,8 +75,7 @@ namespace cart {
 	void Tween::CleanCycle() {
 
 		for (auto iter = pendingDeleteTween.begin(); iter != pendingDeleteTween.end();)
-		{
-				//LOG("WORLD CleanClcyle %i ", iter->);
+		{				
 			//iter->reset();
 			delete *iter;
 		//	*iter = nullptr;

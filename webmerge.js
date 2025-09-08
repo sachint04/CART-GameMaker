@@ -2,13 +2,14 @@ mergeInto(LibraryManager.library, {
   UpdateHostAboutError: function(errorMessagePointer) {
     setErrorMessage(Module.UTF8ToString(errorMessagePointer));
   },
-  GetHTTP:function(id, url)
+  GetHTTP:function(id,url,where)
   {
-    JSHTTPGetRequest(Module.UTF8ToString(id), Module.UTF8ToString( url));
+	
+    JSHTTPGetRequest(Module.UTF8ToString(id), Module.UTF8ToString( url), Module.UTF8ToString( where));
   
-  },PostHTTP:function(id,url,data)
+  },PostHTTP:function(id,url,data,where)
   {
-    JSHTTPostRequest(Module.UTF8ToString(id), Module.UTF8ToString( url), Module.UTF8ToString(data));
+    JSHTTPostRequest(Module.UTF8ToString(id), Module.UTF8ToString( url), Module.UTF8ToString(data), Module.UTF8ToString( where));
   
   },Upload:function(_id, _url, imageDataPtr, w, h, filenamePtr) 
    {

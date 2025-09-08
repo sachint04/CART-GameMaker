@@ -11,6 +11,7 @@ namespace cart {
 	public:
 		static Clock& Get();
 		static void Release();
+		uint64_t getCurrentTimeMillis();
 		void Reset();
 		double ElapsedTime();
 		double DeltaTime();

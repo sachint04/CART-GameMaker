@@ -43,6 +43,8 @@ set(ENGINE_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/src/component/controls/transformCntrl.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/GameStage.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/GameStage.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/include/Logger.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Logger.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/TextInput.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/TextInput.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/component/UIList.h
@@ -70,7 +72,7 @@ set(ENGINE_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/src/tweenray/tweenColor.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/network/network.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/network/network.cpp
-	
+
 	
 	)
 add_library(${CART_ENGINE_TARGET_NAME} 

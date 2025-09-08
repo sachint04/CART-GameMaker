@@ -4,7 +4,7 @@
 #include "UIButton.h"
 #include <memory>
 #include "World.h"
-
+#include "Logger.h"
 namespace cart {
 #pragma region  Constructors
 	UIElement::UIElement(World* _owningworld, const std::string& _id, bool isExcludedFromParentAutoControl)
@@ -40,7 +40,7 @@ namespace cart {
 	void UIElement::Update(float _deltaTime)
 	{
 		if (!m_active || !m_visible)return;
-	//	LOG("UIElement::::: %s ::::UPDATE()", GetID().c_str());
+	//	Logger::Get()->Push("UIElement::::: %s ::::UPDATE()", GetID().c_str());
 	}
 
 	void UIElement::Draw(float _deltaTime)
@@ -238,7 +238,8 @@ namespace cart {
 		for (auto iter = m_children.begin(); iter != m_children.end(); ++iter)
 		{
 			if (iter->get()->GetID().compare(id) == 0) {
-				LOG("Removing %s from child list. usecout is %ld", id.c_str(), iter->use_count());
+				int cnt = iter->use_count();
+			//	Logger::Get()->Push(std::format("Removing {} from child list. usecout is {}", id, cnt));
 				iter->reset();
 				m_children.erase(iter);
 				break;
@@ -254,7 +255,7 @@ namespace cart {
 	
 	
 	void UIElement::Destroy() {
-		LOG("UIElemente | %s | Destroyed!!", m_id.c_str());
+	//	Logger::Get()->Push(std::format("UIElemente | {} | Destroyed!!", m_id));
 		for (auto iter = m_children.begin(); iter != m_children.end();)
 		{
 			iter->get()->Destroy();
@@ -269,7 +270,7 @@ namespace cart {
 
 	UIElement::~UIElement()
 	{
-		//LOG("%s UIElement deleted!", m_id.c_str());
+		//Logger::Get()->Push("{}IElement deleted!", m_id);
 	}
 #pragma endregion
 

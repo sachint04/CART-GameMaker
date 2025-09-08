@@ -1,5 +1,6 @@
 #pragma once
 #include "Text.h"
+#include <string>
 #define MAX_INPUT_CHARS     200
 namespace cart {
 
@@ -14,6 +15,7 @@ namespace cart {
 		void Draw(float _deltaTime)override;
 		void Destroy()override;
 		void SetText(const std::string &txt);
+		std::string GetInputText();
 		void SetFontName(const std::string& strfnt)override;
 		float GetFontSize() { return m_fontsize; };
 		void SetFontSize(float size) override;

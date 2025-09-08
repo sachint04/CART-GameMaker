@@ -1,9 +1,11 @@
 #include <memory>
 #include "UIButton.h"
+#include "Application.h"
 #include  "AssetManager.h"
 #include "Core.h"
 #include "component/InputController.h"
 #include "World.h"
+#include "HUD.h"
 namespace cart {
 	
 #pragma region  INIT
@@ -111,9 +113,13 @@ namespace cart {
 		if (m_active == true) 
 		{
 			Vector2 tPos = { (float)GetMouseX(), (float)GetMouseY() };
-			bool mouseonBtn = m_owningworld->GetInputController()->IsMouseOver(GetWeakRef());
+			if (m_IsMouseOver && m_owningworld->GetApplication()->GetHUD().lock()->IsMouseOverUI(tPos)) {			
+				MouseOut();
+				return;
+			}
 
-			
+			bool mouseonBtn =  m_owningworld->GetInputController()->IsMouseOver(GetWeakRef());
+
 				if (IsMouseButtonUp(0) && m_touch == false) {
 					//if (TestMouseOver(tPos) == true) {
 					if (mouseonBtn) {
@@ -318,7 +324,7 @@ namespace cart {
 		m_IsButtonDown = false;
 		m_color = m_ButtonDefaultColor;		
 		onButtonUp.Broadcast(GetWeakRef(),  pos);
-		//LOG("UIBUTTON  RELEASE!!");
+	
 	}
 	
 	void UIButton::ButtonDown(Vector2 pos)
@@ -330,12 +336,12 @@ namespace cart {
 			m_IsSelected = true;
 		}
 		onButtonDown.Broadcast(GetWeakRef(), pos);
-		//LOG("UIBUTTON  DOWN!!");
+
 	}
 
 
 	void UIButton::ButtonDrag(Vector2 pos) {
-		//LOG("button dragging");
+
 		onButtonDrag.Broadcast(GetWeakRef(), pos);
 	}
 
@@ -351,7 +357,7 @@ namespace cart {
 		m_IsMouseOver = true;
 		SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
 		onButtonHover.Broadcast(GetWeakRef() );
-	//	LOG("UIBUTTON  HOVER!!");
+
 	}
 	void UIButton::MouseOut()
 	{
@@ -362,7 +368,7 @@ namespace cart {
 
 			m_IsMouseOver = false;
 			SetMouseCursor(0);
-		//	LOG("UIBUTTON  OUT!!");
+
 			m_IsButtonDown = false;
 			SetMouseCursor(MOUSE_CURSOR_ARROW);
 			onButtonOut.Broadcast(GetWeakRef() );
@@ -408,7 +414,7 @@ namespace cart {
 	UIButton::~UIButton()
 	{
 
-		LOG("%s UIButton Deleted ", m_id.c_str());
+	
 	}
 #pragma endregion
 }

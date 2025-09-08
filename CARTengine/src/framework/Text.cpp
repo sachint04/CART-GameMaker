@@ -89,6 +89,10 @@ namespace cart {
 		AssetManager::Get().UnloadFontAsset(m_font, m_fontsize);
 		m_font = strfnt;
 	}
+
+	std::string Text::GetFontName() {
+		return m_font;
+	}
 	void Text::SetFontSize(float size)
 	{
 		if (m_fontsize == size)return;

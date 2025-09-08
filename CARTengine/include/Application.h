@@ -1,9 +1,9 @@
 #pragma once
 #include <raylib.h>
+#include <nlohmann/json.hpp>
 #include "Core.h"
 #include "DataFile.h"
 #include "network/network.h"
-#include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
 namespace cart
@@ -32,8 +32,10 @@ namespace cart
 		virtual float GetIconSize();
 		virtual Camera GetCamera()const { return m_camera; };
 		static unique<network> net;
-		
-		
+		virtual weak<HUD> GetHUD();
+		virtual void SetHUD(shared<HUD> hud);
+		~Application();
+		virtual void Destroy();
 	protected:
 		virtual void Update(float deltaTime);
 		virtual void Draw(float deltaTime);
@@ -41,15 +43,15 @@ namespace cart
 		int m_winWidth;
 		int m_winHeight;
 		std::string m_title;
-		shared<HUD> hud;
+		shared<HUD> m_HUD;
 		float m_targetFrameRate;
-	
 		shared<World> m_CurrentWorld;
 		std::string m_resourcedir;
 		DataFile m_Model; 
 		DataFile m_gameConfig;
 		json m_config_json;
 		Camera m_camera;
+		
 		//shared<World> m_PendingWorld;
 	};
 	

@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include <stdexcept>
+#include "Logger.h"
 
  namespace cart {
 
@@ -22,7 +23,7 @@
 
     void AssetManager::Release()
     {
-      //  LOG("AssetManager Deleted!");
+      //  Logger::Get()->Push("AssetManager Deleted!");
         assetManager = nullptr;
     }
 
@@ -35,19 +36,18 @@
      {
         m_RootDirectory = directory + "/";
         if (ChangeDirectory(directory.c_str()))
-        {
-            LOG("Working directory changed to %s syccessfully.", directory.c_str());
+        {            
+          //  Logger::Get()->Push(std::format("Working directory changed to {} syccessfully.",directory));
         }
-        else {
-
-            LOG("FAILED!! TO change working directory  %s.", directory.c_str());
+        else {            
+         //   Logger::Get()->Push(std::format("FAILED!! TO change working directory  {}.", directory));
         }
      }
 #pragma endregion
 
 #pragma region LOAD/UNLOAD TEXTURE ASSET
     shared<Texture2D> AssetManager::LoadTextureAsset(const std::string &path, TEXTURE_DATA_STATUS status){
-     //   LOG("|>=-=ASSETMANAGER =-=<| LoadTextureAsset() %s", path.c_str());
+     //   Logger::Get()->Push("|>=-=ASSETMANAGER =-=<| LoadTextureAsset() %s", path.c_str());
        return LoadTexture(path, m_textureLoadedMap, status);
     } 
     shared<Texture2D > AssetManager::LoadTexture(const std::string &path, Dictionary<std::string, TextureData>& constainer, TEXTURE_DATA_STATUS status)
@@ -55,23 +55,25 @@
         auto found = constainer.find(path);
         if (found != constainer.end())
         {
-         //  LOG("|>=-=ASSETMANAGER =-=<| %s Texture Found in Memory! %s ", path.c_str());       
+         //  Logger::Get()->Push("|>=-=ASSETMANAGER =-=<| %s Texture Found in Memory! %s ", path.c_str());       
             return found->second.texture;
         }
        
         Image* image = new Image{ LoadImage(path.c_str()) };     // Loaded in CPU memory (RAM)
         if (image->data == NULL || image->width == 0 || image->height == 0) {
-            LOG("ERROR!! cannot recognize file data , might be corrupted. Try another Image ");
+            std::string log_str = "ERROR!! cannot recognize file data , might be corrupted. Try another Image ";
+            Logger::Get()->Push(std::format("ERROR!! cannot recognize file data  {}", path));
             return shared<Texture2D> {nullptr};
         }
         ImageFormat(image, 7);
         Texture2D texture = LoadTextureFromImage(*image);         // Image converted to texture, GPU memory (VRAM)       
         try {           
             constainer.insert({ path,  { std::make_shared<Texture2D>(texture) , status } });
-            LOG("ASSETMANAGER | LoadTexture() found %s ", path.c_str());
+            
+          //  Logger::Get()->Push(std::format("ASSETMANAGER | LoadTexture() found {} ", path));
         }
         catch(const std::runtime_error& e){
-            LOG("ERROR!! cannot fine Image with path %s", path.c_str());
+            Logger::Get()->Push(std::format("ERROR!! cannot fine Image with path {}", path));
         }
         if (status == TEXTURE_DATA_STATUS::LOCKED) {
             auto imgfound = m_imageLoadedMap.find(path);
@@ -102,7 +104,7 @@
             return m_textureLoadedMap.find(path)->second.texture;
         }
         catch (const std::runtime_error& e) {
-            LOG("ERROR!! cannot Add Texture with path %s", path.c_str());
+         //   Logger::Get()->Push(std::format("ERROR!! cannot Add Texture with path {}", path.c_str()));
         }
         return shared<Texture2D >{nullptr};
     }
@@ -129,8 +131,9 @@
             ImageResize(&copy, width, height);
             
             if ((copy.data == NULL) || (copy.width == 0) || (copy.height == 0)) {
-
-                LOG("ERROR! MASKED ELEMENT REQUIRED BASE IMAGE POINTER!"); return false;
+                std::string log_str = "ERROR! MASKED ELEMENT REQUIRED BASE IMAGE POINTER!";
+              //  Logger::Get()->Push(log_str);
+                return false;
 
             };
             auto found = m_textureLoadedMap.find(path);
@@ -164,18 +167,18 @@
     bool AssetManager::UnloadTextureAsset(const std::string& path)
     {
         auto found = m_textureLoadedMap.find(path);
-        if (found == m_textureLoadedMap.end() || found->second.status == TEXTURE_DATA_STATUS::LOCKED) {
-            LOG("AssetManage | UnloadTextureAsset() ERROR! Failed to unloded Texture  %s , \n Asset Not found or is LOCKED.", path.c_str());
+        if (found == m_textureLoadedMap.end() || found->second.status == TEXTURE_DATA_STATUS::LOCKED) {            
+          //  Logger::Get()->Push(std::format("AssetManage | UnloadTextureAsset() ERROR! Failed to unloded Texture  {} , \n Asset Not found or is LOCKED.", path));
             return false;
         }
 
         if (found != m_textureLoadedMap.end())
-        {   
-            LOG("AssetManager UnloadTextureAsset() Texture  %s ", found->first.c_str());
+        {               
+           // Logger::Get()->Push(std::format("AssetManager UnloadTextureAsset() Texture  {} ", found->first));
 
             auto foundimg = m_imageLoadedMap.find(path);
-            if (foundimg != m_imageLoadedMap.end()) {
-                LOG("AssetManager UnloadTextureAsset() Image  %s ", foundimg->first.c_str());
+            if (foundimg != m_imageLoadedMap.end()) {                
+               // Logger::Get()->Push(std::format("AssetManager UnloadTextureAsset() Image  {} ", foundimg->first));
                 UnloadImage(*foundimg->second);
                 delete foundimg->second;
                 m_imageLoadedMap.erase(foundimg);
@@ -202,7 +205,7 @@
         auto found = m_fontLoadedMap.find(path + strsize);
         if (found != m_fontLoadedMap.end())
         {
-           //LOG(" font Found in memory%s ", path.c_str());
+           //Logger::Get()->Push(" font Found in memory {} ", path);
             return found->second;
         }
       
@@ -211,10 +214,10 @@
         if(font.baseSize > 0){
             shared<Font> fontptr = std::make_shared<Font>(font);
              m_fontLoadedMap.insert({ path + strsize, fontptr});
-       //     LOG(" font Found %s ", path.c_str()); 
+       //     Logger::Get()->Push(" font Found %s ", path.c_str()); 
              return fontptr; 
         }
-   //     LOG("Failed to load font %s ", path.c_str());
+   //     Logger::Get()->Push("Failed to load font {} ", path);
         return shared<Font> {nullptr};
     }
     bool AssetManager::UnloadFontAsset(const std::string& path, int fontsize)
@@ -226,10 +229,10 @@
             UnloadFont(*found->second);
             found->second.reset();
             m_fontLoadedMap.erase(found);
-            //LOG("AssetManager | UnloadFont() | %s  %ld | Success!", path.c_str(), fontsize);
+            //Logger::Get()->Push("AssetManager | UnloadFont() | {}  {} | Success!", path, fontsize);
             return true;
         }
-        // LOG("AssetManager |UnloadFont()| ERROR! Failed to unload Font %s ", path.c_str());
+        // Logger::Get()->Push("AssetManager |UnloadFont()| ERROR! Failed to unload Font {} ", path);
 
         return false;
     }
@@ -259,19 +262,18 @@
     void AssetManager::CleanCycle()
     {
 
-     //   LOG("|>=-=ASSETMANAGER =-=<| CleanCycle()  ");
+     //   Logger::Get()->Push("|>=-=ASSETMANAGER =-=<| CleanCycle()  ");
        for (auto iter = m_textureLoadedMap.begin(); iter != m_textureLoadedMap.end();)
         {
-       //         LOG("TextureMap  %s User Count  %lu ", iter->first.c_str(), iter->second.use_count());
+       //         Logger::Get()->Push("TextureMap  %s User Count  %lu ", iter->first.c_str(), iter->second.use_count());
             if (iter->second.texture.use_count() == 1 && iter->second.status == TEXTURE_DATA_STATUS::UNLOCKED) {
                 auto foundimg = m_imageLoadedMap.find(iter->first);
                 if (foundimg != m_imageLoadedMap.end()) {
                     UnloadImage(*foundimg->second);
                   foundimg->second = nullptr;
                     m_imageLoadedMap.erase(foundimg);  
-                }
-
-                LOG("AssetManager CleanCycle()  Texture  %s", iter->first.c_str());
+                }                
+              //  Logger::Get()->Push(std::format("AssetManager CleanCycle()  Texture  {}", iter->first));
                 UnloadTexture(*iter->second.texture);
                 iter->second.texture.reset();
                 iter = m_textureLoadedMap.erase(iter);
@@ -284,10 +286,10 @@
        /*
        for (auto iter = m_fontLoadedMap.begin(); iter != m_fontLoadedMap.end();)
        {
-           LOG("Font Map  %s User Count  %lu ", iter->first.c_str(), iter->second.use_count());
+           Logger::Get()->Push("Font Map  %s User Count  {} ", iter->first.c_str(), iter->second.use_count());
            if (iter->second.use_count() == 1) {
 
-               LOG("Cleaning Font Map  %s", iter->first.c_str());
+               Logger::Get()->Push("Cleaning Font Map  %s", iter->first.c_str());
                //            UnloadFont(fnt);
                iter->second.reset();
                iter = m_fontLoadedMap.erase(iter);
@@ -298,19 +300,19 @@
            }
        }
        */
-    //   LOG("Current Live Texture count %zu", m_textureLoadedMap.size());
-    //   LOG("Current Live Font count %zu", m_fontLoadedMap.size());
+    //   Logger::Get()->Push("Current Live Texture count %zu", m_textureLoadedMap.size());
+    //   Logger::Get()->Push("Current Live Font count %zu", m_fontLoadedMap.size());
 
-    //   LOG("|>=-=ASSETMANAGER =-=<| CleanCycle() END!! ");
+    //   Logger::Get()->Push("|>=-=ASSETMANAGER =-=<| CleanCycle() END!! ");
     }
     void AssetManager::ClearTextureMap()
     {
         for (auto iter = m_textureLoadedMap.begin(); iter != m_textureLoadedMap.end();)
-        {
-            LOG("AssetManager ClearTextureMap()  Texture %s", iter->first.c_str());
+        {            
+          //  Logger::Get()->Push(std::format("AssetManager ClearTextureMap()  Texture {}", iter->first));
             UnloadTexture(*iter->second.texture);
              iter->second.texture.reset();
-             //LOG("%s Cleared Texture Map.", iter->first.c_str());
+             //Logger::Get()->Push("%s Cleared Texture Map.", iter->first.c_str());
                iter = m_textureLoadedMap.erase(iter);
           
         }
@@ -321,10 +323,10 @@
         for (auto iter = m_fontLoadedMap.begin(); iter != m_fontLoadedMap.end();)
         {
 
-            UnloadFont(*iter->second);
-            LOG("AssetManager | ClearFontMap() | %s  | Success!", iter->first.c_str());
+            UnloadFont(*iter->second);            
+           // Logger::Get()->Push(std::format("AssetManager | ClearFontMap() | {}  | Success!", iter->first));
             iter->second.reset();
-            //LOG("%s Cleared Font Map.", iter->first.c_str());
+            //Logger::Get()->Push("%s Cleared Font Map.", iter->first.c_str());
             iter = m_fontLoadedMap.erase(iter);
 
         }

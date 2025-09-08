@@ -6,7 +6,7 @@
 #include <sstream>
 #include <functional>
 #include <stack>
-
+#include "Logger.h"
 
 namespace cart{
     
@@ -180,7 +180,7 @@ namespace cart{
             {       
                 std::istringstream  file(strm);
                // std::ifstream file(sfilename);
-              LOG("Data file data %s", strm);
+            // Logger::Get()->Push(std::format("Data file data %s", strm));
              //   if (file.is_open())
                 if (file)
                 {

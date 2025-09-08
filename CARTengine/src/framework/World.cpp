@@ -10,6 +10,7 @@
 #include "AssetManager.h"
 #include <limits> // Required for std::numeric_limits
 #include "component/InputController.h"
+#include "Logger.h"
 namespace cart {
 
 	World::World(Application* owningApp)
@@ -20,7 +21,8 @@ namespace cart {
 		m_cleanCycleStartTime(0),
 		m_cleanCycleIter{ 5.f },
 		m_gameStages{},
-		m_currentStage{m_gameStages.end()}		
+		m_currentStage{m_gameStages.end()},
+		m_inputController{}
 	{
 		
 	}
@@ -41,7 +43,7 @@ namespace cart {
 
     void World::AllGameStagesFinieshed()
     {
-		LOG("All game stages fnished.");
+		//Logger::Get()->Push("All game stages fnished.");
     }
 
     void World::NextGameStage()
@@ -67,7 +69,7 @@ namespace cart {
 		}
 		else{
 
-			LOG("NO GameStage found!");
+			//Logger::Get()->Push("NO GameStage found!");
 		}	
 	}
 
@@ -194,20 +196,23 @@ namespace cart {
 		return totalmem;
 
 	}
-
+	void World::SetSessionData(void* data) 
+	{
+		m_sessionData = data; 
+	}
 #pragma endregion
 	
 #pragma region CleanUp
 
 	void World::CleanCycle() {
-	//	LOG("(- WORLD -) CleanCycle() ");
+	//	Logger::Get()->Push("(- WORLD -) CleanCycle() ");
 		for (auto iter = m_Actors.begin(); iter != m_Actors.end();)
 		{
 			//if (iter->get()->IsPendingDestroy() && iter->use_count() == 1)
-			//	LOG("Actor %s with use count%lu \n", iter->get()->GetID().c_str(), iter->use_count());
+			//	Logger::Get()->Push("Actor %s with use count%lu \n", iter->get()->GetID().c_str(), iter->use_count());
 			if (iter->use_count() == 1)
 			{			
-		//		LOG("Removing last instanece of actor %s with use count%lu \n", iter->get()->GetID().c_str(), iter->use_count());
+		//		Logger::Get()->Push("Removing last instanece of actor %s with use count%lu \n", iter->get()->GetID().c_str(), iter->use_count());
 				iter->reset();
 				iter = m_Actors.erase(iter);
 				
@@ -217,8 +222,8 @@ namespace cart {
 				++iter;
 			}
 		}
-	//	LOG("Current Live Actors count %zu", m_Actors.size());
-	//	LOG("(- WORLD -) CleanCycle() END!");
+	//	Logger::Get()->Push("Current Live Actors count {}", m_Actors.size());
+	//	Logger::Get()->Push("(- WORLD -) CleanCycle() END!");
 		AssetManager::Get().CleanCycle();
 	
 	}
@@ -230,9 +235,16 @@ namespace cart {
 			iter->get()->Destroy();
 			++iter;
 		}
+		for (auto stage : m_gameStages)
+		{		
+			stage.get()->Destroy();
+			stage.reset();
+		}
 	}
 	World::~World() {
-		
+		if(m_sessionData)	delete m_sessionData;
+
+		std::cout << "World Ended!!" << std::endl;
 	}
 #pragma endregion
 	

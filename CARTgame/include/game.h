@@ -11,6 +11,9 @@
 #define REPLAY_ANIM replay_anim
 //using namespace std;
 
+
+#define __LOGGER__
+
 using namespace std::chrono;
 
 namespace cart {
@@ -50,7 +53,7 @@ namespace cart {
     
         shared<PuzzleImageController> m_imagecontrols;
         weak<HUD> m_GameplayHUD;
-        List<DebugData> m_DebugData;
+        Logger* logger;
     };
 
 

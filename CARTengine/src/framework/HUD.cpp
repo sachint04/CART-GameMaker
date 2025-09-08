@@ -4,6 +4,7 @@
 #include "World.h"
 #include "Object.h"
 #include "UIButton.h"
+#include "Logger.h"
 namespace cart
 {
 	
@@ -15,7 +16,6 @@ namespace cart
 	}
 	HUD::~HUD()
 	{
-//		LOG("HUD deleted!");
 		
 	}
 	void HUD::NativeInit()
@@ -38,14 +38,14 @@ namespace cart
 	bool HUD::IsMouseOverUI(Vector2 _locmouse)
 	{
 		
-	for(auto ui : m_children) {
-		if (CheckCollisionPointRec(_locmouse, ui->GetBounds()) && ui->IsVisible() == true) {
-				return true;
-			}
+		for(auto ui : m_children) {
+			if (CheckCollisionPointRec(_locmouse, ui->GetBounds()) && ui->IsVisible() == true) return true;
 		}
 
-		return false;
+		return Logger::Get()->IsMouseOverUI();
 	}
+
+
 	void HUD::Update(float _deltaTime)
 	{
 		//UIElement::Update(_deltaTime);

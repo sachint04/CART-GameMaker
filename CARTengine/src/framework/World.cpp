@@ -242,7 +242,7 @@ namespace cart {
 		}
 	}
 	World::~World() {
-		if(m_sessionData)	delete m_sessionData;
+
 
 		std::cout << "World Ended!!" << std::endl;
 	}

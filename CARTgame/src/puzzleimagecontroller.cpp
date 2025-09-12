@@ -6,7 +6,8 @@
 #include "Sprite2D.h"
 #include "World.h"
 #include "component/controls/transformCntrl.h"
-
+#include "Logger.h"
+#include "AssetManager.h"
 
 namespace cart{
 
@@ -20,7 +21,8 @@ namespace cart{
     m_maxWidth{maxWidth},
     m_maxHeight{maxHeight},
     m_gridWidth{gridWidth},
-    m_gridHeight{gridHeight}
+    m_gridHeight{gridHeight},
+        cannontex{}
     {
     }
 
@@ -103,9 +105,18 @@ void PuzzleImageController::Init()
     m_goBackBtn.lock()->onButtonUp.BindAction(GetWeakRef(), &PuzzleImageController::GoBackHandler);
     AddChild(m_goBackBtn);
 
-    txtbtnui = {};
     
-    ui = {};
+    // TEST EM_Fetch class
+
+// Will Work in __EMSCRIPTEN__ Mode
+   bool success =  AssetManager::Get().LoadTextureAsync(std::string{ "/cannon1.png" }, GetWeakRef(), &PuzzleImageController::OnFetchAsyncLoadTexture, TEXTURE_DATA_STATUS::LOCKED);
+   
+
+   txtbtnui = {};
+
+   ui = {};
+
+//#endif //  __EMSCRIPTEN__
 }
 
 
@@ -130,11 +141,60 @@ void PuzzleImageController::ImageMoveHandler(Vector2 loc)
 }
 #pragma endregion
 
+#pragma region TEST EM_Fetch class
+void PuzzleImageController::OnFetchDataLoad(std::string id, std::string status, const char* data, int size)
+{
+   
+    if (status.compare("ok") == 0) {      
+        unsigned char* modifiable = reinterpret_cast<unsigned char*>(const_cast<char*>(data));            
+        Image cannon = LoadImageFromMemory(".png", (unsigned char*)modifiable, size);
+        ImageResize(&cannon, 400, 400);
+        Logger::Get()->Push(std::format("Image width {} | height {} size {}", cannon.width, cannon.height, size));
+        cannontex = LoadTextureFromImage(cannon);
+        UnloadImage(cannon);
+    }
+}
+
+void PuzzleImageController::OnFetchAsyncLoadTexture(std::string url, ASYNC_CALLBACK_STATUS status, shared<Texture2D> texture, float progress)
+{
+    if (status == FAILED) {
+        Logger::Get()->Push(std::format("ERROR!! , Failed to Load Texture from {}", url));
+        return;
+    }
+    else if (status == PROGRESS)
+    {
+        Logger::Get()->Push(std::format("OnFetchAsyncLoadTexture()  progress {}",  progress));    
+            return;
+    }
+    Logger::Get()->Push(std::format("OnFetchAsyncLoadTexture()  sccusses {}", url));
+
+    UI_Properties  ui = {};
+    ui.color = WHITE;
+    ui.texture = std::string{ "/cannon.png" };
+    ui.location = { 300.f, 0 };
+    ui.size = { 300.f, 300.f };
+    m_cannon = m_owningworld->SpawnActor<Sprite2D>(std::string{ "cannon" });
+    m_cannon.lock()->SetUIProperties(ui);
+    m_cannon.lock()->MaintainAspectRatio(true);
+    m_cannon.lock()->Init();
+    m_cannon.lock()->SetVisible(true);
+    std::string path = { "/cannon.png" };
+    AssetManager::Get().ResizeTexture(path, 300, 300);
+    AddChild(m_cannon);
+  
+}
+
+#pragma endregion
 
 #pragma region CLEANUP
 void PuzzleImageController::Destroy() {
 
     UIElement::Destroy();
+}
+void PuzzleImageController::Draw(float _deltaTime)
+{
+    UIElement::Draw(_deltaTime);
+
 }
 #pragma endregion
 

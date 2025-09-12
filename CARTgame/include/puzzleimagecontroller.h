@@ -1,6 +1,7 @@
 #pragma once
 #include "UIElement.h"
 #include "Core.h"
+#include "network/EM_Fetch.h"
 namespace cart
 {
     class UIButton;
@@ -26,15 +27,18 @@ namespace cart
     int m_gridHeight;
     std::string m_strImage;
     weak<Sprite2D> m_target; 
+    weak<Sprite2D> m_cannon; 
     weak<TransformCntrl> m_control;
     weak<UIButton> m_resetBtn;
     weak<UIButton> m_goBackBtn;
-
+    void OnFetchDataLoad(std::string id, std::string status, const char* data, int size);
+    void OnFetchAsyncLoadTexture(std::string url, ASYNC_CALLBACK_STATUS status, shared<Texture2D> texture, float progress);
+    Texture2D cannontex;
     public:
         PuzzleImageController(World* _owningworld, const std::string& id, const std::string& strimage, int defaultWidth, int defaultHeight, int minWidth, int minHeight, int maxWidth, int maxHeight, int gridWidth, int gridHeight);
        void Init()override;
        void Destroy() override;
-
+       void Draw(float _deltaTime)override;
        Delegate<> onGoBack;
 
        virtual ~PuzzleImageController();

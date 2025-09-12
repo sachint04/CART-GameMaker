@@ -31,7 +31,7 @@ if (ENVIRONMENT_IS_NODE) {
 
 // --pre-jses are emitted after the Module integration code, so that they can
 // refer to Module (if they choose; they can also define Module)
-// include: C:\Users\sachi\AppData\Local\Temp\tmpoak1_h4a.js
+// include: C:\Users\sachi\AppData\Local\Temp\tmp3t7pt816.js
 
   Module['expectedDataFileDownloads'] ??= 0;
   Module['expectedDataFileDownloads']++;
@@ -209,11 +209,11 @@ Module['FS_createPath']("/assets", "fonts", true, true);
     }
 
     }
-    loadPackage({"files": [{"filename": "/assets/cartengine.png", "start": 0, "end": 28073}, {"filename": "/assets/fonts/Lobster-Regular.ttf", "start": 28073, "end": 457789}, {"filename": "/assets/fonts/barlow.ttf", "start": 457789, "end": 557417}, {"filename": "/assets/fonts/bodpstc.ttf", "start": 557417, "end": 649009}, {"filename": "/assets/fonts/fascinate.ttf", "start": 649009, "end": 698541}, {"filename": "/assets/fonts/firasans.ttf", "start": 698541, "end": 1139525}, {"filename": "/assets/fonts/framd.ttf", "start": 1139525, "end": 1273157}, {"filename": "/assets/fonts/monsieurladoulaise.ttf", "start": 1273157, "end": 1326025}, {"filename": "/assets/fonts/passionsconflict.ttf", "start": 1326025, "end": 1469513}, {"filename": "/assets/fonts/synevariable.ttf", "start": 1469513, "end": 1614773}, {"filename": "/assets/fonts/unifrakturMaguntia.ttf", "start": 1614773, "end": 1697349}, {"filename": "/assets/fonts/verdana.ttf", "start": 1697349, "end": 1940653}, {"filename": "/assets/gameconfig.txt", "start": 1940653, "end": 1942829}], "remote_package_size": 1942829});
+    loadPackage({"files": [{"filename": "/assets/cartengine.png", "start": 0, "end": 28073}, {"filename": "/assets/fonts/Lobster-Regular.ttf", "start": 28073, "end": 457789}, {"filename": "/assets/fonts/barlow.ttf", "start": 457789, "end": 557417}, {"filename": "/assets/fonts/bodpstc.ttf", "start": 557417, "end": 649009}, {"filename": "/assets/fonts/fascinate.ttf", "start": 649009, "end": 698541}, {"filename": "/assets/fonts/firasans.ttf", "start": 698541, "end": 1139525}, {"filename": "/assets/fonts/framd.ttf", "start": 1139525, "end": 1273157}, {"filename": "/assets/fonts/monsieurladoulaise.ttf", "start": 1273157, "end": 1326025}, {"filename": "/assets/fonts/passionsconflict.ttf", "start": 1326025, "end": 1469513}, {"filename": "/assets/fonts/synevariable.ttf", "start": 1469513, "end": 1614773}, {"filename": "/assets/fonts/unifrakturMaguntia.ttf", "start": 1614773, "end": 1697349}, {"filename": "/assets/fonts/verdana.ttf", "start": 1697349, "end": 1940653}], "remote_package_size": 1940653});
 
   })();
 
-// end include: C:\Users\sachi\AppData\Local\Temp\tmpoak1_h4a.js
+// end include: C:\Users\sachi\AppData\Local\Temp\tmp3t7pt816.js
 
 
 // Sometimes an existing Module object exists with properties
@@ -718,49 +718,49 @@ async function createWasm() {
 // === Body ===
 
 var ASM_CONSTS = {
-  52632: () => { if (document.fullscreenElement) return 1; },  
- 52678: () => { return document.getElementById('canvas').width; },  
- 52730: () => { return parseInt(document.getElementById('canvas').style.width); },  
- 52798: () => { document.exitFullscreen(); },  
- 52825: () => { setTimeout(function() { Module.requestFullscreen(false, false); }, 100); },  
- 52898: () => { if (document.fullscreenElement) return 1; },  
- 52944: () => { return document.getElementById('canvas').width; },  
- 52996: () => { return screen.width; },  
- 53021: () => { document.exitFullscreen(); },  
- 53048: () => { setTimeout(function() { Module.requestFullscreen(false, true); setTimeout(function() { canvas.style.width="unset"; }, 100); }, 100); },  
- 53181: () => { return window.innerWidth; },  
- 53207: () => { return window.innerHeight; },  
- 53234: () => { if (document.fullscreenElement) return 1; },  
- 53280: () => { return document.getElementById('canvas').width; },  
- 53332: () => { return parseInt(document.getElementById('canvas').style.width); },  
- 53400: () => { if (document.fullscreenElement) return 1; },  
- 53446: () => { return document.getElementById('canvas').width; },  
- 53498: () => { return screen.width; },  
- 53523: () => { return window.innerWidth; },  
- 53549: () => { return window.innerHeight; },  
- 53576: () => { if (document.fullscreenElement) return 1; },  
- 53622: () => { return document.getElementById('canvas').width; },  
- 53674: () => { return screen.width; },  
- 53699: () => { document.exitFullscreen(); },  
- 53726: () => { if (document.fullscreenElement) return 1; },  
- 53772: () => { return document.getElementById('canvas').width; },  
- 53824: () => { return parseInt(document.getElementById('canvas').style.width); },  
- 53892: () => { document.exitFullscreen(); },  
- 53919: ($0) => { document.getElementById('canvas').style.opacity = $0; },  
- 53977: () => { return screen.width; },  
- 54002: () => { return screen.height; },  
- 54028: () => { return window.screenX; },  
- 54055: () => { return window.screenY; },  
- 54082: () => { return window.devicePixelRatio; },  
- 54118: ($0) => { navigator.clipboard.writeText(UTF8ToString($0)); },  
- 54171: ($0) => { document.getElementById("canvas").style.cursor = UTF8ToString($0); },  
- 54242: () => { document.getElementById('canvas').style.cursor = 'none'; },  
- 54299: ($0, $1, $2, $3) => { try { navigator.getGamepads()[$0].vibrationActuator.playEffect('dual-rumble', { startDelay: 0, duration: $3, weakMagnitude: $1, strongMagnitude: $2 }); } catch (e) { try { navigator.getGamepads()[$0].hapticActuators[0].pulse($2, $3); } catch (e) { } } },  
- 54555: ($0) => { document.getElementById('canvas').style.cursor = UTF8ToString($0); },  
- 54626: () => { if (document.fullscreenElement) return 1; },  
- 54672: () => { return window.innerWidth; },  
- 54698: () => { return window.innerHeight; },  
- 54725: () => { if (document.pointerLockElement) return 1; }
+  198928: () => { if (document.fullscreenElement) return 1; },  
+ 198974: () => { return document.getElementById('canvas').width; },  
+ 199026: () => { return parseInt(document.getElementById('canvas').style.width); },  
+ 199094: () => { document.exitFullscreen(); },  
+ 199121: () => { setTimeout(function() { Module.requestFullscreen(false, false); }, 100); },  
+ 199194: () => { if (document.fullscreenElement) return 1; },  
+ 199240: () => { return document.getElementById('canvas').width; },  
+ 199292: () => { return screen.width; },  
+ 199317: () => { document.exitFullscreen(); },  
+ 199344: () => { setTimeout(function() { Module.requestFullscreen(false, true); setTimeout(function() { canvas.style.width="unset"; }, 100); }, 100); },  
+ 199477: () => { return window.innerWidth; },  
+ 199503: () => { return window.innerHeight; },  
+ 199530: () => { if (document.fullscreenElement) return 1; },  
+ 199576: () => { return document.getElementById('canvas').width; },  
+ 199628: () => { return parseInt(document.getElementById('canvas').style.width); },  
+ 199696: () => { if (document.fullscreenElement) return 1; },  
+ 199742: () => { return document.getElementById('canvas').width; },  
+ 199794: () => { return screen.width; },  
+ 199819: () => { return window.innerWidth; },  
+ 199845: () => { return window.innerHeight; },  
+ 199872: () => { if (document.fullscreenElement) return 1; },  
+ 199918: () => { return document.getElementById('canvas').width; },  
+ 199970: () => { return screen.width; },  
+ 199995: () => { document.exitFullscreen(); },  
+ 200022: () => { if (document.fullscreenElement) return 1; },  
+ 200068: () => { return document.getElementById('canvas').width; },  
+ 200120: () => { return parseInt(document.getElementById('canvas').style.width); },  
+ 200188: () => { document.exitFullscreen(); },  
+ 200215: ($0) => { document.getElementById('canvas').style.opacity = $0; },  
+ 200273: () => { return screen.width; },  
+ 200298: () => { return screen.height; },  
+ 200324: () => { return window.screenX; },  
+ 200351: () => { return window.screenY; },  
+ 200378: () => { return window.devicePixelRatio; },  
+ 200414: ($0) => { navigator.clipboard.writeText(UTF8ToString($0)); },  
+ 200467: ($0) => { document.getElementById("canvas").style.cursor = UTF8ToString($0); },  
+ 200538: () => { document.getElementById('canvas').style.cursor = 'none'; },  
+ 200595: ($0, $1, $2, $3) => { try { navigator.getGamepads()[$0].vibrationActuator.playEffect('dual-rumble', { startDelay: 0, duration: $3, weakMagnitude: $1, strongMagnitude: $2 }); } catch (e) { try { navigator.getGamepads()[$0].hapticActuators[0].pulse($2, $3); } catch (e) { } } },  
+ 200851: ($0) => { document.getElementById('canvas').style.cursor = UTF8ToString($0); },  
+ 200922: () => { if (document.fullscreenElement) return 1; },  
+ 200968: () => { return window.innerWidth; },  
+ 200994: () => { return window.innerHeight; },  
+ 201021: () => { if (document.pointerLockElement) return 1; }
 };
 
 // end include: preamble.js
@@ -3726,6 +3726,55 @@ var ASM_CONSTS = {
   var __abort_js = () =>
       abort('');
 
+  var __tzset_js = (timezone, daylight, std_name, dst_name) => {
+      // TODO: Use (malleable) environment variables instead of system settings.
+      var currentYear = new Date().getFullYear();
+      var winter = new Date(currentYear, 0, 1);
+      var summer = new Date(currentYear, 6, 1);
+      var winterOffset = winter.getTimezoneOffset();
+      var summerOffset = summer.getTimezoneOffset();
+  
+      // Local standard timezone offset. Local standard time is not adjusted for
+      // daylight savings.  This code uses the fact that getTimezoneOffset returns
+      // a greater value during Standard Time versus Daylight Saving Time (DST).
+      // Thus it determines the expected output during Standard Time, and it
+      // compares whether the output of the given date the same (Standard) or less
+      // (DST).
+      var stdTimezoneOffset = Math.max(winterOffset, summerOffset);
+  
+      // timezone is specified as seconds west of UTC ("The external variable
+      // `timezone` shall be set to the difference, in seconds, between
+      // Coordinated Universal Time (UTC) and local standard time."), the same
+      // as returned by stdTimezoneOffset.
+      // See http://pubs.opengroup.org/onlinepubs/009695399/functions/tzset.html
+      HEAPU32[((timezone)>>2)] = stdTimezoneOffset * 60;
+  
+      HEAP32[((daylight)>>2)] = Number(winterOffset != summerOffset);
+  
+      var extractZone = (timezoneOffset) => {
+        // Why inverse sign?
+        // Read here https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTimezoneOffset
+        var sign = timezoneOffset >= 0 ? "-" : "+";
+  
+        var absOffset = Math.abs(timezoneOffset)
+        var hours = String(Math.floor(absOffset / 60)).padStart(2, "0");
+        var minutes = String(absOffset % 60).padStart(2, "0");
+  
+        return `UTC${sign}${hours}${minutes}`;
+      }
+  
+      var winterName = extractZone(winterOffset);
+      var summerName = extractZone(summerOffset);
+      if (summerOffset < winterOffset) {
+        // Northern hemisphere
+        stringToUTF8(winterName, std_name, 17);
+        stringToUTF8(summerName, dst_name, 17);
+      } else {
+        stringToUTF8(winterName, dst_name, 17);
+        stringToUTF8(summerName, std_name, 17);
+      }
+    };
+
   var _emscripten_get_now = () => performance.now();
   
   var _emscripten_date_now = () => Date.now();
@@ -3797,6 +3846,17 @@ var ASM_CONSTS = {
       return runEmAsmFunction(code, sigPtr, argbuf);
     };
 
+
+  function _emscripten_fetch_free(id) {
+    if (Fetch.xhrs.has(id)) {
+      var xhr = Fetch.xhrs.get(id);
+      Fetch.xhrs.free(id);
+      // check if fetch is still in progress and should be aborted
+      if (xhr.readyState > 0 && xhr.readyState < 4) {
+        xhr.abort();
+      }
+    }
+  }
 
   var onExits = [];
   var addOnExit = (cb) => onExits.unshift(cb);
@@ -6148,6 +6208,9 @@ var ASM_CONSTS = {
   var _glViewport = (x0, x1, x2, x3) => GLctx.viewport(x0, x1, x2, x3);
   var _emscripten_glViewport = _glViewport;
 
+  var _emscripten_is_main_browser_thread = () =>
+      !ENVIRONMENT_IS_WORKER;
+
   var getHeapMax = () =>
       HEAPU8.length;
   
@@ -7135,6 +7198,511 @@ var ASM_CONSTS = {
     };
   _emscripten_sleep.isAsync = true;
 
+  
+  
+  class HandleAllocator {
+      allocated = [undefined];
+      freelist = [];
+      get(id) {
+        return this.allocated[id];
+      }
+      has(id) {
+        return this.allocated[id] !== undefined;
+      }
+      allocate(handle) {
+        var id = this.freelist.pop() || this.allocated.length;
+        this.allocated[id] = handle;
+        return id;
+      }
+      free(id) {
+        // Set the slot to `undefined` rather than using `delete` here since
+        // apparently arrays with holes in them can be less efficient.
+        this.allocated[id] = undefined;
+        this.freelist.push(id);
+      }
+    }
+  var Fetch = {
+  openDatabase(dbname, dbversion, onsuccess, onerror) {
+      try {
+        var openRequest = indexedDB.open(dbname, dbversion);
+      } catch (e) {
+        return onerror(e);
+      }
+  
+      openRequest.onupgradeneeded = (event) => {
+        var db = /** @type {IDBDatabase} */ (event.target.result);
+        if (db.objectStoreNames.contains('FILES')) {
+          db.deleteObjectStore('FILES');
+        }
+        db.createObjectStore('FILES');
+      };
+      openRequest.onsuccess = (event) => onsuccess(event.target.result);
+      openRequest.onerror = onerror;
+    },
+  init() {
+      Fetch.xhrs = new HandleAllocator();
+      var onsuccess = (db) => {
+        Fetch.dbInstance = db;
+        removeRunDependency('library_fetch_init');
+      };
+  
+      var onerror = () => {
+        Fetch.dbInstance = false;
+        removeRunDependency('library_fetch_init');
+      };
+  
+      addRunDependency('library_fetch_init');
+      Fetch.openDatabase('emscripten_filesystem', 1, onsuccess, onerror);
+    },
+  };
+  
+  function fetchXHR(fetch, onsuccess, onerror, onprogress, onreadystatechange) {
+    var url = HEAPU32[(((fetch)+(8))>>2)];
+    if (!url) {
+      onerror(fetch, 0, 'no url specified!');
+      return;
+    }
+    var url_ = UTF8ToString(url);
+  
+    var fetch_attr = fetch + 108;
+    var requestMethod = UTF8ToString(fetch_attr + 0);
+    requestMethod ||= 'GET';
+    var timeoutMsecs = HEAPU32[(((fetch_attr)+(56))>>2)];
+    var userName = HEAPU32[(((fetch_attr)+(68))>>2)];
+    var password = HEAPU32[(((fetch_attr)+(72))>>2)];
+    var requestHeaders = HEAPU32[(((fetch_attr)+(76))>>2)];
+    var overriddenMimeType = HEAPU32[(((fetch_attr)+(80))>>2)];
+    var dataPtr = HEAPU32[(((fetch_attr)+(84))>>2)];
+    var dataLength = HEAPU32[(((fetch_attr)+(88))>>2)];
+  
+    var fetchAttributes = HEAPU32[(((fetch_attr)+(52))>>2)];
+    var fetchAttrLoadToMemory = !!(fetchAttributes & 1);
+    var fetchAttrStreamData = !!(fetchAttributes & 2);
+    var fetchAttrSynchronous = !!(fetchAttributes & 64);
+  
+    var userNameStr = userName ? UTF8ToString(userName) : undefined;
+    var passwordStr = password ? UTF8ToString(password) : undefined;
+  
+    var xhr = new XMLHttpRequest();
+    xhr.withCredentials = !!HEAPU8[(fetch_attr)+(60)];;
+    xhr.open(requestMethod, url_, !fetchAttrSynchronous, userNameStr, passwordStr);
+    if (!fetchAttrSynchronous) xhr.timeout = timeoutMsecs; // XHR timeout field is only accessible in async XHRs, and must be set after .open() but before .send().
+    xhr.url_ = url_; // Save the url for debugging purposes (and for comparing to the responseURL that server side advertised)
+    xhr.responseType = 'arraybuffer';
+  
+    if (overriddenMimeType) {
+      var overriddenMimeTypeStr = UTF8ToString(overriddenMimeType);
+      xhr.overrideMimeType(overriddenMimeTypeStr);
+    }
+    if (requestHeaders) {
+      for (;;) {
+        var key = HEAPU32[((requestHeaders)>>2)];
+        if (!key) break;
+        var value = HEAPU32[(((requestHeaders)+(4))>>2)];
+        if (!value) break;
+        requestHeaders += 8;
+        var keyStr = UTF8ToString(key);
+        var valueStr = UTF8ToString(value);
+        xhr.setRequestHeader(keyStr, valueStr);
+      }
+    }
+  
+    var id = Fetch.xhrs.allocate(xhr);
+    HEAPU32[((fetch)>>2)] = id;
+    var data = (dataPtr && dataLength) ? HEAPU8.slice(dataPtr, dataPtr + dataLength) : null;
+    // TODO: Support specifying custom headers to the request.
+  
+    // Share the code to save the response, as we need to do so both on success
+    // and on error (despite an error, there may be a response, like a 404 page).
+    // This receives a condition, which determines whether to save the xhr's
+    // response, or just 0.
+    function saveResponseAndStatus() {
+      var ptr = 0;
+      var ptrLen = 0;
+      if (xhr.response && fetchAttrLoadToMemory && HEAPU32[(((fetch)+(12))>>2)] === 0) {
+        ptrLen = xhr.response.byteLength;
+      }
+      if (ptrLen > 0) {
+        // The data pointer malloc()ed here has the same lifetime as the emscripten_fetch_t structure itself has, and is
+        // freed when emscripten_fetch_close() is called.
+        ptr = _malloc(ptrLen);
+        HEAPU8.set(new Uint8Array(/** @type{Array<number>} */(xhr.response)), ptr);
+      }
+      HEAPU32[(((fetch)+(12))>>2)] = ptr
+      writeI53ToI64(fetch + 16, ptrLen);
+      writeI53ToI64(fetch + 24, 0);
+      var len = xhr.response ? xhr.response.byteLength : 0;
+      if (len) {
+        // If the final XHR.onload handler receives the bytedata to compute total length, report that,
+        // otherwise don't write anything out here, which will retain the latest byte size reported in
+        // the most recent XHR.onprogress handler.
+        writeI53ToI64(fetch + 32, len);
+      }
+      HEAP16[(((fetch)+(40))>>1)] = xhr.readyState
+      HEAP16[(((fetch)+(42))>>1)] = xhr.status
+      if (xhr.statusText) stringToUTF8(xhr.statusText, fetch + 44, 64);
+    }
+  
+    xhr.onload = (e) => {
+      // check if xhr was aborted by user and don't try to call back
+      if (!Fetch.xhrs.has(id)) {
+        return;
+      }
+      saveResponseAndStatus();
+      if (xhr.status >= 200 && xhr.status < 300) {
+        onsuccess?.(fetch, xhr, e);
+      } else {
+        onerror?.(fetch, xhr, e);
+      }
+    };
+    xhr.onerror = (e) => {
+      // check if xhr was aborted by user and don't try to call back
+      if (!Fetch.xhrs.has(id)) {
+        return;
+      }
+      saveResponseAndStatus();
+      onerror?.(fetch, xhr, e);
+    };
+    xhr.ontimeout = (e) => {
+      // check if xhr was aborted by user and don't try to call back
+      if (!Fetch.xhrs.has(id)) {
+        return;
+      }
+      onerror?.(fetch, xhr, e);
+    };
+    xhr.onprogress = (e) => {
+      // check if xhr was aborted by user and don't try to call back
+      if (!Fetch.xhrs.has(id)) {
+        return;
+      }
+      var ptrLen = (fetchAttrLoadToMemory && fetchAttrStreamData && xhr.response) ? xhr.response.byteLength : 0;
+      var ptr = 0;
+      if (ptrLen > 0 && fetchAttrLoadToMemory && fetchAttrStreamData) {
+        // Allocate byte data in Emscripten heap for the streamed memory block (freed immediately after onprogress call)
+        ptr = _malloc(ptrLen);
+        HEAPU8.set(new Uint8Array(/** @type{Array<number>} */(xhr.response)), ptr);
+      }
+      HEAPU32[(((fetch)+(12))>>2)] = ptr
+      writeI53ToI64(fetch + 16, ptrLen);
+      writeI53ToI64(fetch + 24, e.loaded - ptrLen);
+      writeI53ToI64(fetch + 32, e.total);
+      HEAP16[(((fetch)+(40))>>1)] = xhr.readyState
+      // If loading files from a source that does not give HTTP status code, assume success if we get data bytes
+      if (xhr.readyState >= 3 && xhr.status === 0 && e.loaded > 0) xhr.status = 200;
+      HEAP16[(((fetch)+(42))>>1)] = xhr.status
+      if (xhr.statusText) stringToUTF8(xhr.statusText, fetch + 44, 64);
+      onprogress?.(fetch, xhr, e);
+      if (ptr) {
+        _free(ptr);
+      }
+    };
+    xhr.onreadystatechange = (e) => {
+      // check if xhr was aborted by user and don't try to call back
+      if (!Fetch.xhrs.has(id)) {
+        
+        return;
+      }
+      HEAP16[(((fetch)+(40))>>1)] = xhr.readyState
+      if (xhr.readyState >= 2) {
+        HEAP16[(((fetch)+(42))>>1)] = xhr.status
+      }
+      onreadystatechange?.(fetch, xhr, e);
+    };
+    try {
+      xhr.send(data);
+    } catch(e) {
+      onerror?.(fetch, xhr, e);
+    }
+  }
+  
+  
+  
+  
+  function fetchCacheData(/** @type {IDBDatabase} */ db, fetch, data, onsuccess, onerror) {
+    if (!db) {
+      onerror(fetch, 0, 'IndexedDB not available!');
+      return;
+    }
+  
+    var fetch_attr = fetch + 108;
+    var destinationPath = HEAPU32[(((fetch_attr)+(64))>>2)];
+    destinationPath ||= HEAPU32[(((fetch)+(8))>>2)];
+    var destinationPathStr = UTF8ToString(destinationPath);
+  
+    try {
+      var transaction = db.transaction(['FILES'], 'readwrite');
+      var packages = transaction.objectStore('FILES');
+      var putRequest = packages.put(data, destinationPathStr);
+      putRequest.onsuccess = (event) => {
+        HEAP16[(((fetch)+(40))>>1)] = 4 // Mimic XHR readyState 4 === 'DONE: The operation is complete'
+        HEAP16[(((fetch)+(42))>>1)] = 200 // Mimic XHR HTTP status code 200 "OK"
+        stringToUTF8("OK", fetch + 44, 64);
+        onsuccess(fetch, 0, destinationPathStr);
+      };
+      putRequest.onerror = (error) => {
+        // Most likely we got an error if IndexedDB is unwilling to store any more data for this page.
+        // TODO: Can we identify and break down different IndexedDB-provided errors and convert those
+        // to more HTTP status codes for more information?
+        HEAP16[(((fetch)+(40))>>1)] = 4 // Mimic XHR readyState 4 === 'DONE: The operation is complete'
+        HEAP16[(((fetch)+(42))>>1)] = 413 // Mimic XHR HTTP status code 413 "Payload Too Large"
+        stringToUTF8("Payload Too Large", fetch + 44, 64);
+        onerror(fetch, 0, error);
+      };
+    } catch(e) {
+      onerror(fetch, 0, e);
+    }
+  }
+  
+  function fetchLoadCachedData(db, fetch, onsuccess, onerror) {
+    if (!db) {
+      onerror(fetch, 0, 'IndexedDB not available!');
+      return;
+    }
+  
+    var fetch_attr = fetch + 108;
+    var path = HEAPU32[(((fetch_attr)+(64))>>2)];
+    path ||= HEAPU32[(((fetch)+(8))>>2)];
+    var pathStr = UTF8ToString(path);
+  
+    try {
+      var transaction = db.transaction(['FILES'], 'readonly');
+      var packages = transaction.objectStore('FILES');
+      var getRequest = packages.get(pathStr);
+      getRequest.onsuccess = (event) => {
+        if (event.target.result) {
+          var value = event.target.result;
+          var len = value.byteLength || value.length;
+          // The data pointer malloc()ed here has the same lifetime as the emscripten_fetch_t structure itself has, and is
+          // freed when emscripten_fetch_close() is called.
+          var ptr = _malloc(len);
+          HEAPU8.set(new Uint8Array(value), ptr);
+          HEAPU32[(((fetch)+(12))>>2)] = ptr;
+          writeI53ToI64(fetch + 16, len);
+          writeI53ToI64(fetch + 24, 0);
+          writeI53ToI64(fetch + 32, len);
+          HEAP16[(((fetch)+(40))>>1)] = 4 // Mimic XHR readyState 4 === 'DONE: The operation is complete'
+          HEAP16[(((fetch)+(42))>>1)] = 200 // Mimic XHR HTTP status code 200 "OK"
+          stringToUTF8("OK", fetch + 44, 64);
+          onsuccess(fetch, 0, value);
+        } else {
+          // Succeeded to load, but the load came back with the value of undefined, treat that as an error since we never store undefined in db.
+          HEAP16[(((fetch)+(40))>>1)] = 4 // Mimic XHR readyState 4 === 'DONE: The operation is complete'
+          HEAP16[(((fetch)+(42))>>1)] = 404 // Mimic XHR HTTP status code 404 "Not Found"
+          stringToUTF8("Not Found", fetch + 44, 64);
+          onerror(fetch, 0, 'no data');
+        }
+      };
+      getRequest.onerror = (error) => {
+        HEAP16[(((fetch)+(40))>>1)] = 4 // Mimic XHR readyState 4 === 'DONE: The operation is complete'
+        HEAP16[(((fetch)+(42))>>1)] = 404 // Mimic XHR HTTP status code 404 "Not Found"
+        stringToUTF8("Not Found", fetch + 44, 64);
+        onerror(fetch, 0, error);
+      };
+    } catch(e) {
+      onerror(fetch, 0, e);
+    }
+  }
+  
+  function fetchDeleteCachedData(db, fetch, onsuccess, onerror) {
+    if (!db) {
+      onerror(fetch, 0, 'IndexedDB not available!');
+      return;
+    }
+  
+    var fetch_attr = fetch + 108;
+    var path = HEAPU32[(((fetch_attr)+(64))>>2)];
+    path ||= HEAPU32[(((fetch)+(8))>>2)];
+  
+    var pathStr = UTF8ToString(path);
+  
+    try {
+      var transaction = db.transaction(['FILES'], 'readwrite');
+      var packages = transaction.objectStore('FILES');
+      var request = packages.delete(pathStr);
+      request.onsuccess = (event) => {
+        var value = event.target.result;
+        HEAPU32[(((fetch)+(12))>>2)] = 0;
+        writeI53ToI64(fetch + 16, 0);
+        writeI53ToI64(fetch + 24, 0);
+        writeI53ToI64(fetch + 32, 0);
+        // Mimic XHR readyState 4 === 'DONE: The operation is complete'
+        HEAP16[(((fetch)+(40))>>1)] = 4;
+        // Mimic XHR HTTP status code 200 "OK"
+        HEAP16[(((fetch)+(42))>>1)] = 200;
+        stringToUTF8("OK", fetch + 44, 64);
+        onsuccess(fetch, 0, value);
+      };
+      request.onerror = (error) => {
+        HEAP16[(((fetch)+(40))>>1)] = 4 // Mimic XHR readyState 4 === 'DONE: The operation is complete'
+        HEAP16[(((fetch)+(42))>>1)] = 404 // Mimic XHR HTTP status code 404 "Not Found"
+        stringToUTF8("Not Found", fetch + 44, 64);
+        onerror(fetch, 0, error);
+      };
+    } catch(e) {
+      onerror(fetch, 0, e);
+    }
+  }
+  
+  function _emscripten_start_fetch(fetch, successcb, errorcb, progresscb, readystatechangecb) {
+    // Avoid shutting down the runtime since we want to wait for the async
+    // response.
+    
+  
+    var fetch_attr = fetch + 108;
+    var onsuccess = HEAPU32[(((fetch_attr)+(36))>>2)];
+    var onerror = HEAPU32[(((fetch_attr)+(40))>>2)];
+    var onprogress = HEAPU32[(((fetch_attr)+(44))>>2)];
+    var onreadystatechange = HEAPU32[(((fetch_attr)+(48))>>2)];
+    var fetchAttributes = HEAPU32[(((fetch_attr)+(52))>>2)];
+    var fetchAttrSynchronous = !!(fetchAttributes & 64);
+  
+    function doCallback(f) {
+      if (fetchAttrSynchronous) {
+        f();
+      } else {
+        callUserCallback(f);
+      }
+    }
+  
+    var reportSuccess = (fetch, xhr, e) => {
+      
+      doCallback(() => {
+        if (onsuccess) ((a1) => dynCall_vi(onsuccess, a1))(fetch);
+        else successcb?.(fetch);
+      });
+    };
+  
+    var reportProgress = (fetch, xhr, e) => {
+      doCallback(() => {
+        if (onprogress) ((a1) => dynCall_vi(onprogress, a1))(fetch);
+        else progresscb?.(fetch);
+      });
+    };
+  
+    var reportError = (fetch, xhr, e) => {
+      
+      doCallback(() => {
+        if (onerror) ((a1) => dynCall_vi(onerror, a1))(fetch);
+        else errorcb?.(fetch);
+      });
+    };
+  
+    var reportReadyStateChange = (fetch, xhr, e) => {
+      doCallback(() => {
+        if (onreadystatechange) ((a1) => dynCall_vi(onreadystatechange, a1))(fetch);
+        else readystatechangecb?.(fetch);
+      });
+    };
+  
+    var performUncachedXhr = (fetch, xhr, e) => {
+      fetchXHR(fetch, reportSuccess, reportError, reportProgress, reportReadyStateChange);
+    };
+  
+    var cacheResultAndReportSuccess = (fetch, xhr, e) => {
+      var storeSuccess = (fetch, xhr, e) => {
+        
+        doCallback(() => {
+          if (onsuccess) ((a1) => dynCall_vi(onsuccess, a1))(fetch);
+          else successcb?.(fetch);
+        });
+      };
+      var storeError = (fetch, xhr, e) => {
+        
+        doCallback(() => {
+          if (onsuccess) ((a1) => dynCall_vi(onsuccess, a1))(fetch);
+          else successcb?.(fetch);
+        });
+      };
+      fetchCacheData(Fetch.dbInstance, fetch, xhr.response, storeSuccess, storeError);
+    };
+  
+    var performCachedXhr = (fetch, xhr, e) => {
+      fetchXHR(fetch, cacheResultAndReportSuccess, reportError, reportProgress, reportReadyStateChange);
+    };
+  
+    var requestMethod = UTF8ToString(fetch_attr + 0);
+    var fetchAttrReplace = !!(fetchAttributes & 16);
+    var fetchAttrPersistFile = !!(fetchAttributes & 4);
+    var fetchAttrNoDownload = !!(fetchAttributes & 32);
+    if (requestMethod === 'EM_IDB_STORE') {
+      // TODO(?): Here we perform a clone of the data, because storing shared typed arrays to IndexedDB does not seem to be allowed.
+      var ptr = HEAPU32[(((fetch_attr)+(84))>>2)];
+      var size = HEAPU32[(((fetch_attr)+(88))>>2)];
+      fetchCacheData(Fetch.dbInstance, fetch, HEAPU8.slice(ptr, ptr + size), reportSuccess, reportError);
+    } else if (requestMethod === 'EM_IDB_DELETE') {
+      fetchDeleteCachedData(Fetch.dbInstance, fetch, reportSuccess, reportError);
+    } else if (!fetchAttrReplace) {
+      fetchLoadCachedData(Fetch.dbInstance, fetch, reportSuccess, fetchAttrNoDownload ? reportError : (fetchAttrPersistFile ? performCachedXhr : performUncachedXhr));
+    } else if (!fetchAttrNoDownload) {
+      fetchXHR(fetch, fetchAttrPersistFile ? cacheResultAndReportSuccess : reportSuccess, reportError, reportProgress, reportReadyStateChange);
+    } else {
+      return 0; // todo: free
+    }
+    return fetch;
+  }
+
+  var ENV = {
+  };
+  
+  var getExecutableName = () => thisProgram || './this.program';
+  var getEnvStrings = () => {
+      if (!getEnvStrings.strings) {
+        // Default values.
+        // Browser language detection #8751
+        var lang = ((typeof navigator == 'object' && navigator.languages && navigator.languages[0]) || 'C').replace('-', '_') + '.UTF-8';
+        var env = {
+          'USER': 'web_user',
+          'LOGNAME': 'web_user',
+          'PATH': '/',
+          'PWD': '/',
+          'HOME': '/home/web_user',
+          'LANG': lang,
+          '_': getExecutableName()
+        };
+        // Apply the user-provided values, if any.
+        for (var x in ENV) {
+          // x is a key in ENV; if ENV[x] is undefined, that means it was
+          // explicitly set to be so. We allow user code to do that to
+          // force variables with default values to remain unset.
+          if (ENV[x] === undefined) delete env[x];
+          else env[x] = ENV[x];
+        }
+        var strings = [];
+        for (var x in env) {
+          strings.push(`${x}=${env[x]}`);
+        }
+        getEnvStrings.strings = strings;
+      }
+      return getEnvStrings.strings;
+    };
+  
+  var stringToAscii = (str, buffer) => {
+      for (var i = 0; i < str.length; ++i) {
+        HEAP8[buffer++] = str.charCodeAt(i);
+      }
+      // Null-terminate the string
+      HEAP8[buffer] = 0;
+    };
+  var _environ_get = (__environ, environ_buf) => {
+      var bufSize = 0;
+      getEnvStrings().forEach((string, i) => {
+        var ptr = environ_buf + bufSize;
+        HEAPU32[(((__environ)+(i*4))>>2)] = ptr;
+        stringToAscii(string, ptr);
+        bufSize += string.length + 1;
+      });
+      return 0;
+    };
+
+  var _environ_sizes_get = (penviron_count, penviron_buf_size) => {
+      var strings = getEnvStrings();
+      HEAPU32[((penviron_count)>>2)] = strings.length;
+      var bufSize = 0;
+      strings.forEach((string) => bufSize += string.length + 1);
+      HEAPU32[((penviron_buf_size)>>2)] = bufSize;
+      return 0;
+    };
+
 
   function _fd_close(fd) {
   try {
@@ -7232,12 +7800,6 @@ var ASM_CONSTS = {
     return e.errno;
   }
   }
-
-
-
-
-
-
 
 
 
@@ -9200,6 +9762,7 @@ var miniTempWebGLIntBuffersStorage = new Int32Array(288);
       Module['getUserMedia'] = Browser.getUserMedia;
       Module['createContext'] = Browser.createContext;
     ;
+Fetch.init();;
 
       Module['requestAnimationFrame'] = MainLoop.requestAnimationFrame;
       Module['pauseMainLoop'] = MainLoop.pause;
@@ -9225,6 +9788,8 @@ var wasmImports = {
   /** @export */
   _abort_js: __abort_js,
   /** @export */
+  _tzset_js: __tzset_js,
+  /** @export */
   clock_time_get: _clock_time_get,
   /** @export */
   emscripten_asm_const_double: _emscripten_asm_const_double,
@@ -9232,6 +9797,8 @@ var wasmImports = {
   emscripten_asm_const_int: _emscripten_asm_const_int,
   /** @export */
   emscripten_date_now: _emscripten_date_now,
+  /** @export */
+  emscripten_fetch_free: _emscripten_fetch_free,
   /** @export */
   emscripten_get_element_css_size: _emscripten_get_element_css_size,
   /** @export */
@@ -9569,6 +10136,8 @@ var wasmImports = {
   /** @export */
   emscripten_glViewport: _emscripten_glViewport,
   /** @export */
+  emscripten_is_main_browser_thread: _emscripten_is_main_browser_thread,
+  /** @export */
   emscripten_resize_heap: _emscripten_resize_heap,
   /** @export */
   emscripten_sample_gamepad_data: _emscripten_sample_gamepad_data,
@@ -9605,6 +10174,12 @@ var wasmImports = {
   /** @export */
   emscripten_sleep: _emscripten_sleep,
   /** @export */
+  emscripten_start_fetch: _emscripten_start_fetch,
+  /** @export */
+  environ_get: _environ_get,
+  /** @export */
+  environ_sizes_get: _environ_sizes_get,
+  /** @export */
   exit: _exit,
   /** @export */
   fd_close: _fd_close,
@@ -9622,8 +10197,6 @@ var wasmImports = {
   glBindAttribLocation: _glBindAttribLocation,
   /** @export */
   glBindBuffer: _glBindBuffer,
-  /** @export */
-  glBindFramebuffer: _glBindFramebuffer,
   /** @export */
   glBindTexture: _glBindTexture,
   /** @export */
@@ -9651,11 +10224,7 @@ var wasmImports = {
   /** @export */
   glDeleteBuffers: _glDeleteBuffers,
   /** @export */
-  glDeleteFramebuffers: _glDeleteFramebuffers,
-  /** @export */
   glDeleteProgram: _glDeleteProgram,
-  /** @export */
-  glDeleteRenderbuffers: _glDeleteRenderbuffers,
   /** @export */
   glDeleteShader: _glDeleteShader,
   /** @export */
@@ -9677,21 +10246,15 @@ var wasmImports = {
   /** @export */
   glEnableVertexAttribArray: _glEnableVertexAttribArray,
   /** @export */
-  glFramebufferTexture2D: _glFramebufferTexture2D,
-  /** @export */
   glFrontFace: _glFrontFace,
   /** @export */
   glGenBuffers: _glGenBuffers,
-  /** @export */
-  glGenFramebuffers: _glGenFramebuffers,
   /** @export */
   glGenTextures: _glGenTextures,
   /** @export */
   glGetAttribLocation: _glGetAttribLocation,
   /** @export */
   glGetFloatv: _glGetFloatv,
-  /** @export */
-  glGetFramebufferAttachmentParameteriv: _glGetFramebufferAttachmentParameteriv,
   /** @export */
   glGetProgramInfoLog: _glGetProgramInfoLog,
   /** @export */
@@ -9715,9 +10278,9 @@ var wasmImports = {
   /** @export */
   glTexImage2D: _glTexImage2D,
   /** @export */
-  glTexParameterf: _glTexParameterf,
-  /** @export */
   glTexParameteri: _glTexParameteri,
+  /** @export */
+  glTexSubImage2D: _glTexSubImage2D,
   /** @export */
   glUniform1i: _glUniform1i,
   /** @export */
@@ -9782,6 +10345,8 @@ var wasmImports = {
 var wasmExports;
 createWasm();
 var ___wasm_call_ctors = () => (___wasm_call_ctors = wasmExports['__wasm_call_ctors'])();
+var _GetHTTPCallback = Module['_GetHTTPCallback'] = (a0, a1, a2) => (_GetHTTPCallback = Module['_GetHTTPCallback'] = wasmExports['GetHTTPCallback'])(a0, a1, a2);
+var _PostHTTPCallback = Module['_PostHTTPCallback'] = (a0, a1, a2) => (_PostHTTPCallback = Module['_PostHTTPCallback'] = wasmExports['PostHTTPCallback'])(a0, a1, a2);
 var _main = Module['_main'] = (a0, a1) => (_main = Module['_main'] = wasmExports['main'])(a0, a1);
 var _malloc = Module['_malloc'] = (a0) => (_malloc = Module['_malloc'] = wasmExports['malloc'])(a0);
 var _free = Module['_free'] = (a0) => (_free = Module['_free'] = wasmExports['free'])(a0);
@@ -9793,16 +10358,18 @@ var dynCall_vi = Module['dynCall_vi'] = (a0, a1) => (dynCall_vi = Module['dynCal
 var dynCall_vii = Module['dynCall_vii'] = (a0, a1, a2) => (dynCall_vii = Module['dynCall_vii'] = wasmExports['dynCall_vii'])(a0, a1, a2);
 var dynCall_fi = Module['dynCall_fi'] = (a0, a1) => (dynCall_fi = Module['dynCall_fi'] = wasmExports['dynCall_fi'])(a0, a1);
 var dynCall_vif = Module['dynCall_vif'] = (a0, a1, a2) => (dynCall_vif = Module['dynCall_vif'] = wasmExports['dynCall_vif'])(a0, a1, a2);
-var dynCall_iii = Module['dynCall_iii'] = (a0, a1, a2) => (dynCall_iii = Module['dynCall_iii'] = wasmExports['dynCall_iii'])(a0, a1, a2);
 var dynCall_viii = Module['dynCall_viii'] = (a0, a1, a2, a3) => (dynCall_viii = Module['dynCall_viii'] = wasmExports['dynCall_viii'])(a0, a1, a2, a3);
+var dynCall_iii = Module['dynCall_iii'] = (a0, a1, a2) => (dynCall_iii = Module['dynCall_iii'] = wasmExports['dynCall_iii'])(a0, a1, a2);
 var dynCall_iiii = Module['dynCall_iiii'] = (a0, a1, a2, a3) => (dynCall_iiii = Module['dynCall_iiii'] = wasmExports['dynCall_iiii'])(a0, a1, a2, a3);
 var dynCall_viiii = Module['dynCall_viiii'] = (a0, a1, a2, a3, a4) => (dynCall_viiii = Module['dynCall_viiii'] = wasmExports['dynCall_viiii'])(a0, a1, a2, a3, a4);
+var dynCall_viiiif = Module['dynCall_viiiif'] = (a0, a1, a2, a3, a4, a5) => (dynCall_viiiif = Module['dynCall_viiiif'] = wasmExports['dynCall_viiiif'])(a0, a1, a2, a3, a4, a5);
+var dynCall_viiiiii = Module['dynCall_viiiiii'] = (a0, a1, a2, a3, a4, a5, a6) => (dynCall_viiiiii = Module['dynCall_viiiiii'] = wasmExports['dynCall_viiiiii'])(a0, a1, a2, a3, a4, a5, a6);
 var dynCall_iiiii = Module['dynCall_iiiii'] = (a0, a1, a2, a3, a4) => (dynCall_iiiii = Module['dynCall_iiiii'] = wasmExports['dynCall_iiiii'])(a0, a1, a2, a3, a4);
+var dynCall_iiiiii = Module['dynCall_iiiiii'] = (a0, a1, a2, a3, a4, a5) => (dynCall_iiiiii = Module['dynCall_iiiiii'] = wasmExports['dynCall_iiiiii'])(a0, a1, a2, a3, a4, a5);
+var dynCall_iiiiiii = Module['dynCall_iiiiiii'] = (a0, a1, a2, a3, a4, a5, a6) => (dynCall_iiiiiii = Module['dynCall_iiiiiii'] = wasmExports['dynCall_iiiiiii'])(a0, a1, a2, a3, a4, a5, a6);
 var dynCall_viff = Module['dynCall_viff'] = (a0, a1, a2, a3) => (dynCall_viff = Module['dynCall_viff'] = wasmExports['dynCall_viff'])(a0, a1, a2, a3);
 var dynCall_viiiii = Module['dynCall_viiiii'] = (a0, a1, a2, a3, a4, a5) => (dynCall_viiiii = Module['dynCall_viiiii'] = wasmExports['dynCall_viiiii'])(a0, a1, a2, a3, a4, a5);
 var dynCall_vidd = Module['dynCall_vidd'] = (a0, a1, a2, a3) => (dynCall_vidd = Module['dynCall_vidd'] = wasmExports['dynCall_vidd'])(a0, a1, a2, a3);
-var dynCall_iiiiii = Module['dynCall_iiiiii'] = (a0, a1, a2, a3, a4, a5) => (dynCall_iiiiii = Module['dynCall_iiiiii'] = wasmExports['dynCall_iiiiii'])(a0, a1, a2, a3, a4, a5);
-var dynCall_viiiiii = Module['dynCall_viiiiii'] = (a0, a1, a2, a3, a4, a5, a6) => (dynCall_viiiiii = Module['dynCall_viiiiii'] = wasmExports['dynCall_viiiiii'])(a0, a1, a2, a3, a4, a5, a6);
 var dynCall_fffi = Module['dynCall_fffi'] = (a0, a1, a2, a3) => (dynCall_fffi = Module['dynCall_fffi'] = wasmExports['dynCall_fffi'])(a0, a1, a2, a3);
 var dynCall_ffi = Module['dynCall_ffi'] = (a0, a1, a2) => (dynCall_ffi = Module['dynCall_ffi'] = wasmExports['dynCall_ffi'])(a0, a1, a2);
 var dynCall_vffff = Module['dynCall_vffff'] = (a0, a1, a2, a3, a4) => (dynCall_vffff = Module['dynCall_vffff'] = wasmExports['dynCall_vffff'])(a0, a1, a2, a3, a4);
@@ -9820,6 +10387,13 @@ var dynCall_viffff = Module['dynCall_viffff'] = (a0, a1, a2, a3, a4, a5) => (dyn
 var dynCall_vfff = Module['dynCall_vfff'] = (a0, a1, a2, a3) => (dynCall_vfff = Module['dynCall_vfff'] = wasmExports['dynCall_vfff'])(a0, a1, a2, a3);
 var dynCall_jiji = Module['dynCall_jiji'] = (a0, a1, a2, a3) => (dynCall_jiji = Module['dynCall_jiji'] = wasmExports['dynCall_jiji'])(a0, a1, a2, a3);
 var dynCall_iidiiii = Module['dynCall_iidiiii'] = (a0, a1, a2, a3, a4, a5, a6) => (dynCall_iidiiii = Module['dynCall_iidiiii'] = wasmExports['dynCall_iidiiii'])(a0, a1, a2, a3, a4, a5, a6);
+var dynCall_viijii = Module['dynCall_viijii'] = (a0, a1, a2, a3, a4, a5) => (dynCall_viijii = Module['dynCall_viijii'] = wasmExports['dynCall_viijii'])(a0, a1, a2, a3, a4, a5);
+var dynCall_iiiiiiiii = Module['dynCall_iiiiiiiii'] = (a0, a1, a2, a3, a4, a5, a6, a7, a8) => (dynCall_iiiiiiiii = Module['dynCall_iiiiiiiii'] = wasmExports['dynCall_iiiiiiiii'])(a0, a1, a2, a3, a4, a5, a6, a7, a8);
+var dynCall_iiiiij = Module['dynCall_iiiiij'] = (a0, a1, a2, a3, a4, a5) => (dynCall_iiiiij = Module['dynCall_iiiiij'] = wasmExports['dynCall_iiiiij'])(a0, a1, a2, a3, a4, a5);
+var dynCall_iiiiid = Module['dynCall_iiiiid'] = (a0, a1, a2, a3, a4, a5) => (dynCall_iiiiid = Module['dynCall_iiiiid'] = wasmExports['dynCall_iiiiid'])(a0, a1, a2, a3, a4, a5);
+var dynCall_iiiiijj = Module['dynCall_iiiiijj'] = (a0, a1, a2, a3, a4, a5, a6) => (dynCall_iiiiijj = Module['dynCall_iiiiijj'] = wasmExports['dynCall_iiiiijj'])(a0, a1, a2, a3, a4, a5, a6);
+var dynCall_iiiiiiii = Module['dynCall_iiiiiiii'] = (a0, a1, a2, a3, a4, a5, a6, a7) => (dynCall_iiiiiiii = Module['dynCall_iiiiiiii'] = wasmExports['dynCall_iiiiiiii'])(a0, a1, a2, a3, a4, a5, a6, a7);
+var dynCall_iiiiiijj = Module['dynCall_iiiiiijj'] = (a0, a1, a2, a3, a4, a5, a6, a7) => (dynCall_iiiiiijj = Module['dynCall_iiiiiijj'] = wasmExports['dynCall_iiiiiijj'])(a0, a1, a2, a3, a4, a5, a6, a7);
 var _asyncify_start_unwind = (a0) => (_asyncify_start_unwind = wasmExports['asyncify_start_unwind'])(a0);
 var _asyncify_stop_unwind = () => (_asyncify_stop_unwind = wasmExports['asyncify_stop_unwind'])();
 var _asyncify_start_rewind = (a0) => (_asyncify_start_rewind = wasmExports['asyncify_start_rewind'])(a0);

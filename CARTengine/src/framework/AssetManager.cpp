@@ -6,19 +6,20 @@
 #include <stdexcept>
 #include "Logger.h"
 
+#include "Core.h"
  namespace cart {
 
 #pragma region CONSTRUCTOR & INIT
 
 
-    unique<AssetManager> AssetManager::assetManager{ nullptr };
+    shared<AssetManager> AssetManager::assetManager{ nullptr };
 
     AssetManager& AssetManager::Get()
      {
          if (!assetManager) {
-             assetManager = unique<AssetManager> {new AssetManager};
+             assetManager = shared<AssetManager> {new AssetManager};
          }
-         return *assetManager;
+         return *assetManager.get();
      }
 
     void AssetManager::Release()
@@ -27,7 +28,7 @@
         assetManager = nullptr;
     }
 
-    AssetManager::AssetManager() : m_RootDirectory{}
+    AssetManager::AssetManager() :Object{}, m_RootDirectory {}
      {
         
      }
@@ -46,10 +47,12 @@
 #pragma endregion
 
 #pragma region LOAD/UNLOAD TEXTURE ASSET
+
     shared<Texture2D> AssetManager::LoadTextureAsset(const std::string &path, TEXTURE_DATA_STATUS status){
      //   Logger::Get()->Push("|>=-=ASSETMANAGER =-=<| LoadTextureAsset() %s", path.c_str());
        return LoadTexture(path, m_textureLoadedMap, status);
     } 
+
     shared<Texture2D > AssetManager::LoadTexture(const std::string &path, Dictionary<std::string, TextureData>& constainer, TEXTURE_DATA_STATUS status)
     {
         auto found = constainer.find(path);
@@ -150,6 +153,20 @@
 
         return false;
     }
+
+    bool AssetManager::ResizeTexture(const std::string& path, int width, int height)
+    {
+
+        auto foundimg = m_textureLoadedMap.find(path);
+        if (foundimg != m_textureLoadedMap.end())
+        {
+            foundimg->second.texture.get()->width = width;
+            foundimg->second.texture.get()->height = height;
+            return true;
+        }
+
+        return false;
+    }
    
     Image* AssetManager::GetImage(const std::string& path) {
         auto found = m_imageLoadedMap.find(path);
@@ -220,6 +237,8 @@
    //     Logger::Get()->Push("Failed to load font {} ", path);
         return shared<Font> {nullptr};
     }
+
+   
     bool AssetManager::UnloadFontAsset(const std::string& path, int fontsize)
     {
         std::string strsize = std::to_string(fontsize);
@@ -238,7 +257,60 @@
     }
 #pragma endregion
     
-    
+#pragma region Event Listeners
+
+    void AssetManager::OnAsync_Texture_Handler(std::string uid, ASYNC_CALLBACK_STATUS status,  const char* data, int size, void * userdata)
+    {
+       
+        if (status == OK)
+        {
+            Logger::Get()->Push(std::format("OnAsync_Success() url {} |  status 'ok'  ", uid));
+            shared<Texture2D> texture = LoadTextureFromMemory(uid, data, size, userdata);
+            
+            for (auto iter = mTextureAsyncCallbacks.begin(); iter != mTextureAsyncCallbacks.end(); ++iter)
+            {
+                std::string url = { iter->first };
+                if (url.compare(uid) == 0)
+                {
+                    if ((iter->second)(uid, status, texture, size)) {
+                        mTextureAsyncCallbacks.erase(iter);
+                        break;
+                    }
+                }
+            }
+        }
+        else if (status == FAILED)
+        {
+            for (auto iter = mTextureAsyncCallbacks.begin(); iter != mTextureAsyncCallbacks.end(); ++iter)
+            {
+                std::string url = { iter->first };
+                if (url.compare(uid) == 0)
+                {
+                    if ((iter->second)(uid, status, shared<Texture2D >{nullptr}, size)) {
+
+                        break;
+                    }
+                }
+            }
+
+        }else if(status == PROGRESS)
+        {
+            //Logger::Get()->Push(std::format("OnAsync_Success() url {} |  progress percent {}", uid, size));
+            for (auto iter = mTextureAsyncCallbacks.begin(); iter != mTextureAsyncCallbacks.end(); ++iter)
+            {
+                std::string url = { iter->first };
+                if (url.compare(uid) == 0)
+                {
+                    if ((iter->second)(uid, status, shared<Texture2D >{nullptr}, size)) {
+                       
+                        break;
+                    }
+                }
+            }
+        }
+    }
+#pragma endregion
+
 #pragma region HELPERS
 
     void AssetManager::SetTextureStatus(const std::string& path, TEXTURE_DATA_STATUS status) {
@@ -248,7 +320,19 @@
             found->second.status = status;
         }
     }
+
+    shared<Texture2D> AssetManager::LoadTextureFromMemory(std::string uid, const char* data, int size, void* userdata)
+    {
+        unsigned char* modifiable = reinterpret_cast<unsigned char*>(const_cast<char*>(data));
+        Image image = LoadImageFromMemory(".png", (unsigned char*)modifiable, size);
+        ImageFormat(&image, 7);
+        TEXTURE_DATA_STATUS* enm_ptr = reinterpret_cast<TEXTURE_DATA_STATUS*>(userdata);
+        shared<Texture2D> texture = AddTexture(image, uid, *enm_ptr);
+        UnloadImage(image);
+        return texture;
+    }
 #pragma endregion
+
 #pragma region  Cleanup
     AssetManager::~AssetManager()
     {

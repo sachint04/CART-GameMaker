@@ -63,10 +63,9 @@ namespace cart {
 		}
 		m_bIsScaling = false;
  	}
+
 	void Sprite2D::Draw(float _deltaTime)
 	{
-		
-
 		if (!m_visible || m_pendingUpdate)return;
 		UIElement::Draw(_deltaTime);
 
@@ -79,8 +78,7 @@ namespace cart {
 			if (m_texturetype == TEXTURE_PART) {// Render PART OF TEXTURE			
 				DrawTextureRec(*m_texture2d, m_texturesource, m_textureLocation, m_textureColor);
 			}
-			else {
-				
+			else {			
 				DrawTextureEx(*m_texture2d, m_textureLocation, m_rotation, 1.f, m_textureColor);
 			}
 		}
@@ -127,8 +125,10 @@ namespace cart {
 	}
 	void Sprite2D::SetSize(Vector2 _size) {
 		UIElement::SetSize(_size);	
+		
 		m_textureSize = _size;
 		m_bIsScaling = true;
+		
 	}
 	void Sprite2D::SetLocation(Vector2 _location)
 	{

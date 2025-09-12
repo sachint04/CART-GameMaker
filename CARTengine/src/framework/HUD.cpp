@@ -38,11 +38,15 @@ namespace cart
 	bool HUD::IsMouseOverUI(Vector2 _locmouse)
 	{
 		
+		if (Logger::Get()->IsMouseOverUI()) {
+			return true;
+		}
+
 		for(auto ui : m_children) {
 			if (CheckCollisionPointRec(_locmouse, ui->GetBounds()) && ui->IsVisible() == true) return true;
 		}
-
-		return Logger::Get()->IsMouseOverUI();
+		
+		return false;
 	}
 
 

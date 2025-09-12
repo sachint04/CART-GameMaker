@@ -16,6 +16,10 @@
 #include "gameplayHUD.h"
 #include "component/controls/transformCntrl.h"
 #include "puzzleimagecontroller.h"
+#include "Logger.h"
+
+
+
 //using namespace std;
 using namespace cart;
 
@@ -125,11 +129,13 @@ namespace cart {
        m_imagecontrols.get()->SetVisible(true);
        
        //Rectangle rect = ui.lock()->GetBounds();
-
+      
 
       // delete txtprop;
        imagecontrols.reset();
        m_assetsLoaded = true;
+
+
     }
 
     void Game::BeginPlay()
@@ -231,12 +237,16 @@ namespace cart {
 
 #pragma endregion
 
+
+
+
 #pragma region CLEAN UP
     void Game::CleanDebugData() {
 
         Application::Destroy();
         delete logger;
     }
+
 
 
     Game::~Game() {

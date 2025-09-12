@@ -50,7 +50,7 @@ namespace cart {
         int m_defaultHeight;
 
         void CleanDebugData();
-    
+
         shared<PuzzleImageController> m_imagecontrols;
         weak<HUD> m_GameplayHUD;
         Logger* logger;

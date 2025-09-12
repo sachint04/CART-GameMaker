@@ -130,11 +130,9 @@ namespace cart
         std::string  info_str = { " SHOWING LAST " + std::to_string(m_max_log_count) + " LOGS." };
         DrawText(info_str.c_str(), container.x, container.y - 15, 10, WHITE);
         DrawTextBoxed(font, t.c_str(), { container.x + 4, container.y + 4, container.width - 4, container.height - 4 }, fontsize, 2.0f, wordWrap, BLACK);
-     //   printf("%s",t.c_str());
         DrawRectangle(container.x, container.y - 20, container.width, 20, borderColor);
         DrawRectangleRec(resizer, borderColor);             // Draw the resize box
         DrawRectangleRec(clearbtn, borderColor);
-     //   logdb.clear();
     }
 
     void Logger::SetRect(Rectangle _rect)

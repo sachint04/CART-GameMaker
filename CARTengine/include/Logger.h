@@ -53,7 +53,7 @@ namespace cart
 		std::string strinfo = "Info ->";
 		std::string stralert = "ALERT! ->";
 		std::string strerror = "ERROR!!! ->";
-		int m_max_log_count =50;
+		int m_max_log_count =10;
 		int m_log_count = 0;
 		int screenWidth = 300;
 		int screenHeight = 600;

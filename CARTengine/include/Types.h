@@ -70,14 +70,20 @@ namespace cart {
         UNLOCKED,
         LOCKED
     };
+    enum ASYNC_CALLBACK_STATUS {
+        OK,
+        PROGRESS,
+        FAILED
+    };
+#pragma endregion
+
+#pragma region STRUCTS
 
     typedef struct {
         shared<Texture2D> texture;
         TEXTURE_DATA_STATUS status;
     }TextureData;
-#pragma endregion
 
-#pragma region STRUCTS
     struct UI_Properties {
     public:
         Vector2 size;
@@ -241,6 +247,8 @@ namespace cart {
         Vector2 textsize;
         float fontsize;
     };
+
+
 #pragma endregion
 
 

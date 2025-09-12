@@ -72,6 +72,9 @@ set(ENGINE_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/src/tweenray/tweenColor.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/network/network.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/network/network.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/include/network/EM_Fetch.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/network/EM_Fetch.cpp
+	
 
 	
 	)

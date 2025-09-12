@@ -117,7 +117,7 @@ namespace cart
 	}
 
 	float Application::GetIconSize() {
-		return NULL;
+		return 0;
 	}
 	void Application::SetHUD(shared<HUD> hud)
 	{

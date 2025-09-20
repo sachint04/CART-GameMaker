@@ -18,7 +18,7 @@ namespace cart
 
 			static json& GetAppData() { return m_config; };
 			static json& GetUserData();
-			static json& GetSessionData();
+			static json& GetSessionData();			
 			static void UpdateUserData(const json& data);
 			static std::string GetUserDataString();
 			static json& GetTemplateInfo();

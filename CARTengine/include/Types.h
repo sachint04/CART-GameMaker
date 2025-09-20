@@ -4,7 +4,6 @@
 #include <raylib.h>
 #include "easing.h"
 #include "Core.h"
-
 namespace cart {
 
       
@@ -78,6 +77,33 @@ namespace cart {
 #pragma endregion
 
 #pragma region STRUCTS
+
+    typedef struct Async_Call_Header
+    {
+        std::string id;
+        std::string location;
+        TEXTURE_DATA_STATUS texture_status;
+
+    }Async_Call_Header;
+
+    typedef struct Async_Call_Response 
+    {
+        Async_Call_Header request;
+        ASYNC_CALLBACK_STATUS callbackstatus;
+        const char* data;
+        int progress;
+        int totalBytes;
+    }Async_Call_Response;
+    
+    
+    typedef struct Async_Call_Data {
+        std::string id;
+        std::string location;
+        TEXTURE_DATA_STATUS texture_status;
+        std::function<bool(Async_Call_Response)> callback;
+
+    }Async_Call_Data;
+
 
     typedef struct {
         shared<Texture2D> texture;

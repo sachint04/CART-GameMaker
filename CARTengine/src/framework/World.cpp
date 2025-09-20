@@ -41,9 +41,9 @@ namespace cart {
 		
 	}
 
-    void World::AllGameStagesFinieshed()
+    void World::AllGameStagesFinished()
     {
-		//Logger::Get()->Push("All game stages fnished.");
+		Logger::Get()->Push("All game stages fnished.");
     }
 
     void World::NextGameStage()
@@ -55,7 +55,7 @@ namespace cart {
 
 		}else{
 
-			AllGameStagesFinieshed();
+			AllGameStagesFinished();
 		}
 	}
 

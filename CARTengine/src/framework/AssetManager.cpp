@@ -6,8 +6,7 @@
 #include <stdexcept>
 #include "Logger.h"
 
-#include "Core.h"
- namespace cart {
+namespace cart {
 
 #pragma region CONSTRUCTOR & INIT
 
@@ -49,12 +48,13 @@
 #pragma region LOAD/UNLOAD TEXTURE ASSET
 
     shared<Texture2D> AssetManager::LoadTextureAsset(const std::string &path, TEXTURE_DATA_STATUS status){
-     //   Logger::Get()->Push("|>=-=ASSETMANAGER =-=<| LoadTextureAsset() %s", path.c_str());
+     //   Logger::Get()->Push(std::format("|>=-=ASSETMANAGER =-=<| LoadTextureAsset() {}", path));
        return LoadTexture(path, m_textureLoadedMap, status);
     } 
 
     shared<Texture2D > AssetManager::LoadTexture(const std::string &path, Dictionary<std::string, TextureData>& constainer, TEXTURE_DATA_STATUS status)
     {
+     
         auto found = constainer.find(path);
         if (found != constainer.end())
         {
@@ -94,16 +94,19 @@
 
     }
 
-    shared<Texture2D> AssetManager::AddTexture( Image image, std::string& path, TEXTURE_DATA_STATUS status)
+    shared<Texture2D> AssetManager::AddTexture( Image& image, std::string& path, TEXTURE_DATA_STATUS status)
     {
+        Logger::Get()->Push(std::format("AssetManager | AddTexture() image width {} ", image.width));
         auto found = m_textureLoadedMap.find(path);
         if (found != m_textureLoadedMap.end())
-        {                 
+        {       
+            Logger::Get()->Push(std::format("AssetManager | AddTexture() Texture already available {}", path));
             return found->second.texture;
         }
         try {
             Texture2D texture = LoadTextureFromImage(image);
             m_textureLoadedMap.insert({ path,  { std::make_shared<Texture2D>(texture) , status} });
+            Logger::Get()->Push(std::format("AssetManager | AddTexture() Texture added to List {}", path));
             return m_textureLoadedMap.find(path)->second.texture;
         }
         catch (const std::runtime_error& e) {
@@ -259,56 +262,6 @@
     
 #pragma region Event Listeners
 
-    void AssetManager::OnAsync_Texture_Handler(std::string uid, ASYNC_CALLBACK_STATUS status,  const char* data, int size, void * userdata)
-    {
-       
-        if (status == OK)
-        {
-            Logger::Get()->Push(std::format("OnAsync_Success() url {} |  status 'ok'  ", uid));
-            shared<Texture2D> texture = LoadTextureFromMemory(uid, data, size, userdata);
-            
-            for (auto iter = mTextureAsyncCallbacks.begin(); iter != mTextureAsyncCallbacks.end(); ++iter)
-            {
-                std::string url = { iter->first };
-                if (url.compare(uid) == 0)
-                {
-                    if ((iter->second)(uid, status, texture, size)) {
-                        mTextureAsyncCallbacks.erase(iter);
-                        break;
-                    }
-                }
-            }
-        }
-        else if (status == FAILED)
-        {
-            for (auto iter = mTextureAsyncCallbacks.begin(); iter != mTextureAsyncCallbacks.end(); ++iter)
-            {
-                std::string url = { iter->first };
-                if (url.compare(uid) == 0)
-                {
-                    if ((iter->second)(uid, status, shared<Texture2D >{nullptr}, size)) {
-
-                        break;
-                    }
-                }
-            }
-
-        }else if(status == PROGRESS)
-        {
-            //Logger::Get()->Push(std::format("OnAsync_Success() url {} |  progress percent {}", uid, size));
-            for (auto iter = mTextureAsyncCallbacks.begin(); iter != mTextureAsyncCallbacks.end(); ++iter)
-            {
-                std::string url = { iter->first };
-                if (url.compare(uid) == 0)
-                {
-                    if ((iter->second)(uid, status, shared<Texture2D >{nullptr}, size)) {
-                       
-                        break;
-                    }
-                }
-            }
-        }
-    }
 #pragma endregion
 
 #pragma region HELPERS
@@ -321,16 +274,6 @@
         }
     }
 
-    shared<Texture2D> AssetManager::LoadTextureFromMemory(std::string uid, const char* data, int size, void* userdata)
-    {
-        unsigned char* modifiable = reinterpret_cast<unsigned char*>(const_cast<char*>(data));
-        Image image = LoadImageFromMemory(".png", (unsigned char*)modifiable, size);
-        ImageFormat(&image, 7);
-        TEXTURE_DATA_STATUS* enm_ptr = reinterpret_cast<TEXTURE_DATA_STATUS*>(userdata);
-        shared<Texture2D> texture = AddTexture(image, uid, *enm_ptr);
-        UnloadImage(image);
-        return texture;
-    }
 #pragma endregion
 
 #pragma region  Cleanup

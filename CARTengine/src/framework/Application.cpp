@@ -143,5 +143,13 @@ namespace cart
 	//	Logger::Get()->Push(std::format("FROM Application id {} response {} data {} ", uid, response, data));
 		net->HTTPCallback(id, res, netdata);
 	}
+
+	void Application::LoadAssetCallback(char* uid, char* filestr, unsigned char* data, int size)
+	{
+		std::string id = { uid };	
+		std::string filename = { filestr };	
+		//	Logger::Get()->Push(std::format("FROM Application id {} response {} data {} ", uid, response, data));
+		net->LoadAssetHTTPCallback(id, filestr, data, size);
+	}
 	
 }

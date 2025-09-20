@@ -4,10 +4,16 @@ namespace cart
 {
     Logger* Logger::instance = nullptr;
 
+#pragma region INIT
+
     Logger::Logger()
     {
     }
-   
+#pragma endregion
+
+#pragma region Helpers
+
+
     void Logger::Show()
 	{
         isVisible = true;
@@ -41,6 +47,29 @@ namespace cart
         
    }
 
+    void Logger::SetRect(Rectangle _rect)
+    {
+        container = _rect;
+        resizer.x = container.x + container.width - 17;
+        resizer.y = container.y + container.height - 17;
+
+        clearbtn.x = container.x + container.width - 17;
+        clearbtn.y = container.y + 2;
+    }
+
+    void Logger::SetMaxLogCount(int _lines)
+    {
+        m_max_log_count = _lines;
+    }
+
+    void Logger::Drag()
+    {
+    }
+#pragma endregion
+
+#pragma region CleanUP
+
+
     Logger::~Logger()
     {
         std::cout << "Logger Destroyed" << std::endl;
@@ -53,7 +82,9 @@ namespace cart
         }
         return instance;
     }
+#pragma endregion
 
+#pragma region LOOP
 	void Logger::Update(float _deltaTime)
 	{
         if (!isVisible)return;
@@ -64,7 +95,9 @@ namespace cart
         // Check if the mouse is inside the container and toggle border color
         if (CheckCollisionPointRec(mouse, container)) borderColor = Fade(MAROON, 0.4f);
         else if (!resizing) borderColor = MAROON;
-
+        
+        Rectangle titlebarRect = { container.x, container.y - 20, container.width, 20.f };
+        Vector2 draggingoffset = { 0 };
         // Container resizing logic
         if (resizing)
         {
@@ -78,34 +111,56 @@ namespace cart
             float height = container.height + (mouse.y - lastMouse.y);
             container.height = (height > minHeight) ? ((height < maxHeight) ? height : maxHeight) : minHeight;
         }
+        else if (dragging) 
+        {
+            if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
+                dragging = false; m_ismouseOverUI = false;
+            }
+            draggingoffset = { mouse.x - lastMouse.x, mouse.y - lastMouse.y };
+            container.x = container.x + draggingoffset.x;
+            container.y = container.y + draggingoffset.y;
+        }
         else
         {
             // Check if we're resizing
+
+            if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) { // Mouse Release
+                if (CheckCollisionPointRec(mouse, clearbtn))
+                {
+                    Clear();
+                    m_ismouseOverUI = true;
+                }
+            }
+
+            if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))// Mouse down
+            {
+                if (CheckCollisionPointRec(mouse, resizer)) {
+                    {
+                        resizing = true;
+                    }
+                    m_ismouseOverUI = true;
+                }
+                else if (CheckCollisionPointRec(mouse, titlebarRect))
+                {
+                    dragging = true;
+                    m_ismouseOverUI = true;
+                }
+                else {
+                    m_ismouseOverUI = false;
+                }
+            }
+
             if (CheckCollisionPointRec(mouse, container)) {
+
                 m_ismouseOverUI = true;
             }
-            else {
-                m_ismouseOverUI = false;
-            }
-            if (CheckCollisionPointRec(mouse, clearbtn) || CheckCollisionPointRec(mouse, resizer))
-            {
-               
-                if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
-                {                    
-                    Clear();
-                }
-                if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
-                    resizing = true;
-                }
-            }            
         }
+        clearbtn.x = container.x + container.width - 17;
+        clearbtn.y = container.y + 2;
 
         // Move resizer rectangle properly
         resizer.x = container.x + container.width - 17;
         resizer.y = container.y + container.height - 17;
-
-        clearbtn.x = container.x + container.width - 17;
-        clearbtn.y = container.y + 2;
 
         lastMouse = mouse; // Update mouse
 	}
@@ -130,26 +185,14 @@ namespace cart
         std::string  info_str = { " SHOWING LAST " + std::to_string(m_max_log_count) + " LOGS." };
         DrawText(info_str.c_str(), container.x, container.y - 15, 10, WHITE);
         DrawTextBoxed(font, t.c_str(), { container.x + 4, container.y + 4, container.width - 4, container.height - 4 }, fontsize, 2.0f, wordWrap, BLACK);
-        DrawRectangle(container.x, container.y - 20, container.width, 20, borderColor);
         DrawRectangleRec(resizer, borderColor);             // Draw the resize box
-        DrawRectangleRec(clearbtn, borderColor);
+        DrawRectangleRec(clearbtn, borderColor);// clear Text box
+        DrawRectangle(container.x, container.y - 20, container.width, 20, borderColor);// draw Title bar
+        
     }
+#pragma endregion
 
-    void Logger::SetRect(Rectangle _rect)
-    {
-        container = _rect;
-        resizer.x = container.x + container.width - 17;
-        resizer.y = container.y + container.height - 17;
-
-        clearbtn.x = container.x + container.width - 17;
-        clearbtn.y = container.y + 2;
-    }
-
-    void Logger::SetMaxLogCount(int _lines)
-    {
-        m_max_log_count = _lines;
-    }
-
+#pragma region DrawText
     // Draw text using font inside rectangle limits
     void Logger::DrawTextBoxed(Font font, const char* text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint)
     {
@@ -285,4 +328,5 @@ namespace cart
             if ((textOffsetX != 0) || (codepoint != ' ')) textOffsetX += glyphWidth;  // avoid leading spaces
         }
     }
+#pragma endregion
 }

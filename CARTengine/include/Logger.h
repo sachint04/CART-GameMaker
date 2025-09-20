@@ -31,6 +31,7 @@ namespace cart
 		bool IsMouseOverUI() { return m_ismouseOverUI; }
 		void SetRect(Rectangle _rect);
 		void SetMaxLogCount(int _lines);
+		void Drag();
 	private:
 
 		Logger();
@@ -66,6 +67,7 @@ namespace cart
 		float maxHeight = 600.0f;
 		bool m_ismouseOverUI = false;
 		float fontsize = 10.f;
+		bool dragging = false;
 
 	};
 

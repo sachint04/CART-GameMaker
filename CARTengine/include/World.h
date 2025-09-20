@@ -21,7 +21,7 @@ namespace cart
 		virtual void Draw(float _deltaTime);
 		virtual void LateUpdate(float _deltaTime);
 		virtual void AddStage(const shared<GameStage>& newStage);
-		virtual void AllGameStagesFinieshed();
+		virtual void AllGameStagesFinished();
 
 		virtual InputController* GetInputController() { return m_inputController; };
 		virtual const InputController* GetInputController() const { return m_inputController; }

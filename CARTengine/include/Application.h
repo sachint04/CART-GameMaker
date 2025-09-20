@@ -25,6 +25,7 @@ namespace cart
 		virtual DataFile& GetModel() { return m_Model; };
 		virtual World* GetCurrentWorld();
 		void SetHTTPCallback(char* id, char* response, char* data);
+		void LoadAssetCallback(char* uid, char* filename, unsigned char* data, int size);
 		DataFile& GetGameConfig(){ return m_gameConfig; };
 		json& GetGameConfigJSON() { return m_config_json; };
 		virtual std::string& GetResourcePath();

@@ -17,7 +17,7 @@
 #include "component/controls/transformCntrl.h"
 #include "puzzleimagecontroller.h"
 #include "Logger.h"
-
+#include "cartconfig.h"
 
 
 //using namespace std;
@@ -53,7 +53,8 @@ namespace cart {
 
     void Game::Init() {
         Application::Init();
-        AssetManager::Get().SetAssetRootDirectory("assets");// SET ASSETS FOLDER
+        m_resourcedir = GetResourceDir();
+        AssetManager::Get().SetAssetRootDirectory(m_resourcedir);// SET ASSETS FOLDER
       
         // CREATE NEW WORLD
         weak<World> newWorld = LoadWorld<World>();

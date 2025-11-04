@@ -7,6 +7,7 @@ namespace cart
 #pragma region INIT
 
     Logger::Logger()
+        :isVisible{true}
     {
     }
 #pragma endregion
@@ -87,6 +88,8 @@ namespace cart
 #pragma region LOOP
 	void Logger::Update(float _deltaTime)
 	{
+
+
         if (!isVisible)return;
        
         if (IsKeyPressed(KEY_SPACE)) wordWrap = !wordWrap;
@@ -166,8 +169,8 @@ namespace cart
 	}
 
     void Logger::Draw(float _deltaTime) {
+
         if (!isVisible)return;
-      
 
         DrawRectangleLinesEx(container, 3, borderColor);    // Draw container border
         std::string t = "";

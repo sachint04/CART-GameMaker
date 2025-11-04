@@ -8,6 +8,7 @@
 #include "component/controls/transformCntrl.h"
 #include "Logger.h"
 #include "AssetManager.h"
+#include "PatternSprite.h"
 
 namespace cart{
 
@@ -55,6 +56,55 @@ void PuzzleImageController::Init()
     ui.color = LIGHTGRAY;
     
     
+#pragma region Background Pattern
+
+    //-----------------Pattern Data------------------------
+    std::vector<Rectangle> recPattern = {
+                                     {3, 3, 66, 66},
+                                     {75, 3, 100, 100},
+                                     {3, 75, 66, 66},
+                                     {7, 156, 50, 50},
+                                     {85, 106, 90, 45},
+                                     {75, 154, 100, 60}
+    };
+    //------------------------------------------------------
+    UI_Properties bgpatt_ui = {};
+    bgpatt_ui.size = { (float)scrW, (float)scrH };
+    bgpatt_ui.location = { 0, 0 };
+    bgpatt_ui.color = WHITE;
+    bgpatt_ui.texturestatus = TEXTURE_DATA_STATUS::LOCKED;
+    bgpatt_ui.texturetype = TEXTURE_TYPE::TEXTURE_PART;
+    bgpatt_ui.texture = std::string{ "patterns2.png" };
+
+    //shared<Texture2D> texPattern = AssetManager::Get().LoadTextureAsset(ui.texture, ui.texturestatus);
+    //SetTextureFilter(*texPattern, TEXTURE_FILTER_TRILINEAR);
+
+   m_bgPatt = m_owningworld->SpawnActor<PatternSprite>(std::string{ "bgpattern" }, 3, recPattern);
+  
+    m_bgPatt.lock()->SetUIProperties(bgpatt_ui);
+    m_bgPatt.lock()->SetLocation({ 0,0 });
+    m_bgPatt.lock()->Init();
+    m_bgPatt.lock()->SetVisible(true);
+    AddChild(m_bgPatt);
+    recPattern = {};
+    bgrect = {};
+    bgpatt_ui = {};
+#pragma endregion
+
+    UI_Properties tmpui = {};
+    tmpui.scale = 1.f;
+    tmpui.size = {256.f, 256.f };
+    tmpui.location = {525.f, 25.f };
+    tmpui.texturestatus = TEXTURE_DATA_STATUS::LOCKED;
+    tmpui.texture = std::string{ "patterns2.png" };
+    tmpui.textureColor = BLACK;
+
+    m_pattern = m_owningworld->SpawnActor<Sprite2D>(std::string{ "pattern" });
+    m_pattern.lock()->MaintainAspectRatio(true);
+    m_pattern.lock()->SetUIProperties(tmpui);
+    m_pattern.lock()->Init();
+    m_pattern.lock()->SetVisible(true);
+    AddChild(m_pattern);
 
     m_target = m_owningworld->SpawnActor<Sprite2D>(std::string{"imgeditor"});
     m_target.lock()->SetUIProperties(ui);
@@ -67,8 +117,8 @@ void PuzzleImageController::Init()
 
    m_control = m_owningworld->SpawnActor<TransformCntrl>(cntrlid, Vector2{ (float)m_minWidth, (float)m_minHeight }, Vector2{ (float)m_maxWidth, (float)m_maxHeight } , m_target.lock()->GetBounds());
   //  m_control.lock()->SetLocation(ui.location);
-    m_control.lock()->SetVisible(true);
     m_control.lock()->Init();
+    m_control.lock()->SetVisible(true);
     m_control.lock()->onScaled.BindAction(GetWeakRef(), &PuzzleImageController::ImageScaleHandler);
     m_control.lock()->onMoved.BindAction(GetWeakRef(), &PuzzleImageController::ImageMoveHandler);
     AddChild(m_control);
@@ -109,7 +159,7 @@ void PuzzleImageController::Init()
     // TEST EM_Fetch class
 
 // Will Work in __EMSCRIPTEN__ Mode
-   bool success =  AssetManager::Get().LoadTextureAsync(std::string{ "/cannon1.png" }, GetWeakRef(), &PuzzleImageController::OnFetchAsyncLoadTexture, TEXTURE_DATA_STATUS::LOCKED);
+  // bool success =  AssetManager::Get().LoadTextureAsync(std::string{ "/cannon1.png" }, GetWeakRef(), &PuzzleImageController::OnFetchAsyncLoadTexture, TEXTURE_DATA_STATUS::LOCKED);
    
 
    txtbtnui = {};

@@ -22,7 +22,7 @@ using namespace cart;
 
 	
 	TweenMove* TweenBuilderBase::move() const{
-		int index = (int)Tween::GetTweenCount() + 1;
+		int index = (int)Tween::GetTweenCount();
 		std::string act_id = "move_" + std::to_string(index);
 		TweenMove* t = new TweenMove{ act_id, m_actor };
 		Tween::AddTween(index, t);
@@ -30,7 +30,7 @@ using namespace cart;
 	}
 
 	TweenRotate* TweenBuilderBase::rotate() const {
-		int index = (int)Tween::GetTweenCount() + 1;
+		int index = (int)Tween::GetTweenCount();
 		std::string act_id = "rotate_" + std::to_string(index);
 		TweenRotate* t = new TweenRotate{ act_id, m_actor };
 		Tween::AddTween(index, t);
@@ -38,7 +38,7 @@ using namespace cart;
 	}
 
 	TweenScale* TweenBuilderBase::scale() const {
-		int index = (int)Tween::GetTweenCount() + 1;
+		int index = (int)Tween::GetTweenCount();
 		std::string act_id = "scale_" + std::to_string(index);
 		TweenScale* t = new TweenScale{ act_id, m_actor };
 		Tween::AddTween(index, t);
@@ -47,7 +47,7 @@ using namespace cart;
 
 	TweenColor* TweenBuilderBase::color() const
 	{
-		int index = (int)Tween::GetTweenCount() + 1;
+		int index = (int)Tween::GetTweenCount();
 		std::string act_id = "color_" + std::to_string(index);
 		TweenColor* t = new TweenColor{ act_id, m_actor };
 		Tween::AddTween(index, t);

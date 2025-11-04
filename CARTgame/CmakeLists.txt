@@ -9,6 +9,8 @@ add_executable(${CART_GAME_TARGET_NAME}
 	${CMAKE_CURRENT_SOURCE_DIR}/include/puzzleimagecontroller.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/puzzleimagecontroller.cpp
 	
+	${CMAKE_CURRENT_SOURCE_DIR}/include/PatternSprite.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/PatternSprite.cpp
 
 	
 
@@ -57,4 +59,8 @@ add_custom_command(
 	${RESOURCE_SRC_DIR}
 	$<TARGET_FILE_DIR:${CART_GAME_TARGET_NAME}>/${RESOURCE_FOLDER_NAME}
 
+)
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/cartconfig.h.in"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/cartconfig.h" ESCAPE_QUOTES
 )

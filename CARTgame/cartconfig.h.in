@@ -1,0 +1,16 @@
+#pragma once
+#include <string>
+std::string GetResourceDir()
+{
+#ifdef PLATFORM_WEB
+	return "@RESOURCE_FOLDER_NAME@";
+#endif
+
+#ifdef NDEBUG // release build
+	return "@RESOURCE_FOLDER_NAME@/";
+#else // debug build
+	return "@RESOURCE_SRC_DIR@/";
+#endif // 
+
+}
+

@@ -13,7 +13,7 @@ namespace cart {
 		m_pivot{ 0, 0 },
 		m_rawlocation{},
 		m_defaultSize{},
-		m_isExcludedFromParentAutoControl{ false },
+		m_isExcludedFromParentAutoControl{ isExcludedFromParentAutoControl },
 		m_shapeType{ SHAPE_TYPE::RECTANGLE }
 	{
 
@@ -30,8 +30,11 @@ namespace cart {
 		{
 			iter->get()->Init();
 		}
-		UpdateLocation();
-		m_pendingUpdate = false;
+		Actor::Init();
+	}
+	void UIElement::Start()
+	{		
+		Actor::Start();
 	}
 #pragma endregion
 
@@ -78,6 +81,11 @@ namespace cart {
 		UpdateLocation();
 	}
 
+	void UIElement::LoadAssets()
+	{
+		Actor::LoadAssets();
+	}
+
 	void UIElement::SetActive(bool _flag)
 	{
 		Actor::SetActive(_flag);
@@ -111,6 +119,7 @@ namespace cart {
 	void UIElement::Notify(const std::string& strevent)
 	{
 	}
+
 
 	void UIElement::SetScale(float _scale)
 	{
@@ -248,12 +257,21 @@ namespace cart {
 	}
 #pragma endregion
 
+
+#pragma region EventHandler
+	/// <summary>
+	/// On Preload Page asssets
+	/// </summary>
+	void UIElement::AssetsLoadCompleted()
+	{
+		UpdateLocation();
+		m_pendingUpdate = false;
+		Actor::AssetsLoadCompleted();
+	}
+
+#pragma endregion
+
 #pragma region  Cleanup
-
-
-
-	
-	
 	void UIElement::Destroy() {
 	//	Logger::Get()->Push(std::format("UIElemente | {} | Destroyed!!", m_id));
 		for (auto iter = m_children.begin(); iter != m_children.end();)

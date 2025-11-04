@@ -14,27 +14,31 @@ namespace cart
 	{
 	public:
 		Application(int _winWidth, int _winHeight, const std::string& title);
+		virtual void Invoke();
 		virtual void Init();
-		virtual void BeginPlay();
+		virtual void Start();
 		virtual void Run();
-		Vector2 GetWindowSize() const ;
-		template<typename WorldType>
-		weak<WorldType> LoadWorld();
-		bool m_exit;
 		virtual void QuitApplication();
-		virtual DataFile& GetModel() { return m_Model; };
+		virtual DataFile& GetModel() { return m_dataModel; };
 		virtual World* GetCurrentWorld();
-		void SetHTTPCallback(char* id, char* response, char* data);
-		void LoadAssetCallback(char* uid, char* filename, unsigned char* data, int size);
-		DataFile& GetGameConfig(){ return m_gameConfig; };
-		json& GetGameConfigJSON() { return m_config_json; };
-		virtual std::string& GetResourcePath();
+		virtual std::string& GetAssetsPath();
+		virtual std::string& GetStaticAssetsPath();		
 		virtual std::string GetResourceDisplayPath();
 		virtual float GetIconSize();
 		virtual Camera GetCamera()const { return m_camera; };
 		static unique<network> net;
 		virtual weak<HUD> GetHUD();
 		virtual void SetHUD(shared<HUD> hud);
+		static Application* app;
+
+		void SetHTTPCallback(char* id, char* response, char* data);
+		void LoadAssetCallback(char* uid, char* url, unsigned char* data, int size);
+		DataFile& GetGameConfig(){ return m_gameConfig; };
+		json& GetGameConfigJSON() { return m_config_json; };
+		Vector2 GetWindowSize() const ;
+		template<typename WorldType>
+		weak<WorldType> LoadWorld();
+		bool m_exit;
 		~Application();
 		virtual void Destroy();
 	protected:
@@ -47,8 +51,10 @@ namespace cart
 		shared<HUD> m_HUD;
 		float m_targetFrameRate;
 		shared<World> m_CurrentWorld;
-		std::string m_resourcedir;
-		DataFile m_Model; 
+		std::string m_assetsdir;
+		std::string m_assetsdir_web;
+		std::string m_static_assetsdir;
+		DataFile m_dataModel; 
 		DataFile m_gameConfig;
 		json m_config_json;
 		Camera m_camera;

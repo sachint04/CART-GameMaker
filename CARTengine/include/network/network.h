@@ -27,8 +27,8 @@ extern "C" {
 #ifdef __EMSCRIPTEN__
     extern void GetHTTP(const char* uid, const char* url, const char* where);
     extern void PostHTTP(const char* uid,  const char* url, const char* data, const char* where );
-    extern void Upload(const char* uid, const char* url, const uintptr_t* imageData, int w, int h, const char* filename);
-    extern void LoadAssetHTTP(const char* uid, const char* url, const char* filename);
+    extern void Upload(const char* uid, const char* url, const char* dir, const uintptr_t* imageData, int w, int h, const char* filename);
+    extern void LoadAssetHTTP(const char* uid, const char* url);
 #endif
 
 #ifdef __cplusplus
@@ -42,7 +42,7 @@ namespace cart {
         ~network();
 
         void HTTPCallback(std::string& uid, std::string& response, std::string& data);
-        void LoadAssetHTTPCallback(std::string& uid, std::string filename,  unsigned char* data, int size);
+        void LoadAssetHTTPCallback(std::string& uid, std::string url,  unsigned char* data, int size);
         std::string GetUID();
 
         template<typename ClassName>
@@ -52,10 +52,10 @@ namespace cart {
         std::string POST(std::string url, std::string data, std::string where, weak<Object> obj, void(ClassName::* callback)(std::string, std::string));
 
         template<typename ClassName>
-        std::string UploadImage(std::string url, const uintptr_t* imageData, int width, int height, std::string filename, weak<Object> obj, void(ClassName::* callback)(std::string, std::string));
+        std::string UploadImage(std::string url, const uintptr_t* imageData, int width, int height, std::string dir, std::string filename, weak<Object> obj, void(ClassName::* callback)(std::string, std::string));
 
         template<typename ClassName>
-        std::string LoadAsset(std::string url, std::string filename, weak<Object> obj, void(ClassName::* callback)(std::string, unsigned char*, int));
+        void LoadAsset(std::string id, std::string url, weak<Object> obj, void(ClassName::* callback)(std::string, std::string, unsigned char*, int));
 
       /*  template<typename ClassName>
         bool FetchAsset_Async(Async_Call_Header url, weak<Object> obj, void(ClassName::* callback)(Async_Call_Response));*/
@@ -68,7 +68,7 @@ namespace cart {
     private:
         
         Dictionary<std::string, std::function<bool(std::string, std::string)>> mCallbacks;
-        Dictionary<std::string, std::function<bool(std::string, unsigned char*, int)>> m_LoadAssetCallbacks;
+        Dictionary<std::string, std::function<bool(std::string, std::string, unsigned char*, int)>> m_LoadAssetCallbacks;
         int requestCount;
 
     };
@@ -126,7 +126,7 @@ namespace cart {
     }
 
     template<typename ClassName>
-    std::string network::UploadImage(std::string url, const uintptr_t* imageData, int width, int height, std::string filename, weak<Object> obj, void(ClassName::* callback)(std::string, std::string))
+    std::string network::UploadImage(std::string url, const uintptr_t* imageData, int width, int height, std::string dir, std::string filename, weak<Object> obj, void(ClassName::* callback)(std::string, std::string))
     {
         std::function<bool(std::string, std::string)> callbackFunc = [obj, callback](std::string response, std::string data)->bool
         {
@@ -143,7 +143,8 @@ namespace cart {
 #ifdef __EMSCRIPTEN__
         const char* urlptr = url.c_str();
         const char* idptr = uid.c_str();
-        Upload(idptr, urlptr, imageData, width, height, filename.c_str());
+       // const char* dirptr = dir.c_str();
+        Upload(idptr, urlptr, dir.c_str(), imageData, width, height, filename.c_str());
         mCallbacks.insert({ uid, callbackFunc });
 #endif
         return uid;
@@ -152,28 +153,29 @@ namespace cart {
     }
 
     template<typename ClassName>
-    std::string network::LoadAsset(std::string url, std::string filename, weak<Object> obj, void (ClassName::* callback)(std::string, unsigned char*, int))
+    void network::LoadAsset(std::string id, std::string url, weak<Object> obj, void (ClassName::* callback)(std::string, std::string, unsigned char*, int))
     {
-        std::function<bool(std::string, unsigned char*, int)> callbackFunc = [obj, callback](std::string filename, unsigned char* data, int size)->bool
+        Logger::Get()->Push(std::format("Network LoadAsset() id {} url {} \n", id, url));
+        std::function<bool(std::string, std::string, unsigned char*, int)> callbackFunc = [obj, callback](std::string id, std::string filename, unsigned char* data, int size)->bool
         {
             if (!obj.expired())
             {
-                (static_cast<ClassName*>(obj.lock().get())->*callback)(filename, data, size);
+                (static_cast<ClassName*>(obj.lock().get())->*callback)(id,filename, data, size);
                 return true;
             }
 
             return false;
         };
-        //  if (!mCallbacks)mCallbacks = {};
-        std::string uid = GetUID();
-#ifdef __EMSCRIPTEN__
+        std::string nid = GetUID();
+        std::string uid = std::string{ id + "," + nid};
         const char* urlptr = url.c_str();
         const char* idptr = uid.c_str();
-        const char* filenameptr = filename.c_str();
-        LoadAssetHTTP(idptr, urlptr, filenameptr);
-        m_LoadAssetCallbacks.insert({ uid, callbackFunc });
+        
+        m_LoadAssetCallbacks.insert({ nid, callbackFunc });
+#ifdef __EMSCRIPTEN__
+        LoadAssetHTTP(idptr, urlptr);
 #endif
-        return uid;
+       
     }
 
    // /// <summary>

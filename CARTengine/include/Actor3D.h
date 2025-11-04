@@ -9,7 +9,8 @@ namespace cart
 	public:
 		Actor3D(World* _owningworld, const std::string& _id);
 		~Actor3D();
-		void Init();
+		void Init()override;
+		void Start()override;
 		void Update(float _deltaTime)override;
 		void Draw(float _deltaTime)override;
 		void Update3D(float _deltaTime, const Camera& camera);
@@ -22,13 +23,16 @@ namespace cart
 		void ShowLabel(bool _flag);
 		void PlayAnimation(int index);
 		void Destroy()override;
+		
+
 		std::string& GetLabel(){ return m_label; };
 		Delegate<weak<Object>, Vector2> onHover;
 		Delegate<weak<Object>, Vector2> onOut;
 		Delegate<weak<Object>, Vector2> onTouch;
+		Delegate<weak<Object>, int> onAnimFinish;
 	private:
 		Model m_model;
-		Vector4 m_rotation;
+		
 		Ray m_ray;
 		RayCollision m_collision;
 		ModelAnimation * m_animations;

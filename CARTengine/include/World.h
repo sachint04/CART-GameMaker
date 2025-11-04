@@ -74,7 +74,7 @@ namespace cart
 	template<typename ActorType, typename...Args>
 	weak<ActorType> World::SpawnActor(Args...args)
 	{
-		shared<ActorType> newActor{ new ActorType(this, args...) };
+		shared<ActorType> newActor{ new ActorType(this, args...) };		
 		m_Actors.push_back(newActor);
 		return newActor;
 	}

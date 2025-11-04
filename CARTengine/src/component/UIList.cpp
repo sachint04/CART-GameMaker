@@ -19,6 +19,8 @@ namespace cart {
 		UIElement::Init();
 		uint16_t scrW = GetScreenWidth();
 		uint16_t scrH = GetScreenHeight();
+		std::string resourcepath = m_owningworld->GetApplication()->GetAssetsPath();
+		std::string staticassetpath = m_owningworld->GetApplication()->GetStaticAssetsPath();
 		m_listitem.clear();
 		int counter = 0;
 		auto& c = m_owningworld->GetApplication()->GetGameConfig()["cart"];
@@ -59,7 +61,7 @@ namespace cart {
 			Vector2 tsize = MeasureTextEx(*fnt, iter->label.c_str(), fontsize, 2.f);
 			Btn_Text_Properties btnprop = {};
 			btnprop.text = iter->label;
-			btnprop.font = strfont;
+			btnprop.font = std::string{ staticassetpath + strfont };
 			btnprop.fontsize = fontsize;
 			btnprop.textcolor = BLACK;
 			btnprop.texthoverolor = ORANGE;

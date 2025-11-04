@@ -24,7 +24,7 @@ namespace cart {
 	}
 
 	void Sprite2D::Init()
-	{
+	{	
 		UIElement::Init();
 	}
 #pragma endregion

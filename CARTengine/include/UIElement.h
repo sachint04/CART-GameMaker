@@ -14,14 +14,14 @@ namespace cart {
 		UIElement(World* _owningworld, const std::string& _id, bool isExcludedFromParentAutoControl = false);
 
 		// UIElement virtual function
-		virtual void Init();  
+		virtual void Init() override;  
+		virtual void Start() override;  
 		virtual void Update(float _deltaTime) override;
 		virtual void Draw(float _deltaTime) override;	
 		virtual void LateUpdate(float _deltaTime) override;
 		virtual void SetUIProperties(UI_Properties _prop);
         virtual void SetSize(Vector2 _size) override;		
-		virtual Rectangle GetBounds();
-		
+		virtual void LoadAssets()override;
 
 		virtual void SetScale(float _scale) override;
 		virtual void SetActive(bool _flag) override;
@@ -31,7 +31,9 @@ namespace cart {
 		virtual void DrawBGColor();
 		virtual void SetVisible(bool _flag) override;
 		virtual void Notify(const std::string& strevent);
+		virtual void AssetsLoadCompleted()override;
 
+		virtual Rectangle GetBounds();
 		virtual ~UIElement();
 
 		void AddText(const std::string & id, Text_Properties _txt);

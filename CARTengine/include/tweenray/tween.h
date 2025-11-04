@@ -26,7 +26,7 @@ namespace cart {
         static Dictionary <int, TweenBuilderBase*> tweenlist;
         static List<TweenBuilderBase*> pendingDeleteTween;
         static void CleanCycle();
-
+        static int tweenId;
         static float m_cleanCycleIter;
         static  double m_cleanCycleStartTime;
 

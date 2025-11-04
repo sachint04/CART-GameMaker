@@ -1,6 +1,11 @@
 #include "Actor.h"
 #include "World.h"
+#include "AssetManager.h"
+#include "Logger.h"
 namespace cart {
+#pragma region Constructor & INIT
+
+
 	Actor::Actor( World* _owingworld, const std::string& _id ) :Object{ _id },
 		m_owningworld{_owingworld},
 		m_scale(1.f), 
@@ -10,24 +15,49 @@ namespace cart {
 		m_active{true},
 		m_color{WHITE},
 		m_calculatedLocation{},
-		m_width{},
-		m_height{},
-		m_location3{},
-		m_zSize{}
+		m_width{1.f},
+		m_height{1.f},
+		m_location3{0},
+		m_rotation3{0},
+		m_zSize{1.f},
+		m_preloadlist{},
+		m_isReady{false}
 	{
 	}
+	void Actor::Start()
+	{
+		m_isReady = true;
+	}
+	void Actor::Init()
+	{
+		LoadAssets();
+		
+	}
+
+#pragma endregion
+
+#pragma region CleanUp
+
 
 	Actor::~Actor()
 	{
 		//LOG("%s Actor deleted! ", m_id.c_str());
 	}
 
+#pragma endregion
+
+
+#pragma region Healpers
+
+	void Actor::SetReady(bool flag)
+	{
+		m_isReady = flag;
+	}
 	Vector2 Actor::GetWindowSize() const
 	{
 		return m_owningworld->GetAppWindowSize();
 	}
-	
-	
+		
 	void Actor::SetLocation(Vector2 _location)
 	{
 		m_location = _location;
@@ -53,6 +83,11 @@ namespace cart {
 	void Actor::SetRotation(float _rotation)
 	{
 		m_rotation = _rotation;
+	}
+
+	void Actor::SetRotation3(Vector4 _rotation)
+	{
+		m_rotation3 = _rotation;
 	}
 
 	bool Actor::IsVisible() const
@@ -89,16 +124,21 @@ namespace cart {
 	{
 		return m_location;
 	}
+	
 	Vector3 Actor::GetLocation3()
 	{
 		return m_location3;
+	}
+
+	Vector4 Actor::GetRotation3()
+	{
+		return m_rotation3;
 	}
 
 	float Actor::GetScale()
 	{
 		return m_scale;
 	}
-
 	
 	void Actor::Update(float _deltaTime)
 	{
@@ -125,9 +165,32 @@ namespace cart {
 		m_zSize = _size.z;
 	}
 
+	/// <summary>
+	/// Load Texture before rendering page
+	/// </summary>
+	void Actor::LoadAssets()
+	{
+		if (m_preloadlist.size() > 0) {			
+			AssetManager::Get().LoadAssetList(GetID(), m_preloadlist, GetWeakRef(), &Actor::AssetsLoadCompleted);
+		}
+		else {
+			AssetsLoadCompleted();
+		}
+		
+	}
+
+	void Actor::AssetsLoadCompleted()
+	{
+		Logger::Get()->Push(std::format(" {} Actor AssetsLoadCompleted()\n", GetID()));
+		Start();
+	}
+
 	void Actor::SetVisible(bool _flag)
 	{
 		m_visible = _flag;
 	}
+
+#pragma endregion
+
 
 }

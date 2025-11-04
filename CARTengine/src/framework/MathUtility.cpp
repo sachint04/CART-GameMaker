@@ -13,6 +13,33 @@ namespace cart
 		return vec;
 	}
 
+	Vector2 GetPointInCircle() {
+		float ran = RandomRange(0.f, 1.f) * 360.f;
+		float radian = DegreesToRadians(ran);
+		float x = std::cos(radian) ;
+		float y = std::sin(radian);
+		Vector2 p = { x,y };
+		return p;
+	}
+
+	Vector2 GetPointOnRectangle()
+	{
+		int seed = std::round(RandomRange(0.f, 1.f));
+		float rany = RandomRange(-1.f, 1.f);
+		float ranx = RandomRange(-1.f, 1.f);
+		
+		if (seed == 0) 
+		{
+			rany = std::round(rany);
+		}
+		else {
+			ranx = std::round(ranx);
+		}
+		Vector2 rect = { ranx, rany};
+		return rect;
+
+	}
+
 	float VectorToRotation(Vector2 vec1 , Vector2 vec2) {
 		float dot = Dot(vec1, vec2);
 		float vecLen1 = GetVectorLength(vec1);
@@ -132,8 +159,6 @@ namespace cart
 		}
 		return Color{ (unsigned char)r, (unsigned char)g, (unsigned char)b, (unsigned char)a };
 	}
-
-
 
     float GetVectorLength(Vector2 vector) {
 		float len = std::sqrt(vector.x * vector.x + vector.y * vector.y);

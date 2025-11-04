@@ -45,5 +45,6 @@ namespace cart
 
 	Color LERP(Color _a, Color _b, float _t , bool _alpha);
 
-	
+	Vector2 GetPointInCircle();
+	Vector2 GetPointOnRectangle();
 }

@@ -13,6 +13,7 @@ namespace cart {
 	List<TweenBuilderBase*> Tween::pendingDeleteTween = {};
 	float Tween::m_cleanCycleIter =  0.3f;
 	double Tween::m_cleanCycleStartTime =  0;
+	int Tween::tweenId = 0;
 
 	Tween::Tween() {
 
@@ -20,11 +21,11 @@ namespace cart {
 
 	TweenBuilder* Tween::create(weak<Actor> actor)
 	{
-		int id = (int)tweenlist.size() + 1;
-		std::string tw_id = "builder_" + std::to_string(id);
+		tweenId++;
+		std::string tw_id = "builder_" + std::to_string(tweenId);
 		TweenBuilder* t = new TweenBuilder{ tw_id, actor};
 //		shared<TweenBuilder> t = std::make_shared<TweenBuilder>(TweenBuilder{ tw_id, actor });
-		tweenlist.insert({ id, t});			
+		tweenlist.insert({ tweenId, t});
 		return t;
 	}
 
@@ -44,6 +45,7 @@ namespace cart {
 
 		for (auto iter = tweenlist.begin(); iter != tweenlist.end();) {
 			if (iter->second->IsPendingDestroy() == true) {
+				std::cout << "Tween Complete " << iter->second->GetID().c_str() << std::endl;
 				pendingDeleteTween.push_back(iter->second);				
 				iter = tweenlist.erase(iter);				
 			}
@@ -57,8 +59,11 @@ namespace cart {
 
 	int Tween::GetTweenCount()
 	{
-		return tweenlist.size();
+		tweenId++;
+		return tweenId;
 	}
+
+	
 
 	void Tween::AddTween(int id, TweenBuilderBase* tween)
 	{

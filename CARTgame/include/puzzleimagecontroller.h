@@ -8,6 +8,7 @@ namespace cart
     class Sprite2D;
     class World;
     class TransformCntrl;
+    class PatternSprite;
     class PuzzleImageController: public UIElement
     {
     private:
@@ -26,6 +27,8 @@ namespace cart
     int m_gridWidth;
     int m_gridHeight;
     std::string m_strImage;
+    weak<PatternSprite> m_bgPatt; 
+    weak<Sprite2D> m_pattern;
     weak<Sprite2D> m_target; 
     weak<Sprite2D> m_cannon; 
     weak<TransformCntrl> m_control;

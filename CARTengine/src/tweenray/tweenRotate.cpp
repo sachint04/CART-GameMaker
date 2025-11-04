@@ -11,7 +11,7 @@ namespace cart {
 	}
 	
 	TweenRotate::TweenRotate(const std::string& id, weak<Actor> actor)
-		:TweenBuilderBase{ id, actor }, m_startAngle{0}, m_targetAngle{0}, m_duration {0}, m_easing{ EaseInOutSine }, m_useFrom{false}
+		:TweenBuilderBase{ id, actor }, m_startAngle{ 0 }, m_targetAngle{ 0 }, m_duration{ 0 }, m_easing{ EaseInOutSine }, m_useFrom{ false }, m_axis{0}
 	{
 		//std::cout << this << "  -> TweenRotate created \n";
 	};
@@ -33,9 +33,14 @@ namespace cart {
 			double t = easingfunc(t_raw);
 			if (t_raw <= 1.0) {
 				float vec = LERP(m_startAngle, m_targetAngle, (float)t);
-				std::string __id = m_actor.lock()->GetID();
-			
-				m_actor.lock()->SetRotation(vec);
+				//std::string __id = m_actor.lock()->GetID();
+				if (m_axis.x == 0 && m_axis.y == 0 && m_axis.z == 0)
+				{
+					m_actor.lock()->SetRotation(vec);
+				}
+				else {
+					m_actor.lock()->SetRotation3({ m_axis.x, m_axis.y, m_axis.z, vec });
+				}
 
 				
 			}
@@ -61,12 +66,21 @@ namespace cart {
 
 	
 
-	TweenRotate* TweenRotate::angle(float angle, double duration, easing_functions _easing)
+	TweenRotate* TweenRotate::angle(float angle, Vector3 axis, double duration, easing_functions _easing)
 	{
-		if(m_useFrom == false)
-			m_startAngle = m_actor.lock()->GetRotation();
+		if (m_useFrom == false) {
+			if (axis.x == 0 && axis.y == 0 && axis.z == 0)
+			{
+				m_startAngle = m_actor.lock()->GetRotation();
+			}
+			else {
+				m_startAngle = m_actor.lock()->GetRotation3().w;
+
+			}
+
+		}
 	
-		
+		m_axis = axis;
 		m_targetAngle = angle;
 		m_duration = duration;
 		m_ready = true;
@@ -75,9 +89,11 @@ namespace cart {
 		return this;
 	}
 
-	TweenRotate* TweenRotate::from(float angle)
+	TweenRotate* TweenRotate::from(float angle, Vector3 axis)
 	{
 		m_startAngle = angle;
+		m_axis = axis;
+		m_useFrom = true;
 		return this;
 	}
 

@@ -7,7 +7,6 @@ namespace cart
 	Actor3D::Actor3D(World* _owningworld, const std::string& _id)
 		:Actor{ _owningworld, _id }, 
 		m_model{ }, 
-		m_rotation{0},
 		m_ray{ 0 }, 
 		m_collision{ 0 },  
 		m_isTouch{0},
@@ -19,12 +18,18 @@ namespace cart
 		m_bPlayAnim{false},
 		m_strfont{},
 		m_fontSize{18},
-		m_fontSpace{2.f}
+		m_fontSpace{2.f},
+		m_animations{nullptr}
 	{
 	}
 	void Actor3D::Init()
 	{
-		
+		Actor::Init();
+	}
+
+	void Actor3D::Start()
+	{
+		Actor::Start();
 	}
 #pragma endregion
 	
@@ -52,7 +57,7 @@ namespace cart
 			if (m_collision.hit)
 			{
 				onTouch.Broadcast(GetWeakRef(), GetMousePosition());
-				m_currentFrame = 0;
+				//m_currentFrame = 0;
 			}	
 		}
 
@@ -83,7 +88,13 @@ namespace cart
 		{
 			ModelAnimation anim = m_animations[m_currentAnimation];
 			m_currentFrame++;
-			if (m_currentFrame > anim.frameCount - 1)m_currentFrame = anim.frameCount - 1;
+			if (m_currentFrame > anim.frameCount - 1)
+			{
+				m_currentFrame = anim.frameCount - 1;
+				m_bPlayAnim = false;
+				onAnimFinish.Broadcast(GetWeakRef(), m_currentAnimation);
+
+			}
 			UpdateModelAnimation(m_model, anim, m_currentFrame);
 		}
 	}
@@ -96,7 +107,7 @@ namespace cart
 	{
 		if (!m_visible)return;
 		BeginMode3D(camera);
-			DrawModelEx(m_model, m_location3, { m_rotation.x, m_rotation.y, m_rotation.z }, m_rotation.w, {(float)m_width, (float)m_height, (float)m_zSize}, WHITE);
+			DrawModelEx(m_model, m_location3, { m_rotation3.x, m_rotation3.y, m_rotation3.z }, m_rotation3.w, {(float)m_width, (float)m_height, (float)m_zSize}, WHITE);
 		EndMode3D();
 		if (m_bShowLabel)
 		{
@@ -151,12 +162,10 @@ namespace cart
 		m_fontSize = size;
 		m_fontSpace = spacing;
 	}
-
 	void Actor3D::ShowLabel(bool _flag)
 	{
 		m_bShowLabel = _flag;
 	}
-
 	void Actor3D::PlayAnimation(int index)
 	{
 		if (index >= 0) {
@@ -169,7 +178,6 @@ namespace cart
 		}
 			m_currentFrame = 0;
 	}
-
 	
 
 #pragma endregion
@@ -177,14 +185,23 @@ namespace cart
 #pragma region CleanUp
 	void Actor3D::Destroy()
 	{
+		if (m_animations && IsModelAnimationValid(m_model, *m_animations)) {
+
+			UnloadModelAnimations(m_animations, m_animcount);
+		}
+
+		if (m_model.meshes != NULL && IsModelValid(m_model)  )
+		{
+			UnloadModel(m_model);
+			m_model.meshes = NULL;
+
+		}
+	
+		
 		SetVisible(false);
-		Actor::Destroy();
 	}
 	Actor3D::~Actor3D()
 	{		
-		if (m_animations)delete m_animations;
-
-		UnloadModel(m_model);
 	}
 #pragma endregion
 }

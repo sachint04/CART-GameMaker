@@ -12,6 +12,7 @@
 namespace cart
 {
 	unique<network> Application::net{ nullptr };
+	Application* Application::app = { nullptr };
 
 	Application::Application(int _winWidth, int _winHeight, const std::string& title)
 		:m_winWidth{ _winWidth },
@@ -21,29 +22,40 @@ namespace cart
 		m_HUD{nullptr},
 		m_targetFrameRate{ 60 },
 		m_exit{ false },
-		m_resourcedir{},
-		m_Model{},
+		m_assetsdir{},
+		m_assetsdir_web{},
+		m_static_assetsdir{},
+		m_dataModel{},
 		m_gameConfig{},
 		m_camera{},
 		m_config_json{}
 		
 	{
+		
 	}
 
 	void Application::Init() {
-		m_Model = {};
+		m_dataModel = {};
 		net = unique<network>{ new network };
 		InitWindow(m_winWidth, m_winHeight, m_title.c_str());
-		SetTargetFPS(m_targetFrameRate);
-
+		SetTargetFPS(m_targetFrameRate);		
 	}
 
-	void Application::BeginPlay()
+	void Application::Start() {
+		Run();
+	}
+
+	/// <summary>
+	/// This is the first function all to Object
+	/// </summary>
+	void Application::Invoke()
 	{
+		// No implimantations
 	}
 
 	void Application::Run()
 	{
+		Logger::Get()->Push("APPLICATION  Run() !!");
 		Clock::Get().Reset();
 		while (m_exit == false)
 		{
@@ -105,9 +117,14 @@ namespace cart
 		return m_CurrentWorld.get();
 	}
 
-	std::string& Application::GetResourcePath()
+	std::string& Application::GetAssetsPath()
 	{
-		return m_resourcedir;
+		return m_assetsdir;
+	}
+
+	std::string& Application::GetStaticAssetsPath()
+	{
+		return m_static_assetsdir;
 	}
 
 	std::string Application::GetResourceDisplayPath()
@@ -147,9 +164,9 @@ namespace cart
 	void Application::LoadAssetCallback(char* uid, char* filestr, unsigned char* data, int size)
 	{
 		std::string id = { uid };	
-		std::string filename = { filestr };	
+		std::string url = { filestr };	
 		//	Logger::Get()->Push(std::format("FROM Application id {} response {} data {} ", uid, response, data));
-		net->LoadAssetHTTPCallback(id, filestr, data, size);
+		net->LoadAssetHTTPCallback(id, url, data, size);
 	}
 	
 }

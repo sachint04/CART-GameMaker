@@ -43,7 +43,7 @@ namespace cart {
         std::string callerID = uid;
         std::string networkID = uid;
         int found = uid.find(delimiter);// find Ids 
-        Logger::Get()->Push(std::format("network::LoadAssetHTTPCallback id {} index {} \n", uid, found));
+       // Logger::Get()->Push(std::format("network::LoadAssetHTTPCallback id {} index {} \n", uid, found));
         if (found != std::string::npos) {
             try {
                 networkID = uid.substr(found + 1); // Network (this) generated Id            

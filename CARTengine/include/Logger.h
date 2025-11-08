@@ -3,17 +3,10 @@
 #include <map>
 #include <raylib.h>
 #include <format>
-
+#include "Types.h"
 
 namespace cart
 {
-
-	enum LOG_TYPE {
-		INFO,
-		ALERT,
-		ERROR,
-	};
-
 
 	class Logger
 	{
@@ -22,7 +15,7 @@ namespace cart
 		void operator=(const Logger&) = delete;
 		~Logger();
 		static Logger* Get();
-		void Push(std::string _t);
+		void Push(std::string _t, LOG_TYPE _type = LOG_TYPE::LOG_INFO);
 		void Show();
 		void Hide();
 		void Clear();
@@ -37,8 +30,8 @@ namespace cart
 		Logger();
 
 		static Logger* instance;
-		
-		std::map<int, std::string > logdb = {};
+		std::vector<Log_Data> logdb;
+//		std::map<int, std::string > logdb = {};
 
 		bool resizing = false;
 		bool wordWrap = true;
@@ -46,7 +39,7 @@ namespace cart
 
 		Vector2 lastMouse = { 0.0f, 0.0f }; // Stores last mouse coordinates
 		Color borderColor = BLUE;         // Container border color
-		Font font = GetFontDefault();       // Get default system font
+		Font font;       // Get default system font
 
 		void DrawTextBoxed(Font font, const char* text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint);
 		void DrawTextBoxedSelectable(Font font, const char* text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint, int selectStart, int selectLength, Color selectTint, Color selectBackTint);

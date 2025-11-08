@@ -19,15 +19,15 @@ namespace cart
     {
     }
 
-    void GameStage::StartStage()
-    {
-        Init();
-    }
+
 
     void GameStage::Init()
     {
-        m_stageFinished = false;
-       
+         m_isReady = true;
+    } 
+    void GameStage::Start()
+    {
+        //     LOG("Game Stage Start!");
     }
     void GameStage::Update(float deltaTime)
     {

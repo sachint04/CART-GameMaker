@@ -17,24 +17,25 @@ namespace cart
 	public:
 		World(Application* owningApp);
 		virtual void Init();
+		virtual void Start();		
+		virtual weak<HUD> GetHUD();		
 		virtual void Update(float _deltaTime);
 		virtual void Draw(float _deltaTime);
 		virtual void LateUpdate(float _deltaTime);
 		virtual void AddStage(const shared<GameStage>& newStage);
 		virtual void AllGameStagesFinished();
-
 		virtual InputController* GetInputController() { return m_inputController; };
 		virtual const InputController* GetInputController() const { return m_inputController; }
 
 		virtual Application* GetApplication() { return m_owningApp; }
 		virtual const Application* GetApplication() const { return m_owningApp; }
-		virtual void InitGameStages();
 		virtual ~World();
 
 		Vector2 GetAppWindowSize() const;
 		long GetSizeOfPendingActors();
 		void CleanCycle();
 		void Unload();
+		void InitStage();
 		void StartStage();
 		void NextGameStage();
 		void PreviousGameStage();
@@ -64,7 +65,7 @@ namespace cart
 		List<shared<Actor>> m_Actors;
 		List<shared<Actor>> m_PendingActors;
 		List<shared<GameStage>> m_gameStages;
-		shared<HUD> mHUD;
+		shared<HUD> m_HUD;
 		List<shared<GameStage>>::iterator  m_currentStage;
 
 
@@ -83,7 +84,7 @@ namespace cart
 	inline weak<HUDType> World::SpawnHUD(Args ...args)
 	{
 		shared<HUDType> newHUD{ new HUDType(this,args...) };
-		mHUD = newHUD;
+		m_HUD = newHUD;
 		return newHUD;
 	}
 

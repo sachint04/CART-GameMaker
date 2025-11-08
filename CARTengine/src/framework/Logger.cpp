@@ -1,5 +1,6 @@
 #include "Logger.h"
 #include "Core.h"
+#include <raylib.h>
 namespace cart
 {
     Logger* Logger::instance = nullptr;
@@ -7,8 +8,9 @@ namespace cart
 #pragma region INIT
 
     Logger::Logger()
-        :isVisible{true}
+        :isVisible{ true }, logdb{}
     {
+        font = GetFontDefault();
     }
 #pragma endregion
 
@@ -30,18 +32,11 @@ namespace cart
         logdb.clear();
     }
 
-    void Logger::Push(std::string _t)
+    void Logger::Push(std::string _t, LOG_TYPE _type)
     {
         if (isVisible) 
         {
-
-            if (logdb.size()> m_max_log_count)
-            {
-                Clear();  
-                m_log_count = 0;
-            }
-            m_log_count++;
-            logdb.insert({ m_log_count, _t });
+            logdb.push_back({ _type, _t });
         }
        
         printf("%s", _t.c_str());
@@ -172,22 +167,40 @@ namespace cart
 
         if (!isVisible)return;
 
+        auto checkrect = [&](Vector2& rect, const std::string& t, float& fontsize, float spacing )
+        {            
+            rect = MeasureTextEx(GetFontDefault(), t.c_str(), fontsize, spacing);
+        };
         DrawRectangleLinesEx(container, 3, borderColor);    // Draw container border
-        std::string t = "";
-
-        int counter = 0;
-        // Draw text in container (add some padding)
-        for (auto iter = logdb.begin(); iter != logdb.end();)
-        {
         
-            t = t + iter->second + "\n";
-            counter = counter + 1;
-            iter++;
-        }
+
+
         DrawRectangle(container.x, container.y , container.width, container.height, RAYWHITE);
         std::string  info_str = { " SHOWING LAST " + std::to_string(m_max_log_count) + " LOGS." };
         DrawText(info_str.c_str(), container.x, container.y - 15, 10, WHITE);
-        DrawTextBoxed(font, t.c_str(), { container.x + 4, container.y + 4, container.width - 4, container.height - 4 }, fontsize, 2.0f, wordWrap, BLACK);
+        std::string t = "";
+
+        int counter = 0;
+        int pos = container.y;
+        // Draw text in container (add some padding)
+        int size = logdb.size();
+        int offset = std::max(size, size - m_max_log_count);
+        if (offset > 0) {
+
+            for (auto iter = logdb.end() - offset;  iter != logdb.end(); ++iter)
+            {        
+                t +=  iter->log + "\n"  ;  
+                Vector2 rect = {};
+                checkrect(rect, iter->log.c_str(), fontsize, 2.f);
+                if (pos > container.y + container.height - 50)
+                {
+                    break;
+                }
+                DrawTextBoxed(font, iter->log.c_str(), { container.x + 4, (float)pos + 4, container.width, rect.y + 4 }, fontsize, 2.0f, wordWrap, BLACK);
+                pos += rect.y; 
+            }
+        }
+       
         DrawRectangleRec(resizer, borderColor);             // Draw the resize box
         DrawRectangleRec(clearbtn, borderColor);// clear Text box
         DrawRectangle(container.x, container.y - 20, container.width, 20, borderColor);// draw Title bar

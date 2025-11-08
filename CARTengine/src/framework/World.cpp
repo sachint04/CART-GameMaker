@@ -27,31 +27,38 @@ namespace cart {
 		
 	}
 
-	void World::Init() {
+	void World::Init() {	
 		m_cleanCycleStartTime = Clock::Get().ElapsedTime();
-		InitGameStages();
-		StartStage();
+		m_inputController = new InputController{ };
+		m_HUD.get()->Init();
+		InitStage();
+		Application::app->Start();
 	}
 
+	void World::Start()
+	{		
+		m_HUD.get()->Start();
+		m_HUD.get()->SetVisible(true);
+		StartStage();
+
+	}
 
 #pragma region GAME STAGE MANAGEMENT
-	void World::InitGameStages()
-	{
-		m_inputController = new InputController{ };
-		
-	}
+
 
     void World::AllGameStagesFinished()
     {
 		Logger::Get()->Push("All game stages fnished.");
     }
 
+
+
     void World::NextGameStage()
 	{
 		++m_currentStage;
 		if (m_currentStage != m_gameStages.end())
 		{			
-			m_currentStage->get()->StartStage();
+			m_currentStage->get()->Init();
 
 		}else{
 
@@ -65,7 +72,7 @@ namespace cart {
 		--m_currentStage;
 		if (m_currentStage != m_gameStages.end())
 		{
-			m_currentStage->get()->StartStage();			
+			m_currentStage->get()->Init();			
 		}
 		else{
 
@@ -84,7 +91,7 @@ namespace cart {
 				break;
 			}			
 		}
-		m_currentStage->get()->StartStage();
+		m_currentStage->get()->Init();
 	}
 	
 	void World::AddStage(const shared<GameStage>& newStage)
@@ -92,13 +99,20 @@ namespace cart {
 		m_gameStages.push_back(newStage);
 		
 	}
-
+	void World::InitStage()
+	{
+		m_currentStage = m_gameStages.begin();
+		if (m_currentStage != m_gameStages.end())
+		{
+			m_currentStage->get()->Init();
+		}
+	}
 	void World::StartStage()
 	{
 		m_currentStage = m_gameStages.begin();
 		if (m_currentStage != m_gameStages.end())
 		{
-			m_currentStage->get()->StartStage();			
+			m_currentStage->get()->Start();			
 		}
 	}
 
@@ -132,14 +146,8 @@ namespace cart {
 #pragma endregion
 
 #pragma region Update HUD
+		m_HUD->Update(_deltaTime);
 
-		if (mHUD)
-		{
-			if (!mHUD->HasInit())
-				mHUD->NativeInit();
-
-			mHUD->Update(_deltaTime);
-		}
 #pragma endregion
 
 	}
@@ -148,19 +156,13 @@ namespace cart {
 	{
 			ClearBackground(RAYWHITE);
 			for (auto iter = m_Actors.begin(); iter != m_Actors.end();  ++iter)
-			{
+			{				
 				iter->get()->Draw(_deltaTime);
 			}
 
-			if (mHUD)
-			{
-				if (!mHUD->HasInit())
-					mHUD->NativeInit();
-
-				mHUD->Draw(_deltaTime);
-			}
-	
+			m_HUD->Draw(_deltaTime);
 	}
+
 	void World::LateUpdate(float _deltaTime)
 	{
 		for (size_t i = 0; i < m_Actors.size(); i++)
@@ -171,9 +173,9 @@ namespace cart {
 
 #pragma region Update HUD
 
-		if (mHUD)
+		if (m_HUD)
 		{
-			mHUD->LateUpdate(_deltaTime);
+			m_HUD->LateUpdate(_deltaTime);
 		}
 #pragma endregion
 	}
@@ -200,6 +202,11 @@ namespace cart {
 	{
 		m_sessionData = data; 
 	}
+
+	weak<HUD> World::GetHUD()
+	{
+		return m_HUD;
+	}
 #pragma endregion
 	
 #pragma region CleanUp
@@ -212,6 +219,7 @@ namespace cart {
 			//	Logger::Get()->Push("Actor %s with use count%lu \n", iter->get()->GetID().c_str(), iter->use_count());
 			if (iter->use_count() == 1)
 			{			
+				std::string id = iter->get()->GetID();
 		//		Logger::Get()->Push("Removing last instanece of actor %s with use count%lu \n", iter->get()->GetID().c_str(), iter->use_count());
 				iter->reset();
 				iter = m_Actors.erase(iter);

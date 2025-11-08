@@ -113,7 +113,7 @@ namespace cart {
 		if (m_active == true) 
 		{
 			Vector2 tPos = { (float)GetMouseX(), (float)GetMouseY() };
-			if (m_IsMouseOver && m_owningworld->GetApplication()->GetHUD().lock()->IsMouseOverUI(tPos)) {			
+			if (m_IsMouseOver && m_owningworld->GetHUD().lock()->IsMouseOverUI(tPos)) {			
 				MouseOut();
 				return;
 			}

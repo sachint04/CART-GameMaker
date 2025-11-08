@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <functional>
 #include <vector>
 #include <raylib.h>
 #include "easing.h"
@@ -74,6 +75,17 @@ namespace cart {
         PROGRESS,
         FAILED
     };
+    enum PROGRESS_VIEW_TYPE {
+        P_BAR,
+        P_DISC,
+        P_CLOCK
+    };
+
+    enum LOG_TYPE {
+        LOG_INFO,
+        LOG_WARNING,
+        LOG_ERROR,
+    };
 #pragma endregion
 
 #pragma region STRUCTS
@@ -94,8 +106,7 @@ namespace cart {
         int progress;
         int totalBytes;
     }Async_Call_Response;
-    
-    
+       
     typedef struct Async_Call_Data {
         std::string id;
         std::string location;
@@ -104,11 +115,19 @@ namespace cart {
 
     }Async_Call_Data;
 
-
     typedef struct {
         shared<Texture2D> texture;
         TEXTURE_DATA_STATUS status;
     }TextureData;
+
+    struct Preload_Data {
+    public:
+        std::string uid;
+        int count;
+        std::function<bool()> callback;
+        std::vector<std::string> list;
+        std::string loadmessage;
+    };
 
     struct UI_Properties {
     public:
@@ -154,6 +173,7 @@ namespace cart {
         Rectangle texturesourcedisable;
        
     };
+    
     struct Btn_Text_Properties : Btn_Properties {
     public:
         std::string font;
@@ -164,7 +184,6 @@ namespace cart {
         Color texthoverolor;
 
     };
-   
 
     struct TransformAnimData {
         Vector2 offset;
@@ -274,7 +293,19 @@ namespace cart {
         float fontsize;
     };
 
+    struct ProgressVeiw_Properties : UI_Properties {
+    public:
+        Rectangle barRect;
+        Color barColor;
+        Color barFill;
+        Color msgCol;
+    };
 
+    typedef struct Log_Data {
+        LOG_TYPE type;
+        std::string log;
+    }LogData;
+   
 #pragma endregion
 
 

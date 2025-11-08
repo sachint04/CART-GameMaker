@@ -11,8 +11,8 @@ namespace cart
             const World * GetWorld() const{return m_owningworld;};
             virtual ~GameStage();
             World * GetWorld() {return m_owningworld;};
-            virtual void StartStage();
             virtual void Init();
+            virtual void Start();
             virtual void Update(float deltaTime);
             virtual void Draw(float deltaTime);
             virtual void Destroy() override;

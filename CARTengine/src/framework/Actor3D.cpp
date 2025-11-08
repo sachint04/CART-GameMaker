@@ -1,4 +1,5 @@
 #include "Actor3D.h"
+#include "World.h"
 #include "AssetManager.h"
 namespace cart
 {
@@ -52,14 +53,7 @@ namespace cart
 			{m_location3.x - m_width / 2, m_location3.y - m_height / 2, m_location3.z - m_zSize / 2},
 			{m_location3.x + m_width / 2, m_location3.y + m_height / 2, m_location3.z + m_zSize / 2}
 		});
-		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
-		{			
-			if (m_collision.hit)
-			{
-				onTouch.Broadcast(GetWeakRef(), GetMousePosition());
-				//m_currentFrame = 0;
-			}	
-		}
+	
 
 //		if (m_collision.hit) {
 //			m_isHover = m_collision.hit;
@@ -71,17 +65,26 @@ namespace cart
 //		else {
 //			m_isHover = false;
 //		}
-	
-		if (!m_isHover) {
-			if (m_collision.hit) {
-				onHover.Broadcast(GetWeakRef(), GetMousePosition());					
-				m_isHover = true;
+		if (!m_owningworld->GetHUD().lock()->IsMouseOverUI(GetMousePosition())) {
+			if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+			{
+				if (m_collision.hit)
+				{
+					onTouch.Broadcast(GetWeakRef(), GetMousePosition());
+					//m_currentFrame = 0;
+				}
 			}
-		}
-		else {
-			if (!m_collision.hit) {
-				onOut.Broadcast(GetWeakRef(), GetMousePosition());
-				m_isHover = false;
+			if ( !m_isHover) {
+				if (m_collision.hit) {
+					onHover.Broadcast(GetWeakRef(), GetMousePosition());					
+					m_isHover = true;
+				}
+			}
+			else {
+				if (!m_collision.hit) {
+					onOut.Broadcast(GetWeakRef(), GetMousePosition());
+					m_isHover = false;
+				}
 			}
 		}
 		if (m_bPlayAnim)

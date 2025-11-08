@@ -1,4 +1,7 @@
 #include <string>
+#include <thread>
+#include <chrono>
+#include <functional>
 #include "Application.h"
 #include "Core.h"
 #include "World.h"
@@ -19,7 +22,6 @@ namespace cart
 		m_winHeight{ _winHeight },
 		m_title{ title },
 		m_CurrentWorld{ nullptr },
-		m_HUD{nullptr},
 		m_targetFrameRate{ 60 },
 		m_exit{ false },
 		m_assetsdir{},
@@ -29,21 +31,24 @@ namespace cart
 		m_gameConfig{},
 		m_camera{},
 		m_config_json{}
-		
 	{
 		
 	}
 
 	void Application::Init() {
-		m_dataModel = {};
+		m_dataModel = {};	
 		net = unique<network>{ new network };
 		InitWindow(m_winWidth, m_winHeight, m_title.c_str());
-		SetTargetFPS(m_targetFrameRate);		
+		SetTargetFPS(m_targetFrameRate);
+
+		
 	}
 
-	void Application::Start() {
+	void Application::Start() {		
+		m_CurrentWorld.get()->Start();
 		Run();
 	}
+
 
 	/// <summary>
 	/// This is the first function all to Object
@@ -102,11 +107,6 @@ namespace cart
 		m_CurrentWorld->LateUpdate(deltaTime);
 	}
 
-	weak<HUD> Application::GetHUD()
-	{
-		return m_HUD;
-	}
-
 	void Application::QuitApplication()
 	{
 		m_exit = true;
@@ -136,17 +136,11 @@ namespace cart
 	float Application::GetIconSize() {
 		return 0;
 	}
-	void Application::SetHUD(shared<HUD> hud)
-	{
-		m_HUD = hud;
-	}
 
 	void Application::Destroy() {
 		m_CurrentWorld.get()->Unload();
 		m_CurrentWorld.get()->Destroy();
 		m_CurrentWorld.reset();
-		m_HUD.get()->Destroy();
-		m_HUD.reset();
 	}
 	Application::~Application()
 	{

@@ -27,15 +27,14 @@ namespace cart
 		virtual float GetIconSize();
 		virtual Camera GetCamera()const { return m_camera; };
 		static unique<network> net;
-		virtual weak<HUD> GetHUD();
-		virtual void SetHUD(shared<HUD> hud);
+
 		static Application* app;
 
 		void SetHTTPCallback(char* id, char* response, char* data);
 		void LoadAssetCallback(char* uid, char* url, unsigned char* data, int size);
 		DataFile& GetGameConfig(){ return m_gameConfig; };
 		json& GetGameConfigJSON() { return m_config_json; };
-		Vector2 GetWindowSize() const ;
+		Vector2 GetWindowSize() const;
 		template<typename WorldType>
 		weak<WorldType> LoadWorld();
 		bool m_exit;
@@ -45,10 +44,10 @@ namespace cart
 		virtual void Update(float deltaTime);
 		virtual void Draw(float deltaTime);
 		virtual void LateUpdate(float deltaTime);
+
 		int m_winWidth;
 		int m_winHeight;
 		std::string m_title;
-		shared<HUD> m_HUD;
 		float m_targetFrameRate;
 		shared<World> m_CurrentWorld;
 		std::string m_assetsdir;
@@ -58,7 +57,6 @@ namespace cart
 		DataFile m_gameConfig;
 		json m_config_json;
 		Camera m_camera;
-		
 		//shared<World> m_PendingWorld;
 	};
 	

@@ -4,12 +4,12 @@ namespace cart
 {
 
 	Object::Object()
-		:m_isPendingDestroy{false},  m_id{ }
+		:m_isPendingDestroy{ false }, m_id{ }, m_isReady{false}
 		{
 
 		}
 
-	Object::Object(const std::string& _id) :m_isPendingDestroy{ false }, m_id{_id}
+	Object::Object(const std::string& _id) :m_isPendingDestroy{ false }, m_id{ _id }, m_isReady{false}
 	{
 		
 	}

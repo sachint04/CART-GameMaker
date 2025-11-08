@@ -21,7 +21,8 @@ namespace cart {
 		m_rotation3{0},
 		m_zSize{1.f},
 		m_preloadlist{},
-		m_isReady{false}
+		m_isReady{false},
+		m_strloadMsg{"Loading... "}
 	{
 	}
 	void Actor::Start()
@@ -171,7 +172,7 @@ namespace cart {
 	void Actor::LoadAssets()
 	{
 		if (m_preloadlist.size() > 0) {			
-			AssetManager::Get().LoadAssetList(GetID(), m_preloadlist, GetWeakRef(), &Actor::AssetsLoadCompleted);
+			AssetManager::Get().LoadAssetList(GetID(), m_preloadlist, m_strloadMsg, GetWeakRef(), &Actor::AssetsLoadCompleted);
 		}
 		else {
 			AssetsLoadCompleted();
@@ -181,7 +182,7 @@ namespace cart {
 
 	void Actor::AssetsLoadCompleted()
 	{
-		Logger::Get()->Push(std::format(" {} Actor AssetsLoadCompleted()\n", GetID()));
+		//Logger::Get()->Push(std::format(" {} Actor AssetsLoadCompleted()\n", GetID()));
 		Start();
 	}
 

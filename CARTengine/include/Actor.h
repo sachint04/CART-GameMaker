@@ -56,5 +56,6 @@ namespace cart {
 		Color m_color;
 		bool m_isReady;
 		std::vector <std::string> m_preloadlist; //<url, filename>
+		std::string m_strloadMsg;
 	};
 }

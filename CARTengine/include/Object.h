@@ -15,6 +15,7 @@ namespace cart
 		virtual ~Object();
 		virtual void Destroy();
 		virtual std::string GetID()const;
+		virtual bool IsReady() { return m_isReady; };
 		bool IsPendingDestroy() const { return m_isPendingDestroy; }
 		
 		virtual weak<Object> GetWeakRef();
@@ -22,6 +23,7 @@ namespace cart
 		Delegate<Object*> onDestory;
 	protected:
 		std::string m_id;
+		bool m_isReady;
 	private:
 		bool m_isPendingDestroy;
 	};

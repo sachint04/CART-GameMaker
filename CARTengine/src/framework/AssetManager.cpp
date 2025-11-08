@@ -1,7 +1,10 @@
 #include "AssetManager.h"
-#include "Actor.h"
 #include "Application.h"
+#include "World.h"
+#include "Actor.h"
+#include "HUD.h"
 #include "network/network.h"
+#include "Clock.h"
 namespace cart {
 
 #pragma region CONSTRUCTOR & INIT
@@ -23,7 +26,7 @@ namespace cart {
         assetManager = nullptr;
     }
 
-    AssetManager::AssetManager() :Object{}, mPreloadCallbacks{}, m_preloadlist{}
+    AssetManager::AssetManager() :Object{}, mPreloadCallbacks{}, m_isLoading{ false }, m_preloadlist{}
      {
         
      }
@@ -268,32 +271,28 @@ namespace cart {
 #pragma endregion
     
 #pragma region Event Listeners
-    void AssetManager::OnPreloadAssetItemLoaded(std::string id, std::string path, unsigned char* data, int size)
-    {
-        Logger::Get()->Push(std::format("AssetManager::OnPreloadAssetItemLoaded() id {},  path {}\n ",id,  path));
-        if (data != nullptr)
+
+    void AssetManager::OnPreloadAssetItemLoaded(std::string callbackId, std::string path, unsigned char* data, int size)
+    {     
+        if (data != nullptr)// store texture data in memory
         {
             std::string filetype = { ".png" };
             Image image = LoadImageFromMemory(filetype.c_str(), data, size);
             ImageFormat(&image, 7);
-            AddTexture(image, path, LOCKED);
+            if (IsImageValid(image))
+            {
+                AddTexture(image, path, LOCKED);
+            }
+            else {
+                Logger::Get()->Push(std::format(" AssetManager::OnPreloadAssetItemLoaded() Invalid image {} \0", path));
+            }
+                UnloadFileData(data);
         }
         else {
             Logger::Get()->Push(std::format("AsssetManager:: OnPreloadAssetItemLoaded() FAILED item {}\n", path));
         }
-       
-        auto found = std::find(m_preloadlist.begin(), m_preloadlist.end(), path);//  m_preloadlist(filename);// Remove loaded from preload list
-        if (found != m_preloadlist.end())
-        {
-           m_preloadlist.erase(found);
-           Logger::Get()->Push(std::format("AssetManager::OnPreloadAssetItemLoaded() item LOADED, Removing from List {}\n ", path));
-         
-        }
-        else {
-            Logger::Get()->Push(std::format("AsssetManager:: OnPreloadAssetItemLoaded() FAILED item  not Available in the List {}\n", path));
-        }
-       
-        LoadAsset_Async(id);// call for next preload;
+   
+        LoadAsset_Async();// call for next load;
     }
 
 #pragma endregion
@@ -317,46 +316,54 @@ namespace cart {
         return false;
     }
 
-   
-
     /// <summary>
     /// Load Preload list; Currently only 'Image' asset supported
     /// </summary>
-    void AssetManager::LoadAsset_Async(std::string id)
+    void AssetManager::LoadAsset_Async()
     {
-        if (m_preloadlist.size() > 0) { 
-            if (!IsImageAlive(m_preloadlist.at(0)) && !IsTextureAlive(m_preloadlist.at(0)))
-            {
-                std::string path = m_preloadlist.at(0);
-                Logger::Get()->Push(std::format(" AssetManager::LoadAsset_Async() Loading {} \n", path ));
-                Application::net->LoadAsset(id, path, GetWeakRef(), &AssetManager::OnPreloadAssetItemLoaded);
-            }
-            else {
-                Logger::Get()->Push(std::format(" AssetManager::LoadAsset_Async() Cached  {}\n", m_preloadlist.at(0)));
-                m_preloadlist.erase(m_preloadlist.begin());
-                LoadAsset_Async(id);
-            }
+        std::vector<Preload_Data>::iterator iter = m_preloadlist.begin();// take first "Preload_Data" object from list
+        if (iter != m_preloadlist.end())//  has preload data
+        {
+             std::vector<std::string>::iterator list_iter = iter->list.begin();// get first path from list
+             if (iter->list.size() > 0)// list still has assets to load
+             {
+                 std::string path = iter->list.at(0);// get first path                 
+                 float progress = 1.f - ((float)iter->list.size() / (float)iter->count);// percentage loaded
+                 Application::app->GetCurrentWorld()->GetHUD().lock()->ShowProgress(progress, std::string{ iter->loadmessage+ " - " + std::to_string((int)(progress * 100)) + "%"});
+
+                 if (IsImageAlive(path) || IsTextureAlive(path))// texture available in memory
+                 {
+                     iter->list.erase(iter->list.begin());// remove first path from list                   
+                     LoadAsset_Async();// start over                     
+                 }
+                 else // load fresh texture
+                 {
+#ifdef _WIN32
+                    int dataSize = 0;
+                    unsigned char* img = LoadFileData(iter->list.at(0).c_str(), &dataSize);                                   
+                    OnPreloadAssetItemLoaded(iter->uid, iter->list.at(0), img, dataSize);// callback
+#endif // _WIN32
+
+#ifdef __EMSCRIPTEN__
+                     Application::net->LoadAsset(iter->uid, iter->list.at(0), GetWeakRef(), &AssetManager::OnPreloadAssetItemLoaded);
+#endif // __EMSCRIPTEN__
+                 }                
+             }
+             else {// current list is empty
+                 (iter->callback)();
+                 m_preloadlist.erase(m_preloadlist.begin());// remove first list from "Preload_Data" list
+                 LoadAsset_Async();// start over
+             }
         }
-        else {
-           // Dictionary<std::string, std::function<bool()>>::iterator iter;     
-            for (auto iter = mPreloadCallbacks.begin(); iter != mPreloadCallbacks.end();)
-            {
-                Logger::Get()->Push(std::format("LoadAsset_Async() compate current callback {} with callback {}\n ", iter->first, id));
-                if (iter->first.compare(id) == 0)
-                {
-                    if ((iter->second)())
-                    {
-                        mPreloadCallbacks.erase(iter);
-                        Logger::Get()->Push("LoadAsset_Async()  Complete CallBack\n " );
-                        break;
-                    }
-                }
-                else {
-                    iter++;
-                }
-            }
+        else {  // no data pending  
+            m_isLoading = false;
+            Application::app->GetCurrentWorld()->GetHUD().lock()->ShowProgress(1.f, "All asset Loading complete.\0");
+           // (iter->callback)();// current list is empty so Fire callback
         }
+       
+      
     }
+
 
     bool AssetManager::IsImageAlive(const std::string& path)
     {       

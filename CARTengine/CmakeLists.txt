@@ -47,6 +47,8 @@ set(ENGINE_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Logger.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/TextInput.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/TextInput.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/include/ProgressView.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/ProgressView.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/component/UIList.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/component/UIList.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/component/IController.h
@@ -74,7 +76,7 @@ set(ENGINE_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/src/network/network.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/network/EM_Fetch.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/network/EM_Fetch.cpp
-	
+
 
 	
 	)

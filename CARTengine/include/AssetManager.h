@@ -9,6 +9,9 @@
 #include "Types.h"
 #include "Object.h"
 #include "Logger.h"
+#include "Application.h"
+#include "HUD.h"
+#include "Core.h"
 namespace cart {
 
 
@@ -63,7 +66,7 @@ namespace cart {
 
 
         template<typename ClassName>
-        void LoadAssetList(std::string id, std::vector<std::string>& list, weak<Object> obj, void(ClassName::* callback)());
+        void LoadAssetList(std::string id, std::vector<std::string>& list, const std::string& loadmessage, weak<Object> obj, void(ClassName::* callback)());
 
     protected:
 
@@ -74,78 +77,47 @@ namespace cart {
         Dictionary<std::string, Image* > m_imageLoadedMap;
         Dictionary<std::string, shared<Font>> m_fontLoadedMap;
         Dictionary<std::string, std::function<bool()>> mPreloadCallbacks;
-        std::vector<std::string> m_preloadlist;
+        std::vector<Preload_Data> m_preloadlist;
+      
         int preloadId = 0;
-        void LoadAsset_Async(std::string id);
+        bool m_isLoading;
+        void LoadAsset_Async();
         shared<Texture2D> LoadTexture(const std::string& path, Dictionary<std::string, TextureData>& constainer, TEXTURE_DATA_STATUS status = TEXTURE_DATA_STATUS::UNLOCKED);        
-        void OnPreloadAssetItemLoaded(std::string id, std::string path, unsigned char* data, int size);
+        void OnPreloadAssetItemLoaded(std::string callbackId, std::string path, unsigned char* data, int size);
         shared<Font> LoadFontMap(const std::string& path, int fontSize, Dictionary<std::string, shared<Font>>& constainer);    
     };
 
 
     template<typename ClassName>
-    void AssetManager::LoadAssetList(std::string id, std::vector<std::string>& list, weak<Object> obj, void(ClassName::* callback)())
+    void AssetManager::LoadAssetList(std::string id, std::vector<std::string>& list,  const std::string& loadmessage, weak<Object> obj, void(ClassName::* callback)())
     {
-        m_preloadlist = list;
+        std::string uid = std::to_string(preloadId++);
+
         std::function<bool()> callbackFunc = [obj, callback]()->bool
         {
-           Logger::Get()->Push(std::format("Async_Load Callback() wrapper expired {} \n", obj.expired()));
             if (!obj.expired())
             {
                 (static_cast<ClassName*>(obj.lock().get())->*callback)();
-                Logger::Get()->Push("Async_Load Callback() \n");
+                //  Logger::Get()->Push(std::format("AssetManager::LoadAssetList() Callback {}\n", obj.lock()->GetID()));
                 return true;
             }
-            Logger::Get()->Push("Async_Load Callback() Object expired!\n");
             return false;
         };
-        std::string uid = std::to_string(preloadId++);
 
-        mPreloadCallbacks.insert({ uid , callbackFunc});
-#ifdef _WIN32 // Sync execution
-        std::vector<std::string>::iterator iter;
-        
-        for (iter = list.begin(); iter != list.end();)
-        {
-            if (IsTextureAlive(*iter))
-            {
-                iter = list.erase(iter);
-            }
-            else {
-                shared<Texture2D> texture= LoadTextureAsset(*iter, LOCKED);
-                if (texture != nullptr) {
-                    iter = list.erase(iter);
-                }
-                else {
-                    iter++;
-                }
-            }
+        //--------- Prepare data to load---------------
+        Preload_Data data = {};
+        data.uid = uid;
+        data.count = list.size();
+        data.list = list;
+        data.loadmessage = loadmessage;
+        data.callback = callbackFunc;
+        // ------------------------
+        m_preloadlist.push_back(data);// dont start start another load requrest while loading is in progress
 
-        }
+        if (m_isLoading)return;
+        m_isLoading = true;
 
-        for (auto iter = mPreloadCallbacks.begin(); iter != mPreloadCallbacks.end();)
-        {
-            if (iter->first.compare(uid) == 0)
-            {
-                if ((iter->second)())
-                {
-                    mPreloadCallbacks.erase(iter);
-                    m_preloadlist.clear();
-
-                    break;
-                }
-            }
-            else {
-                iter++;
-            }
-        }
-        #endif // _WIN32
-
-
-        #ifdef __EMSCRIPTEN__
-                LoadAsset_Async(uid);
-        #endif // __EMSCRIPTEN___
-                // Logger::Get()->Push(std::format("AssetManager | LoadAssetList() count {}", m_preloadlist.size()));
+        LoadAsset_Async();
 
     }
 }

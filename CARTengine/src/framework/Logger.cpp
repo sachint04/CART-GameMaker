@@ -156,8 +156,8 @@ namespace cart
                 m_ismouseOverUI = true;
             }
         }
-        clearbtn.x = container.x + container.width - 55;
-        clearbtn.y = container.y - 18;
+        clearbtn.x = container.x + container.width - 35;
+        clearbtn.y = container.y - 16;
 
         // Move resizer rectangle properly
         resizer.x = container.x + container.width - 17;
@@ -176,9 +176,6 @@ namespace cart
         };
         DrawRectangleLinesEx(container, 3, borderColor);    // Draw container border
         
-
-
-       
         DrawRectangle(container.x, container.y , container.width, container.height, RAYWHITE);
         std::string  info_str = { " SHOWING LAST " + std::to_string(m_max_log_count) + " LOGS." };
         DrawText(info_str.c_str(), container.x, container.y - 15, 10, WHITE);
@@ -220,10 +217,12 @@ namespace cart
         }
        
         DrawRectangle(container.x, container.y - 20, container.width, 20, borderColor);// draw Title bar
-        DrawRectangleRec(clearbtn, GRAY);// clear Text box
+        DrawRectangleRec(clearbtn, WHITE);// clear Text box
         DrawRectangleRec(resizer, borderColor);             // Draw the resize box
-        DrawText("Clear", clearbtn.x + 2, clearbtn.y + 1, 10, BLACK);
-        DrawText("Logger", container.x + 5, container.y - 18, 12, WHITE);
+        DrawTriangle({ resizer.x + 1, resizer.y + 1 }, { resizer.x + 1 , resizer.y + resizer.height - 1 }, { resizer.x + resizer.width -1 , resizer.y + 1 }, WHITE);
+      
+        DrawText("Clear", clearbtn.x + 2, clearbtn.y + 2, 10, BLACK);
+        DrawText("LOG:", container.x + 5, container.y - 14, 10, WHITE);
         DrawRectangleLinesEx(container, 2.f, BLACK);
     }
 #pragma endregion

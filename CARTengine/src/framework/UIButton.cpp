@@ -135,7 +135,6 @@ namespace cart {
 					//if (TestMouseOver(tPos) == true) {
 					if (mouseonBtn) {
 						ButtonDown(tPos);
-
 					}
 					m_touch = true;
 				}
@@ -324,7 +323,6 @@ namespace cart {
 		m_IsButtonDown = false;
 		m_color = m_ButtonDefaultColor;		
 		onButtonUp.Broadcast(GetWeakRef(),  pos);
-	
 	}
 	
 	void UIButton::ButtonDown(Vector2 pos)

@@ -71,7 +71,7 @@ namespace cart{
 #pragma region Helpers
 	void ProgressView::ShowProgress(float v, const std::string& m)
 	{
-		Logger::Get()->Push(std::format("ProgressView::ShowProgress() {} | {} \0", v, m));
+		Logger::Get()->Push(std::format("ProgressView::ShowProgress() {} | {} \0", v, m),LOG_WARNING);
 		m_pValue = v;
 		m_pMessge = m;
 	}

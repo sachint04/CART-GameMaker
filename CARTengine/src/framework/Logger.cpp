@@ -39,8 +39,7 @@ namespace cart
             logdb.push_back({ _type, _t });
         }
        
-        printf("%s", _t.c_str());
-        
+        std::cout << _t << std::endl;
    }
 
     void Logger::SetRect(Rectangle _rect)
@@ -91,8 +90,8 @@ namespace cart
         Vector2 mouse = GetMousePosition();
       
         // Check if the mouse is inside the container and toggle border color
-        if (CheckCollisionPointRec(mouse, container)) borderColor = Fade(MAROON, 0.4f);
-        else if (!resizing) borderColor = MAROON;
+       /* if (CheckCollisionPointRec(mouse, container)) borderColor = Fade(MAROON, 0.4f);
+        else if (!resizing) borderColor = MAROON;*/
         
         Rectangle titlebarRect = { container.x, container.y - 20, container.width, 20.f };
         Vector2 draggingoffset = { 0 };
@@ -131,14 +130,14 @@ namespace cart
             }
 
             if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))// Mouse down
-            {
-                if (CheckCollisionPointRec(mouse, resizer)) {
+            {                
+                if (CheckCollisionPointRec(mouse, resizer) ) {
                     {
                         resizing = true;
                     }
                     m_ismouseOverUI = true;
                 }
-                else if (CheckCollisionPointRec(mouse, titlebarRect))
+                else if (CheckCollisionPointRec(mouse, titlebarRect) && !CheckCollisionPointRec(mouse, clearbtn))
                 {
                     dragging = true;
                     m_ismouseOverUI = true;
@@ -147,14 +146,18 @@ namespace cart
                     m_ismouseOverUI = false;
                 }
             }
+            else {
+                resizing = false;
+                dragging = false;
+            }
 
             if (CheckCollisionPointRec(mouse, container)) {
 
                 m_ismouseOverUI = true;
             }
         }
-        clearbtn.x = container.x + container.width - 17;
-        clearbtn.y = container.y + 2;
+        clearbtn.x = container.x + container.width - 55;
+        clearbtn.y = container.y - 18;
 
         // Move resizer rectangle properly
         resizer.x = container.x + container.width - 17;
@@ -175,36 +178,53 @@ namespace cart
         
 
 
+       
         DrawRectangle(container.x, container.y , container.width, container.height, RAYWHITE);
         std::string  info_str = { " SHOWING LAST " + std::to_string(m_max_log_count) + " LOGS." };
         DrawText(info_str.c_str(), container.x, container.y - 15, 10, WHITE);
-        std::string t = "";
 
         int counter = 0;
-        int pos = container.y;
+        int pos = container.y + container.height;
         // Draw text in container (add some padding)
         int size = logdb.size();
         int offset = std::max(size, size - m_max_log_count);
+        int cnt = 0;
         if (offset > 0) {
 
-            for (auto iter = logdb.end() - offset;  iter != logdb.end(); ++iter)
-            {        
-                t +=  iter->log + "\n"  ;  
+            for (auto iter = logdb.end() - 1;  iter != logdb.end() - offset; --iter)
+            {          
                 Vector2 rect = {};
                 checkrect(rect, iter->log.c_str(), fontsize, 2.f);
-                if (pos > container.y + container.height - 50)
+                pos -= rect.y; 
+                if (pos <= container.y )
                 {
                     break;
                 }
-                DrawTextBoxed(font, iter->log.c_str(), { container.x + 4, (float)pos + 4, container.width, rect.y + 4 }, fontsize, 2.0f, wordWrap, BLACK);
-                pos += rect.y; 
+                cnt++;              
             }
         }
+        pos = container.y;
+        for (auto iter = logdb.end() - cnt; iter != logdb.end(); ++iter)
+        {
+            Vector2 rect = {};
+            checkrect(rect, iter->log.c_str(), fontsize, 2.f);
+            Color txtcol = DARKGRAY;
+            if (iter->type == LOG_ERROR) {
+                txtcol = RED;
+            }
+            else if (iter->type == LOG_WARNING) {
+                txtcol = { 204,51,0,255 };
+            }
+            DrawTextBoxed(font, iter->log.c_str(), { container.x + 4, (float)pos + 4, container.width, rect.y + 4 }, fontsize, 2.0f, wordWrap, txtcol);
+            pos += rect.y;
+        }
        
-        DrawRectangleRec(resizer, borderColor);             // Draw the resize box
-        DrawRectangleRec(clearbtn, borderColor);// clear Text box
         DrawRectangle(container.x, container.y - 20, container.width, 20, borderColor);// draw Title bar
-        
+        DrawRectangleRec(clearbtn, GRAY);// clear Text box
+        DrawRectangleRec(resizer, borderColor);             // Draw the resize box
+        DrawText("Clear", clearbtn.x + 2, clearbtn.y + 1, 10, BLACK);
+        DrawText("Logger", container.x + 5, container.y - 18, 12, WHITE);
+        DrawRectangleLinesEx(container, 2.f, BLACK);
     }
 #pragma endregion
 

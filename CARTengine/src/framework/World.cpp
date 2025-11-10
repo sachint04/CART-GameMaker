@@ -210,7 +210,6 @@ namespace cart {
 #pragma endregion
 	
 #pragma region CleanUp
-
 	void World::CleanCycle() {
 	//	Logger::Get()->Push("(- WORLD -) CleanCycle() ");
 		for (auto iter = m_Actors.begin(); iter != m_Actors.end();)

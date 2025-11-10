@@ -63,7 +63,7 @@ namespace cart {
         Image* image = new Image{ LoadImage(path.c_str()) };     // Loaded in CPU memory (RAM)
         if (image->data == NULL || image->width == 0 || image->height == 0) {
            // std::string log_str = "ERROR!! cannot recognize file data , might be corrupted. Try another Image ";
-          //  Logger::Get()->Push(std::format("ERROR!! cannot recognize file data  {}", path));
+           // Logger::Get()->Push(std::format("ERROR!! cannot recognize file data  {}", path), LOG_WARNING);
             return shared<Texture2D> {nullptr};
         }
         ImageFormat(image, 7);
@@ -76,7 +76,7 @@ namespace cart {
           //  Logger::Get()->Push(std::format("ASSETMANAGER | LoadTexture() found {} ", path));
         }
         catch(const std::runtime_error& e){
-            Logger::Get()->Push(std::format("ERROR!! cannot fine Image with path {}", path));
+            Logger::Get()->Push(std::format("ERROR!! cannot fine Image with path {}", path),LOG_ERROR);
         }
         if (status == TEXTURE_DATA_STATUS::LOCKED) {
             auto imgfound = m_imageLoadedMap.find(path);
@@ -150,7 +150,7 @@ namespace cart {
             Image copy = ImageCopy(*foundimg->second);
             if ((copy.data == NULL) || (copy.width == 0) || (copy.height == 0)) {
                 std::string log_str = "ERROR! MASKED ELEMENT REQUIRED BASE IMAGE POINTER!";
-              //  Logger::Get()->Push(log_str);
+                Logger::Get()->Push(log_str,LOG_ERROR);
                 return false;
 
             };
@@ -291,7 +291,15 @@ namespace cart {
         else {
             Logger::Get()->Push(std::format("AsssetManager:: OnPreloadAssetItemLoaded() FAILED item {}\n", path));
         }
-   
+
+        std::vector<Preload_Data>::iterator iter = m_preloadlist.begin();// Unload loaded/failed path from the list
+        if (iter != m_preloadlist.end())//  has preload data
+        {
+            if (iter->uid.compare(callbackId) == 0)
+            {
+                iter->list.erase(iter->list.begin());// remove first path from list  
+            }
+        }
         LoadAsset_Async();// call for next load;
     }
 
@@ -333,8 +341,9 @@ namespace cart {
 
                  if (IsImageAlive(path) || IsTextureAlive(path))// texture available in memory
                  {
-                     iter->list.erase(iter->list.begin());// remove first path from list                   
-                     LoadAsset_Async();// start over                     
+                    iter->list.erase(iter->list.begin());// remove first path from list                   
+                     LoadAsset_Async();// start over      
+                     return;// break execution since file found.
                  }
                  else // load fresh texture
                  {
@@ -342,12 +351,13 @@ namespace cart {
                     int dataSize = 0;
                     unsigned char* img = LoadFileData(iter->list.at(0).c_str(), &dataSize);                                   
                     OnPreloadAssetItemLoaded(iter->uid, iter->list.at(0), img, dataSize);// callback
+                    return;// Offline load handler called, Job Done!
 #endif // _WIN32
 
 #ifdef __EMSCRIPTEN__
                      Application::net->LoadAsset(iter->uid, iter->list.at(0), GetWeakRef(), &AssetManager::OnPreloadAssetItemLoaded);
 #endif // __EMSCRIPTEN__
-                 }                
+                 }                 
              }
              else {// current list is empty
                  (iter->callback)();
@@ -404,7 +414,7 @@ namespace cart {
                     }
                     m_imageLoadedMap.erase(foundimg);  
                 }                
-                Logger::Get()->Push(std::format("AssetManager CleanCycle()  Texture  {}", iter->first));
+                Logger::Get()->Push(std::format("AssetManager CleanCycle()  Texture  {}", iter->first),LOG_WARNING);
                 UnloadTexture(*iter->second.texture);
                 iter->second.texture.reset();
                 iter = m_textureLoadedMap.erase(iter);
@@ -413,28 +423,7 @@ namespace cart {
                 ++iter;
             }
         }
-   
-       /*
-       for (auto iter = m_fontLoadedMap.begin(); iter != m_fontLoadedMap.end();)
-       {
-           Logger::Get()->Push("Font Map  %s User Count  {} ", iter->first.c_str(), iter->second.use_count());
-           if (iter->second.use_count() == 1) {
 
-               Logger::Get()->Push("Cleaning Font Map  %s", iter->first.c_str());
-               //            UnloadFont(fnt);
-               iter->second.reset();
-               iter = m_fontLoadedMap.erase(iter);
-
-           }
-           else {
-               ++iter;
-           }
-       }
-       */
-    //   Logger::Get()->Push("Current Live Texture count %zu", m_textureLoadedMap.size());
-    //   Logger::Get()->Push("Current Live Font count %zu", m_fontLoadedMap.size());
-
-    //   Logger::Get()->Push("|>=-=ASSETMANAGER =-=<| CleanCycle() END!! ");
     }
     void AssetManager::ClearTextureMap()
     {
@@ -444,10 +433,9 @@ namespace cart {
             UnloadTexture(*iter->second.texture);
              iter->second.texture.reset();
              //Logger::Get()->Push("%s Cleared Texture Map.", iter->first.c_str());
-               iter = m_textureLoadedMap.erase(iter);
+              iter = m_textureLoadedMap.erase(iter);
           
         }
-     
     }
     void AssetManager::ClearFontMap()
     {
@@ -460,6 +448,16 @@ namespace cart {
             //Logger::Get()->Push("%s Cleared Font Map.", iter->first.c_str());
             iter = m_fontLoadedMap.erase(iter);
 
+        }
+    }
+    void AssetManager::ClearImageMap()
+    {
+        Dictionary<std::string, Image* >::iterator iter;
+        for ( iter = m_imageLoadedMap.begin(); iter != m_imageLoadedMap.end();)
+        {
+            UnloadImage(*iter->second);
+            iter->second = nullptr;
+            iter = m_imageLoadedMap.erase(iter);
         }
     }
 #pragma endregion

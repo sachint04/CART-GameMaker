@@ -58,6 +58,7 @@ namespace cart {
         bool UnloadFontAsset(const std::string& path , int fontsize);
         void ClearTextureMap();
         void ClearFontMap();
+        void ClearImageMap();
         void SetTextureStatus(const std::string& path, TEXTURE_DATA_STATUS status = TEXTURE_DATA_STATUS::UNLOCKED );
         bool IsTextureAlive(const std::string& path);
         bool IsImageAlive(const std::string& path);

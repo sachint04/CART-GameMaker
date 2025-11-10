@@ -33,6 +33,7 @@ namespace cart
 
 		Vector2 GetAppWindowSize() const;
 		long GetSizeOfPendingActors();
+		void ClearActors();
 		void CleanCycle();
 		void Unload();
 		void InitStage();

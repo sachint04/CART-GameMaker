@@ -38,7 +38,7 @@ namespace cart
 		bool isVisible = false;
 
 		Vector2 lastMouse = { 0.0f, 0.0f }; // Stores last mouse coordinates
-		Color borderColor = BLUE;         // Container border color
+		Color borderColor = BLACK;         // Container border color
 		Font font;       // Get default system font
 
 		void DrawTextBoxed(Font font, const char* text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint);
@@ -52,8 +52,8 @@ namespace cart
 		int screenWidth = 300;
 		int screenHeight = 600;
 		Rectangle container = { 25.0f, 25.0f, 250.f, 600.f };
-		Rectangle resizer = { 283.f, 408 , 14, 14 };
-		Rectangle clearbtn = { 283.f, 28.0f , 14, 14 };
+		Rectangle resizer = { 283.f, 408 , 10, 10 };
+		Rectangle clearbtn = { 283.f, 28.0f , 30, 14 };
 		float minWidth = 60;
 		float minHeight = 60;
 		float maxWidth = 800.0f;

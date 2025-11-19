@@ -32,6 +32,7 @@ namespace cart
 
 		void SetHTTPCallback(char* id, char* response, char* data);
 		void LoadAssetCallback(char* uid, char* url, unsigned char* data, int size);
+		void OnWindowResize(int w, int h);
 		DataFile& GetGameConfig(){ return m_gameConfig; };
 		json& GetGameConfigJSON() { return m_config_json; };
 		Vector2 GetWindowSize() const;

@@ -11,7 +11,7 @@ namespace cart
     Logger::Logger()
         :isVisible{ true }, logdb{}
     {
-        font = GetFontDefault();
+        
     }
 #pragma endregion
 
@@ -189,7 +189,7 @@ namespace cart
     void Logger::Draw(float _deltaTime) {
 
         if (!isVisible)return;
-
+        font = GetFontDefault();
         auto checkrect = [&](Vector2& rect, const std::string& t, float& fontsize, float spacing )
         {            
             rect = MeasureTextEx(GetFontDefault(), t.c_str(), fontsize, spacing);

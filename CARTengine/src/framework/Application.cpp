@@ -39,17 +39,15 @@ namespace cart
 		m_dataModel = {};	
 		net = unique<network>{ new network };
 	//	SetConfigFlags(FLAG_MSAA_4X_HINT|FLAG_VSYNC_HINT);
+		Logger::Get()->Trace(std::format("Application Init size {} | {} ", APP_WIDTH, APP_HEIGHT));
 		InitWindow(m_winWidth, m_winHeight, m_title.c_str());
 		SetTargetFPS(m_targetFrameRate);
-
-		
 	}
 
 	void Application::Start() {				
 		Run();
 
 	}
-
 
 	/// <summary>
 	/// This is the first function all to Object
@@ -145,10 +143,12 @@ namespace cart
 		m_CurrentWorld.get()->Destroy();
 		m_CurrentWorld.reset();
 	}
+	
 	Application::~Application()
 	{
 		std::cout << "Application Ended." << std::endl;
 	}
+	
 	void Application::SetHTTPCallback(char* uid, char* response, char* data)
 	{
 		std::string id = { uid };
@@ -164,4 +164,7 @@ namespace cart
 		net->LoadAssetHTTPCallback(id, url, data, size);
 	}
 	
+	void Application::OnWindowResize(int w, int h) {
+		SetWindowSize(w, h);
+	}
 }

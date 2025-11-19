@@ -181,7 +181,18 @@ namespace cart
 		}
 			m_currentFrame = 0;
 	}
-	
+	bool Actor3D::UpdateTexture(const std::string& path, int matIndex) {
+
+		shared<Texture2D> tex = AssetManager::Get().LoadTextureAsset(path, LOCKED);
+		SetTextureFilter(*tex, TEXTURE_FILTER_BILINEAR);
+		if (!tex)
+		{
+			return false;
+		}
+		int count = m_model.materialCount;
+		SetMaterialTexture(&m_model.materials[matIndex], MATERIAL_MAP_DIFFUSE, *tex);
+		return true;
+	}
 
 #pragma endregion
 

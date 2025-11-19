@@ -45,7 +45,7 @@ namespace cart {
 
 		for (auto iter = tweenlist.begin(); iter != tweenlist.end();) {
 			if (iter->second->IsPendingDestroy() == true) {
-				std::cout << "Tween Complete " << iter->second->GetID().c_str() << std::endl;
+			//	std::cout << "Tween Complete " << iter->second->GetID().c_str() << std::endl;
 				pendingDeleteTween.push_back(iter->second);				
 				iter = tweenlist.erase(iter);				
 			}

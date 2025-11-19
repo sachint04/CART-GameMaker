@@ -26,7 +26,7 @@ namespace cart {
 		for (int i = m_uilist.size() - 1; i >= 0; --i)
 		{
 			
-			if (m_uilist.at(i).expired())continue;
+			if (m_uilist.at(i).expired() || !m_uilist.at(i).lock()->IsVisible())continue;
 			
 			if (CheckCollisionPointRec(GetMousePosition(), m_uilist.at(i).lock()->GetBounds())) {
 				

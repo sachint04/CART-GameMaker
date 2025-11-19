@@ -39,7 +39,13 @@ namespace cart
 		return rect;
 
 	}
-
+	Vector2 GetPointOnCircle()
+	{
+		float ranAngle = RandomRange(0, 360.f);
+		float x = cos(DegreesToRadians(ranAngle));
+		float y = sin(DegreesToRadians(ranAngle));
+		return { x, y };
+	}
 	float VectorToRotation(Vector2 vec1 , Vector2 vec2) {
 		float dot = Dot(vec1, vec2);
 		float vecLen1 = GetVectorLength(vec1);

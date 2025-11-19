@@ -16,15 +16,14 @@ namespace cart {
 	}
 
     void network::HTTPCallback(std::string& uid, std::string& response, std::string& data) {        
-       Logger::Get()->Push(std::format("network::HTTPCallback id {} \n", uid));
+       Logger::Get()->Trace(std::format("network::HTTPCallback id {} \n", uid));
         for (auto iter = mCallbacks.begin(); iter != mCallbacks.end();)
         {
             if (iter->first.compare(uid) == 0)
             {
                 if ((iter->second)(response, data))
                 {
-                    mCallbacks.erase(iter);
-                //    Logger::Get()->Push(std::format("HTTPCallback Callback function fould for Id {}", uid));
+                    mCallbacks.erase(iter);                
                     break;
                 }
                 
@@ -42,19 +41,18 @@ namespace cart {
         std::string delimiter = ",";
         std::string callerID = uid;
         std::string networkID = uid;
-        int found = uid.find(delimiter);// find Ids 
-       // Logger::Get()->Push(std::format("network::LoadAssetHTTPCallback id {} index {} \n", uid, found));
+        int found = uid.find(delimiter);// find Ids        
         if (found != std::string::npos) {
             try {
                 networkID = uid.substr(found + 1); // Network (this) generated Id            
                 callerID  = uid.substr(0, found);// Load caller provided id
             }
             catch (const std::out_of_range& e) {
-                Logger::Get()->Push(std::format("network::LoadAssetHTTPCallback  Error: {}", e.what()));
+                Logger::Get()->Error(std::format("network::LoadAssetHTTPCallback  Error: {}", e.what()));
             }
               trim(callerID);
               trim(networkID);
-            Logger::Get()->Push(std::format("network::LoadAssetHTTPCallback caller callerId {} networkID {} \n", callerID, networkID));
+            Logger::Get()->Trace(std::format("network::LoadAssetHTTPCallback caller callerId {} networkID {} \n", callerID, networkID));
         }
 
         for (auto iter = m_LoadAssetCallbacks.begin(); iter != m_LoadAssetCallbacks.end();)
@@ -63,7 +61,7 @@ namespace cart {
             {
                 if ((iter->second)(callerID, url, data, size))
                 {
-                    Logger::Get()->Push(" network::LoadAssetHTTPCallback Callback removed \n");
+                    Logger::Get()->Trace(" network::LoadAssetHTTPCallback Callback removed \n");
                     m_LoadAssetCallbacks.erase(iter);
                     break;
                 }

@@ -24,6 +24,7 @@ namespace cart
     void GameStage::Init()
     {
          m_isReady = true;
+         Start();
     } 
     void GameStage::Start()
     {

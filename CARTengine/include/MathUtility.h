@@ -47,4 +47,5 @@ namespace cart
 
 	Vector2 GetPointInCircle();
 	Vector2 GetPointOnRectangle();
+	Vector2 GetPointOnCircle();
 }

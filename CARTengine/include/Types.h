@@ -163,7 +163,7 @@ namespace cart {
         Color btncol;
         Color overcol;
         Color downcol;
-        Color textcolor;
+        Color disablecol;
         ALIGN align = ALIGN::LEFT;
         bool isSelectable;
         int borderwidth = 0;
@@ -181,7 +181,8 @@ namespace cart {
         float fontsize;
         float fontspace = 2.f;
         ALIGN textAlign = ALIGN::LEFT;
-        Color texthoverolor;
+        Color textcolor = BLACK;
+        Color texthoverolor = BLACK;
 
     };
 

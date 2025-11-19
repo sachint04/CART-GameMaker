@@ -22,6 +22,7 @@ namespace cart
 		void SetLabel(const std::string& _label, const std::string& font, float size, float spacing);
 		void ShowLabel(bool _flag);
 		void PlayAnimation(int index);
+		bool UpdateTexture(const std::string& path, int matIndex);
 		void Destroy()override;
 		
 

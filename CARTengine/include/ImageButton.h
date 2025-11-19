@@ -63,6 +63,7 @@ namespace cart {
         Color m_ButtonDefaultColor;
         Color m_ButtonDownColor;
         Color m_ButtonHoverColor;
+        Color m_ButtonDisableColor;
         bool m_IsButtonDown;
         bool m_IsMouseOver;
         bool m_IsSelected;

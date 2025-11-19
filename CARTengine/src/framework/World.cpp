@@ -13,6 +13,9 @@
 #include "Logger.h"
 namespace cart {
 
+	bool World::m_APP_SHOULD_WAIT = true;// IMP * APP WILL NOT START/("Run()") UNLESS TRUE 
+
+	
 	World::World(Application* owningApp)
 		:m_owningApp{ owningApp },
 		m_BeginPlay{false},
@@ -32,15 +35,14 @@ namespace cart {
 		m_inputController = new InputController{ };
 		m_HUD.get()->Init();
 		InitStage();
-		Application::app->Start();
+		Start();// START WORLD
 	}
 
 	void World::Start()
 	{		
 		m_HUD.get()->Start();
 		m_HUD.get()->SetVisible(true);
-		StartStage();
-
+		World::m_APP_SHOULD_WAIT = false;
 	}
 
 #pragma region GAME STAGE MANAGEMENT
@@ -48,7 +50,7 @@ namespace cart {
 
     void World::AllGameStagesFinished()
     {
-		Logger::Get()->Push("All game stages fnished.");
+		Logger::Get()->Trace("All game stages fnished.");
     }
 
 
@@ -76,7 +78,7 @@ namespace cart {
 		}
 		else{
 
-			//Logger::Get()->Push("NO GameStage found!");
+			Logger::Get()->Error(" World::PreviousGameStage() | NO GameStage found!");
 		}	
 	}
 
@@ -160,7 +162,7 @@ namespace cart {
 				iter->get()->Draw(_deltaTime);
 			}
 
-			m_HUD->Draw(_deltaTime);
+	//		m_HUD->Draw(_deltaTime);
 	}
 
 	void World::LateUpdate(float _deltaTime)
@@ -211,15 +213,12 @@ namespace cart {
 	
 #pragma region CleanUp
 	void World::CleanCycle() {
-	//	Logger::Get()->Push("(- WORLD -) CleanCycle() ");
 		for (auto iter = m_Actors.begin(); iter != m_Actors.end();)
 		{
 			//if (iter->get()->IsPendingDestroy() && iter->use_count() == 1)
-			//	Logger::Get()->Push("Actor %s with use count%lu \n", iter->get()->GetID().c_str(), iter->use_count());
 			if (iter->use_count() == 1)
 			{			
 				std::string id = iter->get()->GetID();
-		//		Logger::Get()->Push("Removing last instanece of actor %s with use count%lu \n", iter->get()->GetID().c_str(), iter->use_count());
 				iter->reset();
 				iter = m_Actors.erase(iter);
 				
@@ -229,8 +228,6 @@ namespace cart {
 				++iter;
 			}
 		}
-	//	Logger::Get()->Push("Current Live Actors count {}", m_Actors.size());
-	//	Logger::Get()->Push("(- WORLD -) CleanCycle() END!");
 		AssetManager::Get().CleanCycle();
 	
 	}

@@ -7,6 +7,7 @@
 #include "World.h"
 #include "CARTjson.h"
 #include "component/InputController.h"
+#include "CARTjson.h"
 namespace cart
 {
 #pragma region Construction & Initialization
@@ -47,8 +48,9 @@ namespace cart
 
         m_lrange.push_back({ {0,0}, { (float)textBox.x + m_textmargin, (float)textBox.y + 8 } });
         json& data = CARTjson::GetAppData();
+        std::string staticassetpath = m_owningworld->GetApplication()->GetStaticAssetsPath();
         std::string strfont = data["cart"]["font"]["verdana"]["path"];
-        infofnt = AssetManager::Get().LoadFontAsset(strfont, 14);
+        infofnt = AssetManager::Get().LoadFontAsset(std::string{ staticassetpath + strfont }, 14);
         Vector2 fntmeasure = MeasureTextEx(*m_sharedfont, "W", GetFontSize(), 2.f);
 
         size_t n = (m_text.size() < m_charLimit) ? m_text.size() : m_charLimit;
@@ -521,8 +523,13 @@ namespace cart
         if(!m_sharedfont)
             m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, m_fontsize);
 
-        if(!infofnt)
-        infofnt = AssetManager::Get().LoadFontAsset(CARTjson::GetAppData()["cart"]["font"]["verdana"]["path"], 14);
+        if (!infofnt)
+        {
+            std::string staticassetpath = m_owningworld->GetApplication()->GetStaticAssetsPath();
+            json& configdata = CARTjson::GetAppData();
+            std::string fntpath = configdata["cart"]["font"]["verdana"]["path"];
+            infofnt = AssetManager::Get().LoadFontAsset(std::string{ staticassetpath+fntpath }, 14);
+        }
         
         Vector2 fntmeasure = MeasureTextEx(*m_sharedfont, "W", m_fontsize, m_fontspacing);
 
@@ -552,7 +559,7 @@ namespace cart
     void TextInput::SetFontName(const std::string& strfnt)
     {
         Text::SetFontName(strfnt);
-        
+        m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, m_fontsize);
         //  int &c, char * s, std::vector<std::pair<std::pair<int, int>, Vector2>>& r, std::vector<std::pair<std::string, Vector2>>& l, int &d
   //    m_letterCount, name, m_lrange, m_lines, m_curletterindex
         Rectangle textBox = GetBounds();

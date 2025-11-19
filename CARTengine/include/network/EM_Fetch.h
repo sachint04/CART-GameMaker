@@ -60,7 +60,7 @@ namespace cart
 	template<typename ClassName>
 	std::string EM_Fetch::LoadAsset(std::string url, weak<Object> obj, void(ClassName::* callback)(std::string, ASYNC_CALLBACK_STATUS, const char* , int, int))
 	{
-		Logger::Get()->Push(std::format("EM_Fetch | LoadAssets() location {}", url));
+		Logger::Get()->Trace(std::format("EM_Fetch | LoadAssets() location {}", url));
 		std::function<bool(std::string, ASYNC_CALLBACK_STATUS, const char*, int, int)> callbackFunc = [obj, callback](std::string uid, ASYNC_CALLBACK_STATUS status, const char* data, int progress, int totalbytes)->bool
 		{
 			if (!obj.expired())
@@ -84,7 +84,7 @@ namespace cart
 		attr.onsuccess = Fetch_Succeeded;
 		attr.onerror = Fetch_Failed;
 		emscripten_fetch(&attr, url.c_str());
-		Logger::Get()->Push(std::format("Fetch LoadAsset fetch id {} ", url));
+		Logger::Get()->Trace(std::format("Fetch LoadAsset fetch id {} ", url));
 #endif // __EMSCRIPTEN__
 
 		return url;

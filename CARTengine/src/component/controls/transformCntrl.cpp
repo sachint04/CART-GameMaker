@@ -135,11 +135,10 @@ namespace cart {
 	
 #pragma endregion
 #pragma region Event Handler
-
-
 	void TransformCntrl::onScaleHandler(weak<Object> btn, Vector2 pos)
 	{	
-		Vector2 p = m_center;
+		
+		Vector2 p = {m_topleftCntrl.lock()->GetLocation().x +  ((m_bottomrightCntrl.lock()->GetLocation().x - m_topleftCntrl.lock()->GetLocation().x)  / 2.f),  m_topleftCntrl.lock()->GetLocation().y + ((m_bottomrightCntrl.lock()->GetLocation().y - m_topleftCntrl.lock()->GetLocation().y) / 2.f) };
 		Vector2 dir  = Direction(m_center, pos );
 		double len =  GetRawVectorLength(dir);
 
@@ -158,8 +157,8 @@ namespace cart {
 		float brxpos = p.x + cos(DegreesToRadians(315.f)) * len;
 		float brypos = p.y - sin(DegreesToRadians(315.f)) * len;
 		
-		float width = GetVectorLength(Direction({ tlxpos, tlypos }, { trxpos, trypos }));
-		float height = GetVectorLength(Direction({ blxpos, blypos }, { tlxpos, tlypos }));
+		double width = GetVectorLength(Direction({ trxpos, trypos }, { tlxpos, tlypos }));
+		double height = GetVectorLength(Direction({ blxpos, blypos }, { tlxpos, tlypos }));
 
 		if (width < m_minSize.x || height < m_minSize.y || width > m_maxSize.x || height > m_maxSize.y)return;
 
@@ -169,32 +168,29 @@ namespace cart {
 		m_bottomrightCntrl.lock()->SetLocation({ brxpos, brypos });
 		
 
-		m_center = { m_topleftCntrl.lock()->GetLocation().x + width / 2.f,  m_topleftCntrl.lock()->GetLocation().y + height / 2.f };
+		m_center = { m_topleftCntrl.lock()->GetLocation().x + (float)width / 2.f,  m_topleftCntrl.lock()->GetLocation().y + (float)height / 2.f };
 		//m_target.lock()->SetLocation(m_center);
-		onScaled.Broadcast(m_center, { width, height }, { width / 2.f, height / 2.f });
+		onScaled.Broadcast(m_center, { (float)width, (float)height }, { (float)width / 2.f, (float)height / 2.f });
 
 		m_outline.lock()->SetLocation({ m_topleftCntrl.lock()->GetLocation().x ,  m_topleftCntrl.lock()->GetLocation().y });
-		m_outline.lock()->SetSize({ width,  height});
+		
+		m_outline.lock()->SetSize({ (float)width ,  (float)height });
 
 		m_translateCntrl.lock()->SetLocation({ m_topleftCntrl.lock()->GetLocation().x ,  m_topleftCntrl.lock()->GetLocation().y });
-		m_translateCntrl.lock()->SetSize({ width,  height });	
-	
-		//	Logger::Get()->Push(std::format("onScaleHandler() |width {}", width));
+		m_translateCntrl.lock()->SetSize({ (float)width,  (float)height });
 	}
 	void TransformCntrl::onDragStart(weak<Object> btn, Vector2 pos)
 	{
 		if (m_isScaling)return;
-		//Logger::Get()->Push("Active Control {} ", btn.lock()->GetID());
 		m_isScaling = true;	
 		curDragCntrl = btn.lock()->GetID();
 	}
 	void TransformCntrl::onDragEnd(weak<Object> btn, Vector2 pos)
 	{
-		//Logger::Get()->Push("Drag ended {} ", btn.lock()->GetID());
 		m_isScaling = false;
 		curDragCntrl = "";
 		onButtonUp.Broadcast(pos);
-		
+		Logger::Get()->Trace(std::format(" TransformCntrl::onDragOut() m_center x {} | y {}  \n", m_center.x, m_center.y));
 	}
 	void TransformCntrl::onDragOut(weak<Object> btn)
 	{
@@ -205,8 +201,7 @@ namespace cart {
 	void TransformCntrl::onTranslateStart(weak<Object>, Vector2 pos) {
 		if (m_isScaling)return;
 		m_tempTargetLoc = pos;
-		m_isTranslating = true;
-		//Logger::Get()->Push("Translate Control Start");
+		m_isTranslating = true;		
 	}
 	void TransformCntrl::onTranslateContinue(weak<Object>, Vector2 pos) {
 
@@ -217,9 +212,6 @@ namespace cart {
 		float width = GetVectorLength(Direction(m_toprightCntrl.lock()->GetLocation(), m_topleftCntrl.lock()->GetLocation()));
 		float height = GetVectorLength(Direction(m_bottomleftCntrl.lock()->GetLocation(), m_topleftCntrl.lock()->GetLocation()));
 		m_center = { m_topleftCntrl.lock()->GetLocation().x + width / 2.f,  m_topleftCntrl.lock()->GetLocation().y + height / 2.f };
-	//	Logger::Get()->Push("onTranslateContinue() | offset x %.2f y %.2f  | width %.2f  height %.2f | center x %.2f  y %.2f", offset.x, offset.y, width, height, m_center.x, m_center.y);
-	//	Logger::Get()->Push("onTranslateContinue() | offset x {0:.2f	} y {1:.2f}  | width {2:.2f}  height %.2f | center x {3:.2f}  y {4:.2f}", offset.x, offset.y, width, height, m_center.x, m_center.y);
-		
 		//m_target.lock()->SetLocation(m_center);
 		m_outline.lock()->SetLocation({ m_topleftCntrl.lock()->GetLocation().x ,  m_topleftCntrl.lock()->GetLocation().y });
 		m_translateCntrl.lock()->SetLocation({ m_topleftCntrl.lock()->GetLocation().x ,  m_topleftCntrl.lock()->GetLocation().y });
@@ -227,7 +219,6 @@ namespace cart {
 		m_tempTargetLoc = pos;
 	}
 	void TransformCntrl::onTranslateEnd(weak<Object>) {
-	//	Logger::Get()->Push("Translate Control End");
 		m_isTranslating = false;
 		onStop.Broadcast();
 	}
@@ -279,22 +270,7 @@ namespace cart {
 
 	void TransformCntrl::Update(float _deltaTime)
 	{
-		if (m_isScaling || m_isTranslating) {
-			m_outline.lock()->SetColor(SKYBLUE);
-			m_bottomrightCntrl.lock()->SetColor(SKYBLUE);
-			m_topleftCntrl.lock()->SetColor(SKYBLUE);
-			m_toprightCntrl.lock()->SetColor(SKYBLUE);
-			m_bottomleftCntrl.lock()->SetColor(SKYBLUE);
-		}
-		else {
-			Color c = { 102, 191, 255, 100 };
-			m_outline.lock()->SetColor(c);
-			m_bottomrightCntrl.lock()->SetColor(c);
-			m_topleftCntrl.lock()->SetColor(c);
-			m_toprightCntrl.lock()->SetColor(c);
-			m_bottomleftCntrl.lock()->SetColor(c);
-			c = {};
-		}
+		
 	}
 #pragma endregion
 #pragma region CleanUp
@@ -311,7 +287,6 @@ namespace cart {
 	TransformCntrl::~TransformCntrl()
 	{
 		std::string log_str = "Transfrom Control Destroyed";
-	//	Logger::Get()->Push(log_str);
 	}
 #pragma endregion
 }

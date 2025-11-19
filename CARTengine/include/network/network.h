@@ -155,7 +155,7 @@ namespace cart {
     template<typename ClassName>
     void network::LoadAsset(std::string id, std::string url, weak<Object> obj, void (ClassName::* callback)(std::string, std::string, unsigned char*, int))
     {
-        Logger::Get()->Push(std::format("Network LoadAsset() id {} url {} \n", id, url));
+        Logger::Get()->Trace(std::format("Network LoadAsset() id {} url {} \n", id, url));
         std::function<bool(std::string, std::string, unsigned char*, int)> callbackFunc = [obj, callback](std::string id, std::string filename, unsigned char* data, int size)->bool
         {
             if (!obj.expired())
@@ -203,7 +203,7 @@ namespace cart {
    //     m_LoadAssetCallbacks.insert({ header.id, { header.id, header.location, header.texture_status, callbackFunc } });
 
    //     EM_Fetch f;
-   //     Logger::Get()->Push("Network | FetchAssets_Async() Started!!! ");
+   //    
    //     try
    //     {
    //         f.LoadAsset(header.location, GetWeakRef(), &network::OnAsync_Fetch_Handler);
@@ -211,12 +211,12 @@ namespace cart {
    //     catch (const std::runtime_error& e) {
    //         std::cerr << "Caught runtime error: " << e.what() << std::endl;
    //         const char* error_message_cstr = e.what();
-   //         Logger::Get()->Push(std::format("Caught runtime error: {} ", error_message_cstr));
+   //         
    //     }
    //     catch (const std::exception& e) { // Catches any other std::exception
    //         std::cerr << "Caught generic std::exception: " << e.what() << std::endl;
    //         const char* error_message_cstr = e.what();
-   //         Logger::Get()->Push(std::format("Caught generic std::exception: {} ", error_message_cstr));
+   //        
    //     }
    //     catch (...) { // Catches any other type of exception
    //         std::cerr << "Caught unknown exception" << std::endl;

@@ -1,6 +1,7 @@
+#include <raylib.h>
+#include <stdexcept>
 #include "Logger.h"
 #include "Core.h"
-#include <raylib.h>
 namespace cart
 {
     Logger* Logger::instance = nullptr;
@@ -32,15 +33,33 @@ namespace cart
         logdb.clear();
     }
 
-    void Logger::Push(std::string _t, LOG_TYPE _type)
+    void Logger::Trace(std::string _t)
     {
         if (isVisible) 
         {
-            logdb.push_back({ _type, _t });
+            logdb.push_back({ LOG_INFO, _t });
         }
        
         std::cout << _t << std::endl;
    }
+
+    void Logger::Warn(std::string _t)
+    {
+        if (isVisible)
+        {
+            logdb.push_back({ LOG_WARNING, _t });
+        }
+    }
+
+    void Logger::Error(std::string _t)
+    {
+        if (isVisible)
+        {
+            logdb.push_back({ LOG_ERROR, _t });
+            std::cout << _t << std::endl;
+          //  throw std::runtime_error(_t.c_str());
+        }
+    }
 
     void Logger::SetRect(Rectangle _rect)
     {
@@ -77,6 +96,7 @@ namespace cart
         }
         return instance;
     }
+  
 #pragma endregion
 
 #pragma region LOOP
@@ -181,7 +201,8 @@ namespace cart
         DrawText(info_str.c_str(), container.x, container.y - 15, 10, WHITE);
 
         int counter = 0;
-        int pos = container.y + container.height;
+        int bottomMargin = 20;
+        int pos = container.y + container.height - bottomMargin;
         // Draw text in container (add some padding)
         int size = logdb.size();
         int offset = std::max(size, size - m_max_log_count);

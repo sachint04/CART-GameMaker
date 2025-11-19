@@ -26,6 +26,7 @@ namespace cart {
 		m_ButtonDefaultColor{},
 		m_ButtonDownColor{},
 		m_ButtonHoverColor{},
+		m_ButtonDisableColor{},
 		m_IsButtonDown{ false },
 		m_IsMouseOver{ false },
 		m_IsSelected{ false },
@@ -105,49 +106,42 @@ namespace cart {
 		}
 
 #else
-		if (m_active == true) 
-		{
-			Vector2 tPos = { (float)GetMouseX(), (float)GetMouseY() };
-			bool mouseonBtn = m_owningworld->GetInputController()->IsMouseOver(GetWeakRef());
+		
+		Vector2 tPos = { (float)GetMouseX(), (float)GetMouseY() };
+		bool mouseonBtn = m_owningworld->GetInputController()->IsMouseOver(GetWeakRef());
 
-			
-				if (IsMouseButtonUp(0) && m_touch == false) {
-					//if (TestMouseOver(tPos) == true) {
-					if (mouseonBtn) {
-						MouseHovered();
-					}
-					else {
-						MouseOut();
-					}
-				}
-
-				if (IsMouseButtonPressed(0)) {
-					if (m_touch == true)return;
-					//if (TestMouseOver(tPos) == true) {
-					if (mouseonBtn) {
-						ButtonDown(tPos);
-
-					}
-					m_touch = true;
-				}
-
-				if (IsMouseButtonReleased(0)) {
-
-					if (m_touch == false)return;
-
-					//if (TestMouseOver(tPos) == true) {
-					if (mouseonBtn) {
-						ButtonUp(tPos);
-					}
-				
+		if (mouseonBtn) {//Mouse over
+			if (m_touch) // Mouse/touch active
+			{
+				if (IsMouseButtonReleased(0)) { // Mouse/Touch Released
+					ButtonUp(tPos);
 					m_touch = false;
 				}
-		
-				if (m_IsMouseOver && m_IsButtonDown) {
-						ButtonDrag(tPos);
-				
+				if (IsMouseButtonPressed(0)) {// Drading						
+					ButtonDrag(tPos);
 				}
-			
+			}
+			else {
+				if (IsMouseButtonPressed(0)) {// Drading
+					ButtonDown(tPos);// Mouse /Touch  Pressed
+					m_touch = true;
+				}
+				if (IsMouseButtonUp(0)) {// Mouse over the button //
+					MouseHovered();
+				}
+			}
+
+
+		}
+		else {
+
+			if (m_IsMouseOver) {
+				MouseOut();
+			}
+			if (m_IsButtonDown) {
+				ButtonUp(tPos);
+				m_touch = false;
+			}
 		}
 #endif
 	}
@@ -200,9 +194,12 @@ namespace cart {
 	void ImageButton::SetActive(bool _flag)
 	{
 		Sprite2D::SetActive(_flag);		
-		if (_flag == false) {
+		if (!_flag) {
+			MouseOut();
 			m_IsSelected = false;
+			m_touch = false;
 		}
+		m_color = (_flag) ? m_ButtonDefaultColor : m_ButtonDisableColor;
 	}
 
 
@@ -218,6 +215,7 @@ namespace cart {
 		m_ButtonDefaultColor = _prop.btncol;
 		m_ButtonHoverColor = _prop.overcol;
 		m_ButtonDownColor = _prop.downcol;
+		m_ButtonDisableColor = _prop.disablecol;
 		m_IsSelectable = _prop.isSelectable;
 		m_defaulttexturecolor = _prop.textureColor;
 		m_borderwidth = _prop.borderwidth;

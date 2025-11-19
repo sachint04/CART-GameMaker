@@ -38,15 +38,16 @@ namespace cart
 	void Application::Init() {
 		m_dataModel = {};	
 		net = unique<network>{ new network };
+	//	SetConfigFlags(FLAG_MSAA_4X_HINT|FLAG_VSYNC_HINT);
 		InitWindow(m_winWidth, m_winHeight, m_title.c_str());
 		SetTargetFPS(m_targetFrameRate);
 
 		
 	}
 
-	void Application::Start() {		
-		m_CurrentWorld.get()->Start();
+	void Application::Start() {				
 		Run();
+
 	}
 
 
@@ -60,19 +61,21 @@ namespace cart
 
 	void Application::Run()
 	{
-		Logger::Get()->Push("APPLICATION  Run() !!");
+		Logger::Get()->Trace("APPLICATION  Run() !!");
 		Clock::Get().Reset();
 		while (m_exit == false)
 		{
 			ClearBackground(RAYWHITE);
 			Clock::Get().Tick();
 			double deltaTime = Clock::Get().DeltaTime();
-			Logger::Get()->Update(deltaTime);
 			Update(deltaTime);
+			Logger::Get()->Update(deltaTime);
+
 			BeginDrawing();
 			Draw(deltaTime);
 			Logger::Get()->Draw(deltaTime);
 			EndDrawing();
+
 			LateUpdate(deltaTime);
 
 
@@ -151,7 +154,6 @@ namespace cart
 		std::string id = { uid };
 		std::string res = { response };
 		std::string netdata = { data };
-	//	Logger::Get()->Push(std::format("FROM Application id {} response {} data {} ", uid, response, data));
 		net->HTTPCallback(id, res, netdata);
 	}
 
@@ -159,7 +161,6 @@ namespace cart
 	{
 		std::string id = { uid };	
 		std::string url = { filestr };	
-		//	Logger::Get()->Push(std::format("FROM Application id {} response {} data {} ", uid, response, data));
 		net->LoadAssetHTTPCallback(id, url, data, size);
 	}
 	

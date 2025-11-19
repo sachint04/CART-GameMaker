@@ -159,17 +159,17 @@ namespace cart {
 		ImageResize(&m_ImgCopy, m_textureSize.x, m_textureSize.y);
 		ImageFormat(&m_ImgCopy, 7);
 		
-		if ((m_ImgCopy.data == NULL) || (m_ImgCopy.width == 0) || (m_ImgCopy.height == 0)) {
-		//	std::string log_str = "ERROR! MASKED ELEMENT REQUIRED BASE IMAGE POINTER!";
-		//	Logger::Get()->Push(log_str); return;
+		if ((m_ImgCopy.data == NULL) || (m_ImgCopy.width == 0) || (m_ImgCopy.height == 0)) {		
+			Logger::Get()->Error("Sprite2D::UpdateMask() | ERROR! MASKED ELEMENT REQUIRED BASE IMAGE POINTER!"); 
+			return;
 		
 		};
 
 
 		if (m_screenMask.width != GetScreenWidth() || m_screenMask.height != GetScreenHeight())
-		{
-			//std::string log_str = "ERROR! Screen Mask size does not match with screen size.";
-			//Logger::Get()->Push(log_str);
+		{			
+			Logger::Get()->Error(" Sprite2D::UpdateMask() | ERROR! Screen Mask size does not match with screen size.");
+			return;
 		}
 		
 		if(imagepixel)delete imagepixel;
@@ -223,21 +223,25 @@ namespace cart {
 	}
 	void Sprite2D::UpdateAspectRatio()
 	{
-		m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
-		float tmpscale = std::min(m_width / m_texture2d.get()->width, m_height / m_texture2d.get()->height);
-
-		int width = (m_texture2d.get()->width * tmpscale);
-		int height = (m_texture2d.get()->height * tmpscale);
-		
-		if (tmpscale != 1.f) {
-			AssetManager::Get().ResizeImage(m_strTexture, width, height);
+		Image* img = AssetManager::Get().GetImage(m_strTexture);
+		float ratio = (float)img->width / (float)img->height;
+		float w = (ratio > 1) ? m_width : m_width * ratio;
+		float h = (ratio < 1) ? m_height : m_height / ratio;
+		m_textureSize = { w,h };
+		Image copy = ImageCopy(*img);
+		ImageResize(&copy,  w, h);
+		if (AssetManager::Get().ReplaceTextureFromImage(m_strTexture, copy))
+		{
+			//Logger::Get()->Trace(" Sprite2D::UpdateAspectRatio() Image Resized maintained Aspect Ratio");
 		}
-
-
-
-		m_textureSize = { (float)width, (float)height };	
-		m_textureLocation = { (GetBounds().x + GetBounds().width / 2.f) - (width / 2.f),
-							(GetBounds().y + GetBounds().height  / 2.f) - (height / 2.f)};
+		else {
+			Logger::Get()->Warn(" Sprite2D::UpdateAspectRatio() FAILED!! Image Resized maintained Aspect Ratio");
+		}
+		m_textureLocation = {
+							(GetBounds().x + GetBounds().width / 2.f) - (w / 2.f),
+							(GetBounds().y + GetBounds().height  / 2.f) - (h / 2.f)
+							};
+		UnloadImage(copy);
 
 	}
 	void Sprite2D::TransformIntrupted() {

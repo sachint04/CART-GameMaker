@@ -15,7 +15,9 @@ namespace cart
 		void operator=(const Logger&) = delete;
 		~Logger();
 		static Logger* Get();
-		void Push(std::string _t, LOG_TYPE _type = LOG_TYPE::LOG_INFO);
+		void Trace(std::string _t);
+		void Warn(std::string _t);
+		void Error(std::string _t);
 		void Show();
 		void Hide();
 		void Clear();

@@ -23,10 +23,10 @@ namespace cart {
 		m_fontstr{},
 		m_text{},
 		m_fontsize(),
-		m_defaulttextcolor{},
+		m_defaulttextcolor{BLACK},
 		m_defaulttexturecolor{},
-		m_textcolor{},
-		m_texthovercolor{},
+		m_textcolor{ BLACK },
+		m_texthovercolor{BLUE},
 		m_ButtonDefaultColor{},
 		m_ButtonDownColor{},
 		m_ButtonHoverColor{},
@@ -71,9 +71,9 @@ namespace cart {
 	
 	void UIButton::Update(float _deltaTime)
 	{
-
 		if (!m_active || !m_visible || m_pendingUpdate)return;
 
+	
 		UIElement::Update(_deltaTime);
 #if defined(PLATFORM_ANDROID)
 		tCount = GetTouchPointCount();
@@ -110,96 +110,92 @@ namespace cart {
 		}
 
 #else
-		if (m_active == true) 
-		{
+
 			Vector2 tPos = { (float)GetMouseX(), (float)GetMouseY() };
-			if (m_IsMouseOver && m_owningworld->GetHUD().lock()->IsMouseOverUI(tPos)) {			
-				MouseOut();
-				return;
-			}
-
 			bool mouseonBtn =  m_owningworld->GetInputController()->IsMouseOver(GetWeakRef());
-
-				if (IsMouseButtonUp(0) && m_touch == false) {
-					//if (TestMouseOver(tPos) == true) {
-					if (mouseonBtn) {
+			if (mouseonBtn) {//Mouse over
+				if (m_touch) // Mouse/touch active
+				{
+					if (IsMouseButtonReleased(0)) { // Mouse/Touch Released
+						ButtonUp(tPos);
+						m_touch = false;
+					}else if (IsMouseButtonDown(0)) {// Dragging						
+						ButtonDrag(tPos);
+					}
+				}
+				else {
+					if (IsMouseButtonPressed(0)) {// Pressed once
+						ButtonDown(tPos);// Mouse /Touch  Pressed
+						m_touch = true;
+					}else if (IsMouseButtonUp(0)) {// Mouse over the button //
 						MouseHovered();
 					}
-					else {
-						MouseOut();
-					}
 				}
 
-				if (IsMouseButtonPressed(0)) {
-					if (m_touch == true)return;
-					//if (TestMouseOver(tPos) == true) {
-					if (mouseonBtn) {
-						ButtonDown(tPos);
-					}
-					m_touch = true;
-				}
 
-				if (IsMouseButtonReleased(0)) {
+			}
+			else {
+				if (m_touch) { // Mouse is out of bound while dragging
+					if (tPos.x < 0)tPos.x = 0;
+					if (tPos.x > GetScreenWidth()) tPos.x = GetScreenWidth();
+					if (tPos.y < 0)tPos.y = 0;
+					if (tPos.y > GetScreenHeight()) tPos.y = GetScreenHeight();
 
-					if (m_touch == false)return;
-
-					//if (TestMouseOver(tPos) == true) {
-					if (mouseonBtn) {
+					if (IsMouseButtonReleased(0)) {// Cursor is out fo screen
 						ButtonUp(tPos);
+						m_touch = false;
 					}
-				
-					m_touch = false;
+					else {
+						ButtonDrag(tPos);// keep Dragging
+					}
 				}
-		
-				if (m_IsMouseOver && m_IsButtonDown) {
-						ButtonDrag(tPos);
+				/*if (m_IsMouseOver) {
+					MouseOut();
+				}*/
+				/*if (m_IsButtonDown) {
+					ButtonUp(tPos);
+				}*/
 				
-				}
-			
-		}
+			}
+
+	
 #endif
 	}
 
 	void UIButton::Draw(float  _deltaTime)
 	{
 		if (!m_visible)return;
+		
 		UIElement::Draw(_deltaTime);
-		if (m_IsSelected == true) {
-			DrawRectangle(m_calculatedLocation.x - 10.f, m_calculatedLocation.y - 10.f, m_width + 20.f, m_height + 20.f, m_color);
-		}
-	/*	if (m_strTexture.size() == 0) {
-			if (m_shapeType == SHAPE_TYPE::CIRCLE)
+
+			if (m_IsSelected) {
+				DrawRectangle(m_calculatedLocation.x - 10.f, m_calculatedLocation.y - 10.f, m_width + 20.f, m_height + 20.f, m_color);
+			}
+
+			if (m_borderwidth > 0)
 			{
-				DrawCircle(m_calculatedLocation.x + m_width / 2.f, m_calculatedLocation.y + m_width / 2.f, m_width, m_color);				
+				Rectangle rect = { m_calculatedLocation.x , m_calculatedLocation.y, (float)m_width - m_borderwidth, (float)m_height - m_borderwidth };
+				DrawRectangleLinesEx(rect, m_borderwidth, m_borderColor);
 
 			}
-			else if (m_shapeType == SHAPE_TYPE::ROUNDED_RECTANGLE)
-			{
-				DrawRectangleRounded({ m_calculatedLocation.x, m_calculatedLocation.y, m_width, m_height }, 0.2f, 2, m_color);
+			
+			if (m_text.size() > 0) {
+					m_font = AssetManager::Get().LoadFontAsset(m_fontstr, m_fontsize);			
+					DrawTextEx(*m_font, m_text.c_str(), m_fontLocation, m_fontsize * m_scale, m_fontspace * m_scale, m_textcolor);			
 			}
-			else
-			{
-				
-				DrawRectangle(m_calculatedLocation.x, m_calculatedLocation.y, m_width, m_height, m_color);
-			}
-		}*/
-
-		if (m_borderwidth > 0)
-		{
-			Rectangle rect = { m_calculatedLocation.x , m_calculatedLocation.y, (float)m_width - m_borderwidth, (float)m_height - m_borderwidth };
-			DrawRectangleLinesEx(rect, m_borderwidth, m_borderColor);
-
-		}
-		Color calcColor = { m_textcolor.r, m_textcolor.g, m_textcolor.b, m_color.a };
-		if (m_text.size() > 0) {
-				m_font = AssetManager::Get().LoadFontAsset(m_fontstr, m_fontsize);			
-				DrawTextEx(*m_font, m_text.c_str(), m_fontLocation, m_fontsize * m_scale, m_fontspace * m_scale, calcColor);			
-		}
-
+		
+		
 	}
 
 
 
+
+
+
+#pragma endregion
+	
+#pragma region Helpers
+	
 	void UIButton::SetSelected(bool _flag)
 	{
 		m_IsSelected = _flag;
@@ -208,17 +204,16 @@ namespace cart {
 	void UIButton::SetActive(bool _flag)
 	{
 		UIElement::SetActive(_flag);		
-		if (_flag == false) {
+		if (!_flag) {			
+			MouseOut();			
 			m_IsSelected = false;
+			m_touch = false;
 		}
+		Color textDisabledColor = { m_defaulttextcolor.r, m_defaulttextcolor.g, m_defaulttextcolor.b, 150 };
+		m_color = (_flag)?m_ButtonDefaultColor : m_ButtonDisableColor;
+		m_textcolor = (_flag) ? m_defaulttextcolor : textDisabledColor;
 	}
 
-
-
-#pragma endregion
-	
-#pragma region Helpers
-	
 	void UIButton::SetButtonProperties(Btn_Properties _prop)
 	{
 		UIElement::SetUIProperties(_prop);
@@ -226,6 +221,7 @@ namespace cart {
 		m_ButtonDefaultColor = _prop.btncol;
 		m_ButtonHoverColor = _prop.overcol;
 		m_ButtonDownColor = _prop.downcol;
+		m_ButtonDisableColor = _prop.disablecol;
 		m_IsSelectable = _prop.isSelectable;
 		m_defaulttexturecolor = _prop.textureColor;
 		m_borderwidth = _prop.borderwidth;
@@ -283,9 +279,15 @@ namespace cart {
 	{
 		m_ButtonHoverColor = _color;
 	}
+	
 	void UIButton::SetDownColor(Color _color)
 	{
 		m_ButtonDownColor = _color;
+	}
+
+	void UIButton::SetDisableColor(Color _color)
+	{
+		m_ButtonDisableColor = _color;
 	}
 
 	void UIButton::UpdateTextLocation() {
@@ -346,31 +348,29 @@ namespace cart {
 
 	void UIButton::MouseHovered()
 	{
-		m_color = m_ButtonHoverColor;
-
-		if(m_text.size() > 0)
-			m_textcolor = m_texthovercolor;
-
 		
+		m_color = m_ButtonHoverColor;
+		m_textcolor = m_texthovercolor;
 		m_IsMouseOver = true;
 		SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
 		onButtonHover.Broadcast(GetWeakRef() );
 
+
 	}
 	void UIButton::MouseOut()
 	{
-		if(m_IsMouseOver == true){
+		//if(m_IsMouseOver == true){
 			m_color = m_ButtonDefaultColor;
-			if (m_text.size() > 0)
-				m_textcolor = m_defaulttextcolor;
-
+			m_textcolor = m_defaulttextcolor;
 			m_IsMouseOver = false;
 			SetMouseCursor(0);
 
 			m_IsButtonDown = false;
-			SetMouseCursor(MOUSE_CURSOR_ARROW);
-			onButtonOut.Broadcast(GetWeakRef() );
-		}
+			//SetMouseCursor(MOUSE_CURSOR_ARROW);
+			if (m_active) {
+				onButtonOut.Broadcast(GetWeakRef() );
+			}
+		//}
 	}
 
 	

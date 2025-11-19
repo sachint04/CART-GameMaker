@@ -50,6 +50,7 @@ namespace cart {
         /// <returns></returns>
         shared<Texture2D> AddTexture( Image& image, std::string& path, TEXTURE_DATA_STATUS status = TEXTURE_DATA_STATUS::UNLOCKED);
       //  shared<Texture2D> UpdateTexture( Image& image, std::string& path, TEXTURE_DATA_STATUS status = TEXTURE_DATA_STATUS::UNLOCKED);
+        bool ReplaceTextureFromImage(const std::string& path, Image image);
         bool UpdateTextureFromData(const std::string& path, Rectangle rect, Color* pixels);
         bool ResizeImage(const std::string& path, int width, int height);
         bool ResizeTexture(const std::string& path, int width, int height);
@@ -99,7 +100,6 @@ namespace cart {
             if (!obj.expired())
             {
                 (static_cast<ClassName*>(obj.lock().get())->*callback)();
-                //  Logger::Get()->Push(std::format("AssetManager::LoadAssetList() Callback {}\n", obj.lock()->GetID()));
                 return true;
             }
             return false;

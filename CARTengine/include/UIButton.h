@@ -40,6 +40,7 @@ namespace cart {
         void SetColor(Color _color)override;
         virtual void SetHoverColor(Color _color);
         virtual void SetDownColor(Color _color);
+        virtual void SetDisableColor(Color _color);
         void UpdateTextLocation();
         void SetFontName(const std::string& strfnt);
 		~UIButton();
@@ -65,6 +66,7 @@ namespace cart {
         Color m_ButtonDefaultColor;
         Color m_ButtonDownColor;
         Color m_ButtonHoverColor;
+        Color m_ButtonDisableColor;
         bool m_IsButtonDown;
         bool m_IsMouseOver;
         bool m_IsSelected;

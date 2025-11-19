@@ -31,9 +31,9 @@ namespace cart
 		virtual const Application* GetApplication() const { return m_owningApp; }
 		virtual ~World();
 
+		static bool m_APP_SHOULD_WAIT;
 		Vector2 GetAppWindowSize() const;
 		long GetSizeOfPendingActors();
-		void ClearActors();
 		void CleanCycle();
 		void Unload();
 		void InitStage();
@@ -56,6 +56,7 @@ namespace cart
 		void* m_sessionData = nullptr;
 		
 	private:
+
 		bool m_BeginPlay;
 		float m_cleanCycleIter;
 		double m_cleanCycleStartTime;

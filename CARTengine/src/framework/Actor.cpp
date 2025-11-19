@@ -182,7 +182,6 @@ namespace cart {
 
 	void Actor::AssetsLoadCompleted()
 	{
-		//Logger::Get()->Push(std::format(" {} Actor AssetsLoadCompleted()\n", GetID()));
 		Start();
 	}
 

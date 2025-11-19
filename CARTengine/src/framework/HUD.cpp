@@ -25,15 +25,11 @@ namespace cart
 	{		
 		
 		m_isReady = true;
-		UIElement::Init();
-	}
-
-	void HUD::Start() {
 		int w = GetScreenWidth();
 		int h = GetScreenHeight();
 		int barwidth = 300;
 		int barheight = 20;
-		ProgressView pview = { m_owningworld, std::string{ "progressview" } };		
+		ProgressView pview = { m_owningworld, std::string{ "progressview" }, true };		
 		m_progressview = std::make_shared<ProgressView>(pview);
 		ProgressVeiw_Properties pprop = {};
 		pprop.size = { (float)w, (float)h };
@@ -46,6 +42,10 @@ namespace cart
 		m_progressview.get()->Init();
 		m_progressview.get()->SetVisible(false);
 		AddChild(m_progressview);
+		UIElement::Init();
+	}
+
+	void HUD::Start() {
 	}
 
 	bool HUD::IsMouseOverUI(Vector2 _locmouse)
@@ -94,7 +94,7 @@ namespace cart
 	}
 	void HUD::AssetsLoadCompleted()
 	{
-		Logger::Get()->Push(std::format(" {} Actor AssetsLoadCompleted()\n", GetID()));
+		Logger::Get()->Trace(std::format(" {} Actor AssetsLoadCompleted()\n", GetID()));
 		// Overridden this method to stop Actor from calling "Start" method
 	}
 	void HUD::RestartButtonClicked(weak<Object> obj, Vector2 pos)

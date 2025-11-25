@@ -39,8 +39,8 @@ namespace cart
 		m_dataModel = {};	
 		net = unique<network>{ new network };
 	//	SetConfigFlags(FLAG_MSAA_4X_HINT|FLAG_VSYNC_HINT);
-		Logger::Get()->Trace(std::format("Application Init size {} | {} ", APP_WIDTH, APP_HEIGHT));
-		InitWindow(m_winWidth, m_winHeight, m_title.c_str());
+		//Logger::Get()->Trace(std::format("Application Init size {} | {} ", SCREEN_WIDTH, SCREEN_HEIGHT));
+		InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, m_title.c_str());
 		SetTargetFPS(m_targetFrameRate);
 	}
 

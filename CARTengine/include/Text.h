@@ -29,7 +29,7 @@ namespace cart {
 		int m_margin;
 		Color m_background;
 		Color m_textColor;
-		void UpdateLocation() override;
+		void UpdateLocation();
 		
 		
 		shared<Font> m_sharedfont;

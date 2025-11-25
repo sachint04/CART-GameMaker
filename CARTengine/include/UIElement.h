@@ -3,11 +3,15 @@
 #include "Actor.h"
 #include "Core.h"
 #include "Types.h"
+#include "component/LayoutComponent.h"
+
+
+
 namespace cart {
 	class World;
 	class UIButton;
     class Text;
-	class UIElement : public Actor {
+	class UIElement : public Actor  {
 		
 	public:
 		
@@ -28,12 +32,20 @@ namespace cart {
 		virtual void SetLocation(Vector2 _location)override;		
 		virtual void SetPivot(Vector2 _pivot);
 		virtual void Offset(Vector2 _location)override;
+		virtual void SetAnchor(Rectangle rect);
 		virtual void DrawBGColor();
 		virtual void SetVisible(bool _flag) override;
 		virtual void Notify(const std::string& strevent);
 		virtual void AssetsLoadCompleted()override;
-
+		virtual void UpdateLayout(int canvas_w, int canvas_h);
 		virtual Rectangle GetBounds();
+		virtual Vector2 GetPivot();
+		virtual Rectangle GetAnchor();
+
+		virtual void AddComponent(COMPONENT_TYPE type);
+		weak<LayoutComponent> GetLayoutComponent();
+
+
 		virtual ~UIElement();
 
 		void AddText(const std::string & id, Text_Properties _txt);
@@ -43,22 +55,25 @@ namespace cart {
 		bool IsPendingUpdate() { return m_pendingUpdate; };
 		void SetPendingUpdate(bool _flag);
 	
-		Vector2 GetPivot();
 		void Destroy()override;
 		void SetExcludeFromParentAutoControl(bool _flag);
 		bool IsExcludedFromParentAutoControl() { return m_isExcludedFromParentAutoControl; };
-	
+		
+		weak<UIElement> parent();
+		void parent(weak<UIElement> ui);
 	protected:
 		Vector2 m_rawlocation;	
 		Vector2 m_pivot;
 		std::vector<shared<UIElement>> m_children = {};
 		std::vector <shared<UIButton>> m_slides = {};
-		virtual void UpdateLocation();		
+		//virtual void UpdateLocation();		
 		bool m_pendingUpdate;
 		Vector2 m_defaultSize;
 		bool m_isExcludedFromParentAutoControl;
 		SHAPE_TYPE m_shapeType;
-		
+		shared<LayoutComponent> m_layout;
+		weak<UIElement> m_parent;
+		Rectangle m_anchor;
 	};
 
 }

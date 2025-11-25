@@ -44,8 +44,7 @@ namespace cart {
 	}
 
 	void Text::UpdateLocation()
-	{
-		UIElement::UpdateLocation();
+	{		
 		if (!m_sharedfont) {
 			m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, m_fontsize);
 		}

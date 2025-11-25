@@ -10,7 +10,9 @@ namespace cart {
       
 
 #pragma region  ENUMNS
-   
+    enum COMPONENT_TYPE {
+        LAYOUT_COMPONENT
+   };
     enum VEC_TYPE {
         Vec2D,
         Vec3D,
@@ -86,6 +88,13 @@ namespace cart {
         LOG_WARNING,
         LOG_ERROR,
     };
+
+    enum CANVAS_SCALE_MODE {
+        CONSTANT_PIXEL, // no change in define window size
+        MATCH_HEIGHT,   // maintain aspect raio according to height
+        MATCH_WIDTH,    // maintain aspect raio according to width
+        SCREEN_SIZE     // no aspect ratio - match screen/display size
+    };
 #pragma endregion
 
 #pragma region STRUCTS
@@ -131,42 +140,43 @@ namespace cart {
 
     struct UI_Properties {
     public:
+        TEXTURE_DATA_STATUS texturestatus = TEXTURE_DATA_STATUS::UNLOCKED;
+        TEXTURE_TYPE texturetype = TEXTURE_TYPE::TEXTURE_FULL;
+        SHAPE_TYPE shapetype = SHAPE_TYPE::RECTANGLE;
+        int linewidth = 0;
+        std::string texture;
+        float scale{ 1.f };
+        float rotation;
+        Color color = WHITE;
+        Color textureColor =  WHITE ;
         Vector2 size;
         Vector2 location;
         Vector2 pivot;
-        Color color = WHITE;
-        float scale{ 1.f };
-        float rotation;
-        std::string texture;
-        Color textureColor =  WHITE ;
-        TEXTURE_DATA_STATUS texturestatus = TEXTURE_DATA_STATUS::UNLOCKED;
-        TEXTURE_TYPE texturetype = TEXTURE_TYPE::TEXTURE_FULL;
         Rectangle texturesource;
-        SHAPE_TYPE shapetype = SHAPE_TYPE::RECTANGLE;
-        int linewidth = 0;
+        Rectangle anchor = {0,0,1.f,1.f};
 
     };
 
 	struct Text_Properties : UI_Properties{
     public:
+		ALIGN align = ALIGN::LEFT;	
 		std::string font;
 		std::string text;
-		float fontsize;
-        float fontspacing = 2.f;
-		ALIGN align = ALIGN::LEFT;	
         Color textbackground;
         Color textcolor;
+		float fontsize;
+        float fontspacing = 2.f;
 	};
 
     struct Btn_Properties :UI_Properties {
     public:
+        ALIGN align = ALIGN::LEFT;
+        bool isSelectable;
+        int borderwidth = 0;
         Color btncol;
         Color overcol;
         Color downcol;
         Color disablecol;
-        ALIGN align = ALIGN::LEFT;
-        bool isSelectable;
-        int borderwidth = 0;
         Color bordercol = GRAY;
         Rectangle texturesourceover;
         Rectangle texturesourcedown;
@@ -176,13 +186,13 @@ namespace cart {
     
     struct Btn_Text_Properties : Btn_Properties {
     public:
+        ALIGN textAlign = ALIGN::LEFT;
         std::string font;
         std::string text;        
-        float fontsize;
-        float fontspace = 2.f;
-        ALIGN textAlign = ALIGN::LEFT;
         Color textcolor = BLACK;
         Color texthoverolor = BLACK;
+        float fontsize;
+        float fontspace = 2.f;
 
     };
 
@@ -307,6 +317,9 @@ namespace cart {
         std::string log;
     }LogData;
    
+    struct Vec2_short {short int x; short int y;};
+
+    struct UI_ANCHOR {float MinX = 0.f;float MaxX = 1.f;float MinY = 0.f;float MaxY = 1.f;} ;
 #pragma endregion
 
 

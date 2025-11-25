@@ -5,7 +5,10 @@
 #include "DataFile.h"
 #include "network/network.h"
 
+extern int SCREEN_WIDTH;
+extern int SCREEN_HEIGHT;
 using json = nlohmann::json;
+
 namespace cart
 {
 	class HUD;

@@ -35,7 +35,7 @@ namespace cart {
         void Draw(float _deltaTime) override;
         void SetSelected(bool _flag);
         void SetActive(bool _flag) override;
-        void UpdateLocation() override;
+       // void UpdateLocation() override;
         void SetLocation(Vector2 _location) override;
         void SetColor(Color _color)override;
         virtual void SetHoverColor(Color _color);

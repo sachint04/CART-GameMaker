@@ -134,11 +134,11 @@ namespace cart {
 	{
 		UIElement::SetLocation(_location);
 	}
-	void Sprite2D::UpdateLocation()
+	/*void Sprite2D::UpdateLocation()
 	{
 		UIElement::UpdateLocation();
 
-	}
+	}*/
 	void Sprite2D::SetUIProperties(UI_Properties _prop)
 	{
 		UIElement::SetUIProperties(_prop);

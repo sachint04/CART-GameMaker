@@ -14,7 +14,7 @@ namespace cart {
 		virtual void SetUIProperties(UI_Properties _prop) override;
 		virtual void SetSize(Vector2 _size) override;
 		virtual void SetLocation(Vector2 _location) override;
-		virtual void UpdateLocation() override;
+		//virtual void UpdateLocation() override;
 		virtual void Destroy() override;
 
 		void MaintainAspectRatio(bool _flag) { m_bAspectRatio = _flag; };

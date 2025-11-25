@@ -60,7 +60,7 @@ namespace cart {
 	void UIButton::SetScale(float _scale)
 	{
 		UIElement::SetScale(_scale);
-		UpdateTextLocation();
+		//UpdateTextLocation();
 	}
 
 	
@@ -169,12 +169,12 @@ namespace cart {
 		UIElement::Draw(_deltaTime);
 
 			if (m_IsSelected) {
-				DrawRectangle(m_calculatedLocation.x - 10.f, m_calculatedLocation.y - 10.f, m_width + 20.f, m_height + 20.f, m_color);
+				DrawRectangle(m_location.x - 10.f, m_location.y - 10.f, m_width + 20.f, m_height + 20.f, m_color);
 			}
 
 			if (m_borderwidth > 0)
 			{
-				Rectangle rect = { m_calculatedLocation.x , m_calculatedLocation.y, (float)m_width - m_borderwidth, (float)m_height - m_borderwidth };
+				Rectangle rect = { m_location.x , m_location.y, (float)m_width - m_borderwidth, (float)m_height - m_borderwidth };
 				DrawRectangleLinesEx(rect, m_borderwidth, m_borderColor);
 
 			}
@@ -257,16 +257,16 @@ namespace cart {
 
 	}
 
-	void UIButton::UpdateLocation()
+	/*void UIButton::UpdateLocation()
 	{
 		UIElement::UpdateLocation();
 
-	}
+	}*/
 
 	void UIButton::SetLocation(Vector2 _location)
 	{
 		UIElement::SetLocation(_location);
-		UpdateTextLocation();
+	//	UpdateTextLocation();
 	}
 
 	void UIButton::SetColor(Color _color)

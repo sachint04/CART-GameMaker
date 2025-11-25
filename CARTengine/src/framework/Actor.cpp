@@ -54,6 +54,11 @@ namespace cart {
 	{
 		m_isReady = flag;
 	}
+	void Actor::AddComponent(Component& component)
+	{
+		componentlist.insert({ static_cast<unsigned char>(componentlist.size()), component });
+	}
+
 	Vector2 Actor::GetWindowSize() const
 	{
 		return m_owningworld->GetAppWindowSize();
@@ -139,6 +144,11 @@ namespace cart {
 	float Actor::GetScale()
 	{
 		return m_scale;
+	}
+
+	Vector2 Actor::GetSize()
+	{
+		return { m_width, m_height };
 	}
 	
 	void Actor::Update(float _deltaTime)

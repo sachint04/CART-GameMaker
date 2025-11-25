@@ -10,9 +10,7 @@
 
 
 
-extern float APP_SCALE;
-extern int APP_WIDTH;
-extern int APP_HEIGHT;
+
 extern int FONT_SIZE;
 extern std::string FONT_NAME;
 

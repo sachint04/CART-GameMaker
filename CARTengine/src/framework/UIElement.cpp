@@ -5,6 +5,16 @@
 #include <memory>
 #include "World.h"
 #include "Logger.h"
+#include "UICanvas.h"
+
+
+extern int CANVAS_X;
+extern int CANVAS_Y;
+extern float CANVAS_SCALE_X;
+extern float CANVAS_SCALE_Y;
+extern int CANVAS_WIDTH;
+extern int CANVAS_HEIGHT;
+
 namespace cart {
 #pragma region  Constructors
 	UIElement::UIElement(World* _owningworld, const std::string& _id, bool isExcludedFromParentAutoControl)
@@ -14,9 +24,12 @@ namespace cart {
 		m_rawlocation{},
 		m_defaultSize{},
 		m_isExcludedFromParentAutoControl{ isExcludedFromParentAutoControl },
-		m_shapeType{ SHAPE_TYPE::RECTANGLE }
-	{
+		m_shapeType{ SHAPE_TYPE::RECTANGLE },
+		m_parent{ shared<UIElement>{nullptr} }
 
+	{
+		m_anchor = { 0.f, 0.f, 1.f, 1.f }; 
+		m_pivot = { 0.f, 0.f };
 	}
 
 
@@ -61,15 +74,14 @@ namespace cart {
 #pragma region Set Properties
 	void UIElement::SetUIProperties(UI_Properties _prop)
 	{
-		m_location = _prop.location;
-		m_rawlocation = _prop.location;
+		SetLocation(_prop.location);
+		m_shapeType = _prop.shapetype;
+		m_defaultSize = _prop.size;
 		m_scale = _prop.scale;
 		m_color = _prop.color;
-
 		m_pivot = _prop.pivot;
-		m_defaultSize = _prop.size;
+		m_anchor = _prop.anchor;
 		SetSize(_prop.size);
-		m_shapeType = _prop.shapetype;
 	}
 #pragma endregion
 
@@ -77,7 +89,7 @@ namespace cart {
 	void UIElement::SetSize(Vector2 _size) {
 		m_width = _size.x;
 		m_height = _size.y;
-		UpdateLocation();
+		//UpdateLocation();
 	}
 
 	void UIElement::LoadAssets()
@@ -112,13 +124,33 @@ namespace cart {
 		//	return{ m_location.x - m_pivot.x, m_location.y - m_pivot.y, m_width * m_scale,m_height * m_scale };
 		return{ m_calculatedLocation.x, m_calculatedLocation.y, m_width * m_scale,m_height * m_scale };
 	}
+
+	void UIElement::AddComponent(COMPONENT_TYPE type)
+	{
+		switch (type)
+		{
+			case LAYOUT_COMPONENT :
+				if (m_layout) {
+					Logger::Get()->Error(std::format("UIElement::AddComponent() LAYOUT_COMPONENT is already exists in {}", GetID()));
+				}
+				weak<UIElement> owner = std::dynamic_pointer_cast<UIElement>(GetWeakRef().lock());
+				LayoutComponent comp{ std::string{GetID() + "_layout"}, owner, {0.f, 1.f, 0.f, 1.f} };
+				m_layout = std::make_shared<LayoutComponent>(comp);
+				Vec2_short offset = { (short int)m_location.x, (short int)m_location.y};
+				Vec2_short size = { (short int)m_width, (short int)m_height};
+				UICanvas::Get().lock()->RegisterComponent(m_layout, offset, size);
+			break;
+		}
+	}
+
+	weak<LayoutComponent> UIElement::GetLayoutComponent()
+	{
+		return m_layout;
+	}
 	
-
-
 	void UIElement::Notify(const std::string& strevent)
 	{
 	}
-
 
 	void UIElement::SetScale(float _scale)
 	{
@@ -129,20 +161,20 @@ namespace cart {
 			iter->get()->SetScale(_scale);
 		}
 
-		UpdateLocation();
+		//UpdateLocation();
 	}
 
 	void UIElement::SetLocation(Vector2 _location)
 	{
 		Vector2 offset = { _location.x - m_location.x , _location.y - m_location.y };
 		Actor::SetLocation(_location);
-		for (auto iter = m_children.begin(); iter != m_children.end(); ++iter)
+	//	UpdateLocation();
+		/*for (auto iter = m_children.begin(); iter != m_children.end(); ++iter)
 		{		
 			Vector2 loc = iter->get()->GetLocation();
 			Vector2 newloc = { loc.x + offset.x, loc.y + offset.y };
 			iter->get()->SetLocation(newloc);
-		}
-		UpdateLocation();
+		}*/
 	}
 
 	void UIElement::SetPivot(Vector2 _pivot)
@@ -155,45 +187,59 @@ namespace cart {
 		Actor::Offset(_location);
 	}
 
+	void UIElement::SetAnchor(Rectangle rect)
+	{
+		m_anchor = rect;
+	}
+
 	void UIElement::DrawBGColor()
 	{
 		if (m_shapeType == SHAPE_TYPE::CIRCLE)
 		{
-			DrawCircle(m_calculatedLocation.x + m_width / 2.f, m_calculatedLocation.y + m_width / 2.f, m_width, m_color);
+			DrawCircle(m_location.x + m_width / 2.f, m_location.y + m_width / 2.f, m_width, m_color);
 
 		}
 		else if (m_shapeType == SHAPE_TYPE::ROUNDED_RECTANGLE)
 		{
-			DrawRectangleRounded({ m_calculatedLocation.x, m_calculatedLocation.y, m_width, m_height }, 0.2f, 2, m_color);
+			DrawRectangleRounded({  m_location.x,  m_location.y,  m_width , m_height }, 0.2f * UICanvas::Get().lock()->Scale(), 2, m_color);
 		}
 		else 
 		{
-			DrawRectangle(m_calculatedLocation.x, m_calculatedLocation.y, m_width * m_scale, m_height * m_scale, m_color);
+			DrawRectangle(m_location.x, m_location.y, m_width, m_height, m_color);
 			//DrawRectangle(m_calculatedLocation.x, m_calculatedLocation.y, m_width, m_height, m_color);
 		}
 	}
 
-	void UIElement::UpdateLocation()
+	/*void UIElement::UpdateLocation()
 	{
 		m_rawlocation = { m_location.x * m_scale, m_location.y * m_scale };
-
-		//m_calculatedLocation = { m_location.x - (m_pivot.x * m_scale) , m_location.y - (m_pivot.y * m_scale) };
-		m_calculatedLocation = { m_location.x - (m_pivot.x * m_scale), m_location.y - (m_pivot.y * m_scale) };
-
-	}
+		m_calculatedLocation = { m_location.x - (m_pivot.x * m_scale) , m_location.y - (m_pivot.y * m_scale) };
+	}*/
 
 	Vector2 UIElement::GetPivot()
 	{
 		return { m_pivot.x * m_scale , m_pivot.y * m_scale };
 	}
 
+	Rectangle UIElement::GetAnchor()
+	{
+		return m_anchor;
+	}
 	
-
 	void UIElement::SetExcludeFromParentAutoControl(bool _flag)
 	{
 		m_isExcludedFromParentAutoControl = _flag;
 	}
 
+	weak<UIElement> UIElement::parent()
+	{
+		return m_parent;
+	}
+
+	void UIElement::parent(weak<UIElement> parent)
+	{
+		m_parent = parent;
+	}
 
 	void UIElement::SetPendingUpdate(bool _flag)
 	{
@@ -235,7 +281,10 @@ namespace cart {
 
 	void UIElement::AddChild(weak<UIElement> _ui)
 	{
+		
 		shared<UIElement> shared_ui = _ui.lock();
+		weak<UIElement> self = std::dynamic_pointer_cast<UIElement>(GetWeakRef().lock());
+		shared_ui.get()->parent(self);
 		m_children.push_back(shared_ui);
 		shared_ui.reset();
 	
@@ -253,6 +302,10 @@ namespace cart {
 			}
 		}
 	}
+
+	void UIElement::UpdateLayout(int canvas_w, int canvas_h)
+	{
+	}
 #pragma endregion
 
 
@@ -262,10 +315,12 @@ namespace cart {
 	/// </summary>
 	void UIElement::AssetsLoadCompleted()
 	{
-		UpdateLocation();
+		//UpdateLocation();
 		m_pendingUpdate = false;
 		Actor::AssetsLoadCompleted();
 	}
+
+	
 
 #pragma endregion
 

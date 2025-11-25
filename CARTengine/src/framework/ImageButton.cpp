@@ -151,7 +151,8 @@ namespace cart {
 		if (!m_visible)return;
 		Sprite2D::Draw(_deltaTime);
 		if (m_IsSelected == true) {
-			DrawRectangle(m_calculatedLocation.x - 10.f, m_calculatedLocation.y - 10.f, m_width + 20.f, m_height + 20.f, m_color);
+		//	DrawRectangle(m_calculatedLocation.x - 10.f, m_calculatedLocation.y - 10.f, m_width + 20.f, m_height + 20.f, m_color);
+			DrawRectangle(m_location.x - 10.f, m_location.y - 10.f, m_width + 20.f, m_height + 20.f, m_color);
 		}
 	/*	if (m_strTexture.size() == 0) {
 			if (m_shapeType == SHAPE_TYPE::CIRCLE)
@@ -172,7 +173,8 @@ namespace cart {
 
 		if (m_borderwidth > 0)
 		{
-			Rectangle rect = { m_calculatedLocation.x , m_calculatedLocation.y, (float)m_width - m_borderwidth, (float)m_height - m_borderwidth };
+			//Rectangle rect = { m_calculatedLocation.x , m_calculatedLocation.y, (float)m_width - m_borderwidth, (float)m_height - m_borderwidth };
+			Rectangle rect = { m_location.x , m_location.y, (float)m_width - m_borderwidth, (float)m_height - m_borderwidth };
 			DrawRectangleLinesEx(rect, m_borderwidth, m_borderColor);
 
 		}
@@ -255,11 +257,11 @@ namespace cart {
 
 	}
 
-	void ImageButton::UpdateLocation()
+	/*void ImageButton::UpdateLocation()
 	{
 		Sprite2D::UpdateLocation();
 
-	}
+	}*/
 
 	void ImageButton::SetLocation(Vector2 _location)
 	{

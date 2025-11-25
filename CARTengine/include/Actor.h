@@ -4,6 +4,7 @@
 #include "Object.h"
 namespace cart {
 	class World;
+	class Component;
 	class Actor : public Object {
 
 	public:
@@ -29,8 +30,9 @@ namespace cart {
 		virtual void LoadAssets();
 		virtual void Init();
 		virtual void SetReady(bool flag);
-		virtual void AssetsLoadCompleted();
+		virtual void AddComponent(Component& component);
 
+		virtual void AssetsLoadCompleted();
 		bool IsReady() { return m_isReady; };
 
 		float GetRotation();
@@ -39,6 +41,7 @@ namespace cart {
 		Vector3 GetLocation3();
 		Vector4 GetRotation3();
 		float GetScale();
+		Vector2 GetSize();
 		Vector2 GetWindowSize() const;
 		World* m_owningworld;
 	protected:
@@ -57,5 +60,6 @@ namespace cart {
 		bool m_isReady;
 		std::vector <std::string> m_preloadlist; //<url, filename>
 		std::string m_strloadMsg;
+		Dictionary<unsigned char, Component&> componentlist;
 	};
 }

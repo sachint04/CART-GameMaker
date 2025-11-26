@@ -14,7 +14,6 @@ namespace cart {
 		m_rotation(0),
 		m_active{true},
 		m_color{WHITE},
-		m_calculatedLocation{},
 		m_width{1.f},
 		m_height{1.f},
 		m_location3{0},
@@ -27,7 +26,7 @@ namespace cart {
 	}
 	void Actor::Start()
 	{
-		m_isReady = true;
+		SetReady(true);
 	}
 	void Actor::Init()
 	{
@@ -53,6 +52,7 @@ namespace cart {
 	void Actor::SetReady(bool flag)
 	{
 		m_isReady = flag;
+		onReady.Broadcast(GetId());
 	}
 	void Actor::AddComponent(Component& component)
 	{
@@ -67,7 +67,6 @@ namespace cart {
 	void Actor::SetLocation(Vector2 _location)
 	{
 		m_location = _location;
-		m_calculatedLocation = _location;
 	}
 
 	void Actor::SetLocation(Vector3 _location)
@@ -182,7 +181,7 @@ namespace cart {
 	void Actor::LoadAssets()
 	{
 		if (m_preloadlist.size() > 0) {			
-			AssetManager::Get().LoadAssetList(GetID(), m_preloadlist, m_strloadMsg, GetWeakRef(), &Actor::AssetsLoadCompleted);
+			AssetManager::Get().LoadAssetList(GetId(), m_preloadlist, m_strloadMsg, GetWeakRef(), &Actor::AssetsLoadCompleted);
 		}
 		else {
 			AssetsLoadCompleted();
@@ -192,7 +191,7 @@ namespace cart {
 
 	void Actor::AssetsLoadCompleted()
 	{
-		Logger::Get()->Trace(std::format("{} Asset Load complete!", GetID()));
+		Logger::Get()->Trace(std::format("{} Asset Load complete!", GetId()));
 		Start();
 	}
 

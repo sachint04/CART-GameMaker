@@ -2,12 +2,16 @@
 #include <vector>
 #include <raylib.h>
 #include "Object.h"
+#include "Delegate.h"
 namespace cart {
 	class World;
 	class Component;
 	class Actor : public Object {
 
 	public:
+		Delegate<const std::string&> onReady;
+
+
 		Actor( World* _owingworld, const std::string& _id );
 		virtual ~Actor();
 		virtual void Start();
@@ -53,7 +57,6 @@ namespace cart {
 		Vector2 m_location;
 		Vector3 m_location3;
 		Vector4 m_rotation3;
-		Vector2 m_calculatedLocation;
 		bool m_visible;
 		bool m_active;
 		Color m_color;

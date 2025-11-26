@@ -94,7 +94,7 @@ namespace cart
 	}
 	void HUD::AssetsLoadCompleted()
 	{
-		Logger::Get()->Trace(std::format(" {} Actor AssetsLoadCompleted()\n", GetID()));
+		Logger::Get()->Trace(std::format(" {} Actor AssetsLoadCompleted()\n", GetId()));
 		// Overridden this method to stop Actor from calling "Start" method
 	}
 	void HUD::RestartButtonClicked(weak<Object> obj, Vector2 pos)

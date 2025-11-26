@@ -14,7 +14,7 @@ namespace cart
 		Object(const std::string& _id);
 		virtual ~Object();
 		virtual void Destroy();
-		virtual std::string GetID()const;
+		virtual std::string GetId()const;
 		virtual bool IsReady() { return m_isReady; };
 		bool IsPendingDestroy() const { return m_isPendingDestroy; }
 		

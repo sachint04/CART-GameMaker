@@ -145,7 +145,7 @@ namespace cart {
 	{
 		for (auto iter = m_listdata.begin(); iter != m_listdata.end(); ++iter)
 		{
-			if (iter->id.compare(btn.lock()->GetID()) == 0) {
+			if (iter->id.compare(btn.lock()->GetId()) == 0) {
 
 				onSelect.Broadcast(iter->index);
 				break;

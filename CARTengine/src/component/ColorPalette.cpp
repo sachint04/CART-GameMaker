@@ -24,6 +24,10 @@ namespace cart {
 		}
 	
 	}
+	void ColorPalette::Start()
+	{
+		UIElement::Start();
+	}
 #pragma endregion
 
 #pragma region  Loop

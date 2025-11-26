@@ -40,26 +40,33 @@ namespace cart {
 	void TransformCntrl::Init()
 	{
 		
-		Btn_Text_Properties cntrlui = {};		
+		UIElement::Init();
+
+	}
+
+	void TransformCntrl::Start()
+	{
+		Btn_Text_Properties cntrlui = {};
 		cntrlui.color = GRAY;
 		cntrlui.size = { cntrlsize, cntrlsize };
 		cntrlui.btncol = GRAY;
 		cntrlui.overcol = GRAY;
 		cntrlui.downcol = ORANGE;
 
-		
-		
+
+
 		m_location = { m_targetInitState.x, m_targetInitState.y };
 
 		std::string btnid = "translate-btn";
 		Btn_Text_Properties btnprop = {};
 		btnprop.location = { m_location.x , m_location.y };
 		btnprop.size = { m_targetInitState.width, m_targetInitState.height };
-		btnprop.color = { 0};
-		btnprop.btncol = {0};
-		btnprop.overcol = {0};
-		btnprop.downcol = {0};
-		btnprop.size = { m_targetInitState.width   , m_targetInitState.height};
+		btnprop.color = { 0 };
+		btnprop.btncol = { 0 };
+		btnprop.overcol = { 0 };
+		btnprop.downcol = { 0 };
+		btnprop.component = LAYOUT_COMPONENT;
+		btnprop.size = { m_targetInitState.width   , m_targetInitState.height };
 
 		m_translateCntrl = AddButton(btnid, btnprop);
 		m_translateCntrl.lock()->onButtonDown.BindAction(GetWeakRef(), &TransformCntrl::onTranslateStart);
@@ -72,10 +79,11 @@ namespace cart {
 		std::string id = "outline-cntrl";
 		UI_Properties lnui = {};
 		lnui.location = m_location;
-		lnui.size = { m_targetInitState.width, m_targetInitState.height};
+		lnui.size = { m_targetInitState.width, m_targetInitState.height };
 		lnui.color = BLUE;
 		lnui.shapetype = SHAPE_TYPE::LINE;
 		lnui.linewidth = 1;
+		lnui.component = LAYOUT_COMPONENT;
 		m_outline = m_owningworld->SpawnActor<Shape>(id);
 		m_outline.lock()->SetUIProperties(lnui);
 		m_outline.lock()->SetVisible(true);
@@ -90,47 +98,49 @@ namespace cart {
 		cntrlui.downcol = ORANGE;
 		cntrlui.pivot = { cntrlhalf, cntrlhalf };
 		cntrlui.shapetype = SHAPE_TYPE::CIRCLE;
+		cntrlui.component = LAYOUT_COMPONENT;
 		id = "topleft-cntrl";
 		m_topleftCntrl = AddButton(id, cntrlui);
 		m_topleftCntrl.lock()->onButtonDrag.BindAction(GetWeakRef(), &TransformCntrl::onScaleHandler);
 		m_topleftCntrl.lock()->onButtonDown.BindAction(GetWeakRef(), &TransformCntrl::onDragStart);
 		m_topleftCntrl.lock()->onButtonUp.BindAction(GetWeakRef(), &TransformCntrl::onDragEnd);
 		m_topleftCntrl.lock()->onButtonOut.BindAction(GetWeakRef(), &TransformCntrl::onDragOut);
-	
 
 
-		
+
+
 
 		id = "topright-cntrl";
-		cntrlui.location = { m_targetInitState.x + m_targetInitState.width , m_targetInitState.y  };
+		cntrlui.location = { m_targetInitState.x + m_targetInitState.width , m_targetInitState.y };
 		m_toprightCntrl = AddButton(id, cntrlui);
 		m_toprightCntrl.lock()->onButtonDrag.BindAction(GetWeakRef(), &TransformCntrl::onScaleHandler);
 		m_toprightCntrl.lock()->onButtonDown.BindAction(GetWeakRef(), &TransformCntrl::onDragStart);
 		m_toprightCntrl.lock()->onButtonUp.BindAction(GetWeakRef(), &TransformCntrl::onDragEnd);
 		m_toprightCntrl.lock()->onButtonOut.BindAction(GetWeakRef(), &TransformCntrl::onDragOut);
 
-	
+
 		id = "bottomleft-cntrl";
-		cntrlui.location = { m_targetInitState.x, m_targetInitState.y + m_targetInitState.height  };
+		cntrlui.location = { m_targetInitState.x, m_targetInitState.y + m_targetInitState.height };
 		m_bottomleftCntrl = AddButton(id, cntrlui);
 		m_bottomleftCntrl.lock()->onButtonDrag.BindAction(GetWeakRef(), &TransformCntrl::onScaleHandler);
 		m_bottomleftCntrl.lock()->onButtonDown.BindAction(GetWeakRef(), &TransformCntrl::onDragStart);
 		m_bottomleftCntrl.lock()->onButtonUp.BindAction(GetWeakRef(), &TransformCntrl::onDragEnd);
 		m_bottomleftCntrl.lock()->onButtonOut.BindAction(GetWeakRef(), &TransformCntrl::onDragOut);
 
-		
+
 		id = "bottomright-cntrl";
-		cntrlui.location = { m_targetInitState.x + m_targetInitState.width , m_targetInitState.y + m_targetInitState.height  };
+		cntrlui.location = { m_targetInitState.x + m_targetInitState.width , m_targetInitState.y + m_targetInitState.height };
 		m_bottomrightCntrl = AddButton(id, cntrlui);
 		m_bottomrightCntrl.lock()->onButtonDrag.BindAction(GetWeakRef(), &TransformCntrl::onScaleHandler);
 		m_bottomrightCntrl.lock()->onButtonDown.BindAction(GetWeakRef(), &TransformCntrl::onDragStart);
 		m_bottomrightCntrl.lock()->onButtonUp.BindAction(GetWeakRef(), &TransformCntrl::onDragEnd);
 		m_bottomrightCntrl.lock()->onButtonOut.BindAction(GetWeakRef(), &TransformCntrl::onDragOut);
-	
+
 		id = "";
 		btnprop = {};
 		cntrlui = {};
 
+		UIElement::Start();
 	}
 	
 #pragma endregion
@@ -183,7 +193,7 @@ namespace cart {
 	{
 		if (m_isScaling)return;
 		m_isScaling = true;	
-		curDragCntrl = btn.lock()->GetID();
+		curDragCntrl = btn.lock()->GetId();
 	}
 	void TransformCntrl::onDragEnd(weak<Object> btn, Vector2 pos)
 	{

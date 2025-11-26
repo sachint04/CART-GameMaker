@@ -21,6 +21,7 @@ namespace  cart {
 		~TransformCntrl();
 
 		void Init() override;
+		void Start() override;
 		void Destroy()override;
 		void Reset();
 		void Close();

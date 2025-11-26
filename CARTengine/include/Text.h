@@ -10,6 +10,7 @@ namespace cart {
 		~Text();
 		void SetTextProperties(Text_Properties _props);
 		void Init() override;
+		void Update(float _deltaTime) override;
 		void Draw(float _deltaTime) override;
 		void Destroy() override;
 		virtual void SetFontName(const std::string& strfnt);
@@ -29,7 +30,7 @@ namespace cart {
 		int m_margin;
 		Color m_background;
 		Color m_textColor;
-		void UpdateLocation();
+		void UpdateTextLocation();
 		
 		
 		shared<Font> m_sharedfont;

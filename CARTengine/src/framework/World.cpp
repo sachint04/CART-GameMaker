@@ -87,7 +87,7 @@ namespace cart {
 		int counter = 0;
 		for (auto iter = m_gameStages.begin(); iter != m_gameStages.end(); ++iter)
 		{
-			if (iter->get()->GetID().compare(stageid) == 0)
+			if (iter->get()->GetId().compare(stageid) == 0)
 			{
 				m_currentStage = iter;
 				break;
@@ -218,7 +218,7 @@ namespace cart {
 			//if (iter->get()->IsPendingDestroy() && iter->use_count() == 1)
 			if (iter->use_count() == 1)
 			{			
-				std::string id = iter->get()->GetID();
+				std::string id = iter->get()->GetId();
 				iter->reset();
 				iter = m_Actors.erase(iter);
 				

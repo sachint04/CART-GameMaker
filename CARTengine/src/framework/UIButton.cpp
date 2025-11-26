@@ -6,6 +6,7 @@
 #include "component/InputController.h"
 #include "World.h"
 #include "HUD.h"
+#include "UICanvas.h"
 namespace cart {
 	
 #pragma region  INIT
@@ -39,7 +40,8 @@ namespace cart {
 		m_texturesourcedefault{},
 		m_texturesourceover{},
 		m_texturesourcedown{},
-		m_texturesourcedisable{}
+		m_texturesourcedisable{},
+		m_ButtonDisableColor{GRAY}
 	{
 	}
 
@@ -49,11 +51,11 @@ namespace cart {
 		UIElement::Init();
 		m_owningworld->GetInputController()->RegisterUI(GetWeakRef());
 
-		if (m_text.size() > 0) {
+		/*if (m_text.size() > 0) {
 			m_font = AssetManager::Get().LoadFontAsset(m_fontstr, m_fontsize);
 			m_textsize = MeasureTextEx(*m_font, m_text.c_str(), m_fontsize, 2.f);
 			UpdateTextLocation();
-		}
+		}*/
 		
 	}
 
@@ -71,9 +73,16 @@ namespace cart {
 	
 	void UIButton::Update(float _deltaTime)
 	{
-		if (!m_active || !m_visible || m_pendingUpdate)return;
+		if (!m_visible || m_pendingUpdate)return;
+		if (m_fontstr.size() > 0) {
+			m_font = AssetManager::Get().LoadFontAsset(m_fontstr, std::ceil(m_fontsize * UICanvas::Get().lock()->Scale()));
+			m_textsize = MeasureTextEx(*m_font, m_text.c_str(),  std::ceil(m_fontsize * UICanvas::Get().lock()->Scale()), std::ceil(2.f * UICanvas::Get().lock()->Scale()));
+			UpdateTextLocation();
+		}
+		
+		if (!m_active)return;
 
-	
+
 		UIElement::Update(_deltaTime);
 #if defined(PLATFORM_ANDROID)
 		tCount = GetTouchPointCount();
@@ -110,6 +119,7 @@ namespace cart {
 		}
 
 #else
+
 
 			Vector2 tPos = { (float)GetMouseX(), (float)GetMouseY() };
 			bool mouseonBtn =  m_owningworld->GetInputController()->IsMouseOver(GetWeakRef());
@@ -180,8 +190,8 @@ namespace cart {
 			}
 			
 			if (m_text.size() > 0) {
-					m_font = AssetManager::Get().LoadFontAsset(m_fontstr, m_fontsize);			
-					DrawTextEx(*m_font, m_text.c_str(), m_fontLocation, m_fontsize * m_scale, m_fontspace * m_scale, m_textcolor);			
+					m_font = AssetManager::Get().LoadFontAsset(m_fontstr, std::ceil(m_fontsize *  UICanvas::Get().lock()->Scale()));			
+					DrawTextEx(*m_font, m_text.c_str(), m_fontLocation, std::ceilf(m_fontsize * m_scale * UICanvas::Get().lock()->Scale()), std::ceil(m_fontspace * m_scale * UICanvas::Get().lock()->Scale()), m_textcolor);
 			}
 		
 		
@@ -209,7 +219,9 @@ namespace cart {
 			m_IsSelected = false;
 			m_touch = false;
 		}
-		Color textDisabledColor = { m_defaulttextcolor.r, m_defaulttextcolor.g, m_defaulttextcolor.b, 150 };
+		// TO DO
+		Color textDisabledColor =  { m_defaulttextcolor.r, m_defaulttextcolor.g, m_defaulttextcolor.b, 200 };
+		// == END
 		m_color = (_flag)?m_ButtonDefaultColor : m_ButtonDisableColor;
 		m_textcolor = (_flag) ? m_defaulttextcolor : textDisabledColor;
 	}
@@ -230,6 +242,7 @@ namespace cart {
 	}
 	void UIButton::SetButtonProperties(Btn_Text_Properties _prop)
 	{
+		UIElement::SetUIProperties(_prop);
 		SetTextProperties(_prop);	
 		m_IsSelectable = _prop.isSelectable;
 
@@ -242,7 +255,6 @@ namespace cart {
 
 	void UIButton::SetTextProperties(Btn_Text_Properties _prop)
 	{
-		SetUIProperties(_prop);
 		SetButtonProperties((Btn_Properties)_prop);
 		m_fontstr = _prop.font;
 		m_text = _prop.text;
@@ -296,10 +308,10 @@ namespace cart {
 			float margin_x = ((m_width *  m_scale) - (m_textsize.x * m_scale))* 0.5f;
 			float margin_y = ((m_height * m_scale) - (m_textsize.y * m_scale)) * 0.5f;
 
-			m_fontLocation = { m_calculatedLocation.x + margin_x, m_calculatedLocation.y + margin_y  };
+			m_fontLocation = { m_location.x + margin_x, m_location.y + margin_y  };
 		}
 		else {
-			m_fontLocation = { m_calculatedLocation.x, m_calculatedLocation.y };
+			m_fontLocation = { m_location.x, m_location.y };
 		}
 	}
 
@@ -380,7 +392,7 @@ namespace cart {
 	
 	Rectangle UIButton::GetBounds() 
 	{	
-		return { m_calculatedLocation.x, m_calculatedLocation.y, (float)m_width, (float)m_height };
+		return { m_location.x, m_location.y, (float)m_width, (float)m_height };
 	}
 
 #pragma endregion

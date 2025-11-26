@@ -284,16 +284,16 @@ namespace cart {
             ImageFormat(&image, 7);
             if (IsImageValid(image))
             {
-                Logger::Get()->Trace(std::format(" AssetManager::OnPreloadAssetItemLoaded()  Image valid. Add Texture  \n [{}] \0", path));
+              //  Logger::Get()->Trace(std::format(" AssetManager::OnPreloadAssetItemLoaded()  Image valid. Add Texture  \n [{}] \0", path));
                 AddTexture(image, path, LOCKED);
             }
             else {
-                Logger::Get()->Trace(std::format(" AssetManager::OnPreloadAssetItemLoaded() Invalid image \n[{}] \0", path));
+               Logger::Get()->Error(std::format(" AssetManager::OnPreloadAssetItemLoaded() Invalid image \n[{}] \0", path));
             }
                 UnloadFileData(data);
         }
         else {
-            Logger::Get()->Trace(std::format("AsssetManager:: OnPreloadAssetItemLoaded() FAILED item\n [{}]\0", path));
+            Logger::Get()->Error(std::format("AsssetManager:: OnPreloadAssetItemLoaded() FAILED item\n [{}]\0", path));
         }
 
         std::vector<Preload_Data>::iterator iter = m_preloadlist.begin();// Unload loaded/failed path from the list

@@ -22,7 +22,7 @@ namespace cart {
 			DrawTextureEx(*texture2d.lock(), m_location, m_rotation, m_scale, m_color);
 		}
 		else {
-			Logger::Get()->Error(std::format("Sprite \' {}\' Scound not load textue {}", GetID(), m_texturePath));
+			Logger::Get()->Error(std::format("Sprite \' {}\' Scound not load textue {}", GetId(), m_texturePath));
 		}
 	}
 	Sprite::~Sprite()

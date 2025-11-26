@@ -151,29 +151,29 @@ namespace cart {
 		if (!m_visible)return;
 		Sprite2D::Draw(_deltaTime);
 		if (m_IsSelected == true) {
-		//	DrawRectangle(m_calculatedLocation.x - 10.f, m_calculatedLocation.y - 10.f, m_width + 20.f, m_height + 20.f, m_color);
+		//	DrawRectangle(m_location.x - 10.f, m_location.y - 10.f, m_width + 20.f, m_height + 20.f, m_color);
 			DrawRectangle(m_location.x - 10.f, m_location.y - 10.f, m_width + 20.f, m_height + 20.f, m_color);
 		}
 	/*	if (m_strTexture.size() == 0) {
 			if (m_shapeType == SHAPE_TYPE::CIRCLE)
 			{
-				DrawCircle(m_calculatedLocation.x + m_width / 2.f, m_calculatedLocation.y + m_width / 2.f, m_width, m_color);				
+				DrawCircle(m_location.x + m_width / 2.f, m_location.y + m_width / 2.f, m_width, m_color);				
 
 			}
 			else if (m_shapeType == SHAPE_TYPE::ROUNDED_RECTANGLE)
 			{
-				DrawRectangleRounded({ m_calculatedLocation.x, m_calculatedLocation.y, m_width, m_height }, 0.2f, 2, m_color);
+				DrawRectangleRounded({ m_location.x, m_location.y, m_width, m_height }, 0.2f, 2, m_color);
 			}
 			else
 			{
 				
-				DrawRectangle(m_calculatedLocation.x, m_calculatedLocation.y, m_width, m_height, m_color);
+				DrawRectangle(m_location.x, m_location.y, m_width, m_height, m_color);
 			}
 		}*/
 
 		if (m_borderwidth > 0)
 		{
-			//Rectangle rect = { m_calculatedLocation.x , m_calculatedLocation.y, (float)m_width - m_borderwidth, (float)m_height - m_borderwidth };
+			//Rectangle rect = { m_location.x , m_location.y, (float)m_width - m_borderwidth, (float)m_height - m_borderwidth };
 			Rectangle rect = { m_location.x , m_location.y, (float)m_width - m_borderwidth, (float)m_height - m_borderwidth };
 			DrawRectangleLinesEx(rect, m_borderwidth, m_borderColor);
 
@@ -281,10 +281,10 @@ namespace cart {
 			float margin_x = ((m_width *  m_scale) - (m_textsize.x * m_scale))* 0.5f;
 			float margin_y = ((m_height * m_scale) - (m_textsize.y * m_scale)) * 0.5f;
 
-			m_fontLocation = { m_calculatedLocation.x + margin_x, m_calculatedLocation.y + margin_y  };
+			m_fontLocation = { m_location.x + margin_x, m_location.y + margin_y  };
 		}
 		else {
-			m_fontLocation = { m_calculatedLocation.x, m_calculatedLocation.y };
+			m_fontLocation = { m_location.x, m_location.y };
 		}
 	}
 
@@ -392,7 +392,7 @@ namespace cart {
 	
 	Rectangle ImageButton::GetBounds() 
 	{	
-		return { m_calculatedLocation.x, m_calculatedLocation.y, (float)m_width, (float)m_height };
+		return { m_location.x, m_location.y, (float)m_width, (float)m_height };
 	}
 
 #pragma endregion

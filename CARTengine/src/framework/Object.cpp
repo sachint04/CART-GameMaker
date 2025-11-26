@@ -33,7 +33,7 @@ namespace cart
 		//onDestory.Broadcast(this);
 		m_isPendingDestroy = true;	
 	}
-	std::string Object::GetID() const	{
+	std::string Object::GetId() const	{
 		return m_id;
 	}
 }

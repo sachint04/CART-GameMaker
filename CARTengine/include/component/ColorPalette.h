@@ -10,6 +10,7 @@ namespace cart
 	public:
 		ColorPalette(World* _owningworld, const std::string& _id, float palatteiconsize);
 		void Init()override;
+		void Start()override;
 		void Update(float _deltaTime)override;
 		void Draw(float _deltaTime)override;
 		void SetVisible(bool _flag)override;

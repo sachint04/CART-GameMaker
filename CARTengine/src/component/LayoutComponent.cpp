@@ -6,13 +6,15 @@
 #include "Logger.h"
 namespace cart
 {
-    LayoutComponent::LayoutComponent(const std::string& id, weak<UIElement> ui, Rectangle Anchor )
+    LayoutComponent::LayoutComponent(const std::string& id, shared<UIElement> ui, Rectangle Anchor, Rectangle rect)
 		:IComponent{id},
-		m_ui{ui},
+		m_owner{ui},
 		m_anchorMinX{ Anchor.x },
 		m_anchorMaxX{ Anchor.y },
 		m_anchorMinY{ Anchor.width },
-		m_anchorMaxY{ Anchor.height }
+		m_anchorMaxY{ Anchor.height },
+		m_isUpdated{false},
+		m_Rect{rect}
     {
     }
     void LayoutComponent::Destroy()
@@ -23,52 +25,75 @@ namespace cart
     {
     }
 
-    void LayoutComponent::UpdateLayout(Vector2 size, float scale, const Rectangle& safeRect)
+    bool LayoutComponent::UpdateLayout(Vector2 size, float scale, const Rectangle& safeRect)
     {
-		// compute anchors in pixels
+		Logger::Get()->Trace(std::format("LayoutComponent::UpdateLayout() ======== {} ========== ", GetId()));
 		
-		auto parent = m_ui.lock()->parent();
-		Rectangle parentRect;
+		auto parent = m_owner.get()->parent();
+		Rectangle parentRect = {};
 		if (!parent.expired()) {
-
-			if (!parent.lock()->GetLayoutComponent().lock()->IsUpdated())
+			// has owner
+			if (parent.lock()->IsReady())
 			{
-				parent.lock()->GetLayoutComponent().lock()->UpdateLayout(size, scale, safeRect);// update parent first
-			}
+			// owner is ready
+				if (!parent.lock()->GetLayoutComponent().lock()->IsUpdated()) 
+				{
+					// owner not updated
+					if (parent.lock()->GetLayoutComponent().lock()->UpdateLayout(size, scale, safeRect))// Update Parent first
+					{
+						// update parent first
+						parentRect = { parent.lock()->GetLocation().x - parent.lock()->GetPivot().x,
+										parent.lock()->GetLocation().y - parent.lock()->GetPivot().y,
+										parent.lock()->GetSize().x,
+										parent.lock()->GetSize().y };
+					}
+					else {
+						// owner failed to update
+						Logger::Get()->Warn(std::format("LayoutComponent::UpdateLayout() Error!! owner {} is Read  but failed to update.\n", m_owner.get()->GetId()));
+						return false;// failed to update parent, no point  goint further
+					}
 
-			parentRect = {	parent.lock()->GetLocation().x - parent.lock()->GetPivot().x,
-							parent.lock()->GetLocation().y - parent.lock()->GetPivot().y,
-							parent.lock()->GetSize().x, 
-							parent.lock()->GetSize().y };
+				}
+				else {
+				// owner is already updated!!!
+					parentRect = { parent.lock()->GetLocation().x - parent.lock()->GetPivot().x,
+										parent.lock()->GetLocation().y - parent.lock()->GetPivot().y,
+										parent.lock()->GetSize().x,
+										parent.lock()->GetSize().y };
+				}
+				
+			}
+			else {
+				// owner not ready
+				Logger::Get()->Warn(std::format("LayoutComponent::UpdateLayout() owner {} Not ready \n", m_owner.get()->GetId()));
+				return false;
+			}
 		}
 		else {
 			Vector2 canvas_size = UICanvas::Get().lock()->Size();
 			parentRect = { 0, 0, (float)canvas_size.x, (float)canvas_size.y };
 		}
 			
-		Vector2 ownerloc = m_ui.lock()->GetLocation();
-		Rectangle ownerRect = {	m_ui.lock()->GetLocation().x,
-									m_ui.lock()->GetLocation().y,
-									m_ui.lock()->GetSize().x,
-									m_ui.lock()->GetSize().y };
-		int left = parentRect.x + int(parentRect.width * m_ui.lock()->GetAnchor().x);
-		int right = parentRect.x + int(parentRect.width * m_ui.lock()->GetAnchor().width);
-		int top = parentRect.y + int(parentRect.height * m_ui.lock()->GetAnchor().y);
-		int bottom = parentRect.y + int(parentRect.height * m_ui.lock()->GetAnchor().height);
+
+		Vector2 ownerpivot = m_owner.get()->GetPivot();
+		int left = parentRect.x + int(parentRect.width * m_owner.get()->GetAnchor().x);
+		int right = parentRect.x + int(parentRect.width * m_owner.get()->GetAnchor().width);
+		int top = parentRect.y + int(parentRect.height * m_owner.get()->GetAnchor().y);
+		int bottom = parentRect.y + int(parentRect.height * m_owner.get()->GetAnchor().height);
 		int availW = std::max(0, right - left);
 		int availH = std::max(0, bottom - top);
 
 		// element pixel size based on design size and scale
-		int pixelW = std::max(1, int(ownerRect.width * scale));
-		int pixelH = std::max(1, int(ownerRect.height * scale));
+		int pixelW = std::max(1, int(m_Rect.width * scale));
+		int pixelH = std::max(1, int(m_Rect.height * scale));
 
 		// place element at center of anchor rect with clamping
 		/*int cx = left + availW / 2;
 		int cy = top + availH / 2;*/
 
 		// place element at left top of anchor rect with clamping
-		int cx = left + (m_ui.lock()->GetLocation().x * scale) - (m_ui.lock()->GetPivot().x * scale);
-		int cy = top + (m_ui.lock()->GetLocation().y * scale) - (m_ui.lock()->GetPivot().y * scale);
+		int cx = left + (m_Rect.x * scale) - (ownerpivot.x * scale);
+		int cy = top + (m_Rect.y * scale) - (ownerpivot.y * scale);
 
 		Vector2 screenSize, screenLoc;
 		screenSize.x = std::min(pixelW, availW);
@@ -79,8 +104,8 @@ namespace cart
 		screenLoc.x = cx;// -(screenSize.x / 2) + (m_ui.lock()->GetLocation().x * scale) - (m_ui.lock()->GetPivot().x * scale);
 		screenLoc.y = cy;// -(screenSize.y / 2) + (m_ui.lock()->GetLocation().y * scale) - (m_ui.lock()->GetPivot().y * scale);
 
-		m_ui.lock()->SetSize(screenSize);
-		m_ui.lock()->SetLocation(screenLoc);
+		m_owner.get()->SetSize(screenSize);
+		m_owner.get()->SetLocation(screenLoc);
 
 		// Safety check: is element outside safeRect?
 		if (screenLoc.x < safeRect.x || screenLoc.y < safeRect.y ||
@@ -89,19 +114,35 @@ namespace cart
 			// For demo we print; in real system we'd emit warning event
 			std::cout << "[WARN] Element '" << m_Id << "' overlaps safe area.\n";
 		}
-		Logger::Get()->Trace(std::format("\n{} Layout updated x {} | y {} \n width {} | height {}\n", m_Id, screenLoc.x, screenLoc.y, screenSize.x, screenSize.y));
+		//Logger::Get()->Trace(std::format("\n{} Layout updated x {} | y {} \n width {} | height {}\n", m_Id, screenLoc.x, screenLoc.y, screenSize.x, screenSize.y));
+		Logger::Get()->Trace(std::format("LayoutComponent::UpdateLayout() {}  Updated Successfully. ", GetId()));
+		Logger::Get()->Trace(std::format("LayoutComponent::END ======== {} ========== \n", GetId()));
 		m_isUpdated = true;
+		return m_isUpdated;
+		
     }
 
 	bool LayoutComponent::HasParent()
 	{		
-		return !m_ui.lock()->parent().expired();
+		return !m_owner.get()->parent().expired();
 	}
 
 	void LayoutComponent::SetForUpdate()
 	{
 		m_isUpdated = false;
+	}
 
+	bool LayoutComponent::IsOwnerReady()
+	{
+		if (m_owner) {
+			return m_owner.get()->IsReady();
+		}
+		return false;
+	}
+
+	bool LayoutComponent::IsUpdated()
+	{		
+		return m_isUpdated;
 	}
 
    

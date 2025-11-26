@@ -1,6 +1,7 @@
 #include "Text.h"
 #include "AssetManager.h"
 #include "World.h"
+#include "UICanvas.h"
 namespace cart {
 
 #pragma region  Constructor & Initialization
@@ -21,8 +22,6 @@ namespace cart {
 
 	void Text::Init()
 	{
-		m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, m_fontsize);
-		
 		UIElement::Init();
 		
 	}
@@ -30,39 +29,40 @@ namespace cart {
 #pragma endregion
 
 #pragma region  LOOP
+
+	void Text::Update(float _deltaTime)
+	{
+		if (!m_visible || m_pendingUpdate)return;
+		m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, std::ceil(m_fontsize * UICanvas::Get().lock()->Scale()));
+		m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), std::ceil(m_fontsize * UICanvas::Get().lock()->Scale()), 2.f * UICanvas::Get().lock()->Scale());
+		UpdateTextLocation();
+	}
 	void Text::Draw(float _deltaTime)
 	{
 		if (m_visible == false)return;
-		UIElement::Draw(_deltaTime);
-		if (!m_sharedfont) {
-			m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, m_fontsize);
-		}
-		m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), m_fontsize, m_fontspacing);
+		UIElement::Draw(_deltaTime);		
+		m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), std::ceil(m_fontsize * UICanvas::Get().lock()->Scale()), m_fontspacing * UICanvas::Get().lock()->Scale());
 		DrawRectangle(m_location.x, m_location.y, m_width, m_height, m_background);	
 
-		DrawTextEx(*m_sharedfont, m_text.c_str(), m_textLocation, m_fontsize * m_scale, 1, m_textColor);
+		DrawTextEx(*m_sharedfont, m_text.c_str(), m_textLocation, m_fontsize * m_scale * UICanvas::Get().lock()->Scale(), 1, m_textColor);
 	}
 
-	void Text::UpdateLocation()
-	{		
-		if (!m_sharedfont) {
-			m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, m_fontsize);
-		}
-		m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), m_fontsize, m_fontspacing);
+	void Text::UpdateTextLocation()
+	{				
 		switch (m_align)
 		{
 		case LEFT:
-			m_textLocation = { m_calculatedLocation.x,
-								m_calculatedLocation.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 };
+			m_textLocation = { m_location.x,
+								m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 };
 			break;
 		case CENTER:
-			m_textLocation = { m_calculatedLocation.x + (m_width * m_scale / 2) - (m_textsize.x * m_scale) / 2, 
-								m_calculatedLocation.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 };
+			m_textLocation = { m_location.x + (m_width * m_scale / 2) - (m_textsize.x * m_scale) / 2, 
+								m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 };
 			break;
 
 		case RIGHT:
-			m_textLocation = { m_calculatedLocation.x + (m_width * m_scale) - (m_textsize.x * m_scale), 
-								m_calculatedLocation.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 };
+			m_textLocation = { m_location.x + (m_width * m_scale) - (m_textsize.x * m_scale), 
+								m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 };
 			break;
 		}
 
@@ -99,8 +99,6 @@ namespace cart {
 		m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, size);
 		AssetManager::Get().UnloadFontAsset(m_font, m_fontsize);
 		m_fontsize = size;
-		UpdateLocation();
-
 	}
 	void Text::SetTextColor(Color col)
 	{
@@ -109,7 +107,6 @@ namespace cart {
 
 	void Text::UpdateText(const std::string& str) {
 		m_text = str;
-		UpdateLocation();
 	}
 #pragma endregion
 

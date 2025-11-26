@@ -25,7 +25,7 @@ namespace cart {
         return canvas_;
     }
 
-    bool UICanvas::RegisterComponent(weak<LayoutComponent> comp, Vec2_short& offset, Vec2_short& size)// register to update layout when device size/res changes
+    bool UICanvas::RegisterComponent(weak<LayoutComponent> comp)// register to update layout when device size/res changes
     {
       //  std::string d = ui.lock()->GetID();
       //  std::transform(d.begin(), d.end(), d.begin(),
@@ -55,8 +55,12 @@ namespace cart {
     {     
         for (auto iter = elemlist.begin(); iter != elemlist.end();)
         {
-            iter->second.lock()->SetForUpdate();
-            ++iter;
+            if (!iter->second.expired())
+            {
+                iter->second.lock()->SetForUpdate();
+                ++iter;
+
+            }
         }
         
         for (auto iter = elemlist.begin(); iter != elemlist.end();)
@@ -66,12 +70,13 @@ namespace cart {
                 iter = elemlist.erase(iter);
             }
             else {
-                if (!iter->second.lock()->IsUpdated())
+                if (iter->second.lock()->IsOwnerReady() && !iter->second.lock()->IsUpdated())
                 {
                     iter->second.lock()->UpdateLayout({ (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT },
-                                                        std::min((float)SCREEN_WIDTH / (float)DEFAULT_CANVAS_WIDTH ,
-                                                        (float)SCREEN_HEIGHT/ (float)DEFAULT_CANVAS_HEIGHT), 
-                                                        m_safeRect);
+                        std::min((float)SCREEN_WIDTH / (float)DEFAULT_CANVAS_WIDTH,
+                            (float)SCREEN_HEIGHT / (float)DEFAULT_CANVAS_HEIGHT),
+                        m_safeRect);
+                  
                 }
                 ++iter;
             }

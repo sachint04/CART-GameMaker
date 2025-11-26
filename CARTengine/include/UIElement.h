@@ -74,6 +74,10 @@ namespace cart {
 		shared<LayoutComponent> m_layout;
 		weak<UIElement> m_parent;
 		Rectangle m_anchor;
+
+
+	private:
+		void OnChildReady(const std::string& id);
 	};
 
 }

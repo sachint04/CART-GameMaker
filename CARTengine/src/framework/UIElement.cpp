@@ -47,7 +47,14 @@ namespace cart {
 	}
 	void UIElement::Start()
 	{		
-		Actor::Start();
+		if (m_children.size() == 0) {
+			Actor::Start();// There are no childres hence set Ready
+		}
+		//if (m_parent.expired()) {
+		//	UICanvas::Get().lock()->UpdateLayout();// Update Layout 
+		//}
+		//onReady.Broadcast(GetId());
+
 	}
 #pragma endregion
 
@@ -82,6 +89,7 @@ namespace cart {
 		m_pivot = _prop.pivot;
 		m_anchor = _prop.anchor;
 		SetSize(_prop.size);
+		if (_prop.component != NO_LAYOUT)AddComponent(_prop.component);
 	}
 #pragma endregion
 
@@ -122,7 +130,7 @@ namespace cart {
 	
 	Rectangle UIElement::GetBounds() {
 		//	return{ m_location.x - m_pivot.x, m_location.y - m_pivot.y, m_width * m_scale,m_height * m_scale };
-		return{ m_calculatedLocation.x, m_calculatedLocation.y, m_width * m_scale,m_height * m_scale };
+		return{ m_location.x, m_location.y, m_width * m_scale,m_height * m_scale };
 	}
 
 	void UIElement::AddComponent(COMPONENT_TYPE type)
@@ -130,15 +138,15 @@ namespace cart {
 		switch (type)
 		{
 			case LAYOUT_COMPONENT :
-				if (m_layout) {
-					Logger::Get()->Error(std::format("UIElement::AddComponent() LAYOUT_COMPONENT is already exists in {}", GetID()));
+				if (!m_layout) {					
+					shared<UIElement> owner = std::dynamic_pointer_cast<UIElement>(GetWeakRef().lock());
+					LayoutComponent comp{ std::string{GetId() + "_layout"}, owner, {0.f, 1.f, 0.f, 1.f}, {m_location.x, m_location.y, m_width, m_height} };
+					m_layout = std::make_shared<LayoutComponent>(comp);
+					UICanvas::Get().lock()->RegisterComponent(m_layout);
 				}
-				weak<UIElement> owner = std::dynamic_pointer_cast<UIElement>(GetWeakRef().lock());
-				LayoutComponent comp{ std::string{GetID() + "_layout"}, owner, {0.f, 1.f, 0.f, 1.f} };
-				m_layout = std::make_shared<LayoutComponent>(comp);
-				Vec2_short offset = { (short int)m_location.x, (short int)m_location.y};
-				Vec2_short size = { (short int)m_width, (short int)m_height};
-				UICanvas::Get().lock()->RegisterComponent(m_layout, offset, size);
+				else {
+					Logger::Get()->Error(std::format("UIElement::AddComponent() LAYOUT_COMPONENT is already exists in {}", GetId()));
+				}
 			break;
 		}
 	}
@@ -206,14 +214,14 @@ namespace cart {
 		else 
 		{
 			DrawRectangle(m_location.x, m_location.y, m_width, m_height, m_color);
-			//DrawRectangle(m_calculatedLocation.x, m_calculatedLocation.y, m_width, m_height, m_color);
+			//DrawRectangle(m_location.x, m_location.y, m_width, m_height, m_color);
 		}
 	}
 
 	/*void UIElement::UpdateLocation()
 	{
 		m_rawlocation = { m_location.x * m_scale, m_location.y * m_scale };
-		m_calculatedLocation = { m_location.x - (m_pivot.x * m_scale) , m_location.y - (m_pivot.y * m_scale) };
+		m_location = { m_location.x - (m_pivot.x * m_scale) , m_location.y - (m_pivot.y * m_scale) };
 	}*/
 
 	Vector2 UIElement::GetPivot()
@@ -241,6 +249,7 @@ namespace cart {
 		m_parent = parent;
 	}
 
+	
 	void UIElement::SetPendingUpdate(bool _flag)
 	{
 		m_pendingUpdate = _flag;
@@ -280,8 +289,8 @@ namespace cart {
 	}
 
 	void UIElement::AddChild(weak<UIElement> _ui)
-	{
-		
+	{		
+		_ui.lock()->onReady.BindAction(GetWeakRef(), &UIElement::OnChildReady);// listen to child ready event
 		shared<UIElement> shared_ui = _ui.lock();
 		weak<UIElement> self = std::dynamic_pointer_cast<UIElement>(GetWeakRef().lock());
 		shared_ui.get()->parent(self);
@@ -294,7 +303,7 @@ namespace cart {
 	{
 		for (auto iter = m_children.begin(); iter != m_children.end(); ++iter)
 		{
-			if (iter->get()->GetID().compare(id) == 0) {
+			if (iter->get()->GetId().compare(id) == 0) {
 				int cnt = iter->use_count();
 				iter->reset();
 				m_children.erase(iter);
@@ -308,7 +317,6 @@ namespace cart {
 	}
 #pragma endregion
 
-
 #pragma region EventHandler
 	/// <summary>
 	/// On Preload Page asssets
@@ -320,7 +328,24 @@ namespace cart {
 		Actor::AssetsLoadCompleted();
 	}
 
-	
+	void UIElement::OnChildReady(const std::string& id)
+	{
+		Logger::Get()->Trace(std::format("UIElement child {} is ready.\n", id));
+		for (auto iter = m_children.begin(); iter != m_children.end();)
+		{
+			if (!iter->get()->IsReady())
+			{
+				return;// child ements not ready. do nothing
+			}
+			++iter;
+		}
+		Actor::Start();
+			UICanvas::Get().lock()->UpdateLayout();// Update Layout 
+		//if (m_parent.expired()) {
+		//}
+		//onReady.Broadcast(GetId());
+	}
+
 
 #pragma endregion
 

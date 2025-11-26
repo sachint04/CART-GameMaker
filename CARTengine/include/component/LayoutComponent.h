@@ -7,21 +7,23 @@ namespace cart {
 	class LayoutComponent : public IComponent
 	{
 	public:
-		LayoutComponent(const std::string& id, weak<UIElement> ui, Rectangle Anchor);
+		LayoutComponent(const std::string& id, shared<UIElement> ui, Rectangle Anchor, Rectangle rect);
 		// Inherited via IComponent
 		void Destroy() override;
 		void Update() override;
-		void UpdateLayout(Vector2 size, float scale, const Rectangle& safeRect);
+		bool UpdateLayout(Vector2 size, float scale, const Rectangle& safeRect);
 		bool HasParent();
 		void SetForUpdate();
-		bool IsUpdated() { return m_isUpdated; };
+		bool IsUpdated();
+		bool IsOwnerReady();
 	private:
-		weak<UIElement> m_ui;
+		shared<UIElement> m_owner;
 		float m_anchorMinX;
 		float m_anchorMaxX;
 		float m_anchorMinY;
 		float m_anchorMaxY;
 		bool m_isUpdated;
+		Rectangle m_Rect;
 	};
 
 }

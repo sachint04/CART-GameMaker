@@ -38,7 +38,7 @@ namespace cart {
 		UIElement::Update(_deltaTime);
 
 		if (m_strTexture.size() > 0 ) {
-			//m_textureLocation = m_calculatedLocation;
+			//m_textureLocation = m_location;
 		
 			m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
 			
@@ -58,7 +58,7 @@ namespace cart {
 				}
 			}
 			else if (m_texturetype == TEXTURE_PART) {
-				m_textureLocation = m_calculatedLocation;
+				m_textureLocation = m_location;
 			}
 		}
 		m_bIsScaling = false;
@@ -204,7 +204,7 @@ namespace cart {
 		float tmpscalex = (float)m_width / (float)m_texture2d.get()->width;
 		float tmpscaley = (float)m_height / (float)m_texture2d.get()->height;
 
-		m_textureLocation = m_calculatedLocation;
+		m_textureLocation = m_location;
 
 		if (tmpscalex == 1 && tmpscaley == 1)return;
 

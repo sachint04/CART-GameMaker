@@ -10,7 +10,7 @@ namespace cart {
 	class UICanvas {
 	public:           
         static  weak<UICanvas> Get();
-        bool RegisterComponent(weak<LayoutComponent> comp, Vec2_short& offset, Vec2_short& size);
+        bool RegisterComponent(weak<LayoutComponent> comp);
         bool RemoveComponent(const std::string& id);
         void UpdateLayout();       
         const Vector2 Size();

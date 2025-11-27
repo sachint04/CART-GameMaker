@@ -275,6 +275,7 @@ namespace cart {
 		m_color = _color;
 	}
 
+
 	void ImageButton::UpdateTextLocation() {
 		if (m_text.size() == 0)return;
 		if (m_textsize.x < m_width) {
@@ -396,6 +397,18 @@ namespace cart {
 	}
 
 #pragma endregion
+
+#pragma region Clean Up
+	void ImageButton::Destroy()
+	{
+		if (m_isPendingDestroy)return;
+
+		m_owningworld->GetInputController()->RemoveUI(GetId());
+		Sprite2D::Destroy();
+	}
+
+#pragma endregion
+
 
 ImageButton::~ImageButton()
 	{

@@ -86,6 +86,8 @@ namespace cart
         infofnt.reset();
 	}
     void TextInput::Destroy() {
+        if (m_isPendingDestroy)return;
+        m_owningworld->GetInputController()->RemoveUI(GetId());
         Text::Destroy();
     }
 

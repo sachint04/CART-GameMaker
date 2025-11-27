@@ -45,6 +45,10 @@ namespace cart {
         auto found = elemlist.find(id);
         if (found != elemlist.end())// check if key exists
         {
+            if (!found->second.expired())
+            {
+                found->second.reset();
+            }
             elemlist.erase(found);   
             return true;
         }
@@ -82,6 +86,7 @@ namespace cart {
             }
         }
          
+        onScreenSizeChange.Broadcast();
     }
 
     const Vector2 UICanvas::Size()

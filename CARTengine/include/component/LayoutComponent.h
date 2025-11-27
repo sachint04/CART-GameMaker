@@ -2,6 +2,8 @@
 #include "IComponent.h"
 #include "Types.h"
 #include <raylib.h>
+#include "Delegate.h"
+
 namespace cart {
 	class UIElement;
 	class LayoutComponent : public IComponent
@@ -16,6 +18,8 @@ namespace cart {
 		void SetForUpdate();
 		bool IsUpdated();
 		bool IsOwnerReady();
+
+		Delegate<> onLayoutChange;
 	private:
 		shared<UIElement> m_owner;
 		float m_anchorMinX;

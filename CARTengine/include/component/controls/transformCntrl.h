@@ -17,7 +17,7 @@ namespace  cart {
 	class TransformCntrl : public UIElement {
 
 	public:
-		TransformCntrl(World* _owningworld, const std::string& id, Vector2 minsize, Vector2 maxsize, Rectangle targetInitState);
+		TransformCntrl(World* _owningworld, const std::string& id);
 		~TransformCntrl();
 
 		void Init() override;
@@ -26,7 +26,11 @@ namespace  cart {
 		void Reset();
 		void Close();
 		Rectangle GetBounds() override;
+
 		void Update(float _deltaTime) override;
+		
+		void SetDefaultRect(Rectangle rect);
+		void SetMinMaxRect(Rectangle rect);
 		Delegate<Vector2, Vector2, Vector2>onScaled;
 		Delegate<float>onRotated;
 		Delegate<Vector2> onMoved;
@@ -55,8 +59,9 @@ namespace  cart {
 
 		float cntrlsize;
 		float cntrlhalf;
-		Vector2 m_minSize;
-		Vector2 m_maxSize;
+		Rectangle m_MinMaxRect;
+		//Vector2 m_minSize;
+		//Vector2 m_maxSize;
 		float m_aspectRatio;
 		std::string curDragCntrl;
 		bool m_isScaling;
@@ -65,7 +70,7 @@ namespace  cart {
 		Vector2 m_tmpPivot;
 		Vector2 m_tempTargetLoc;
 		Rectangle m_targetInitState;
-		Vector2 m_center;
+	//	Vector2 m_center;
 		
 	};
 }

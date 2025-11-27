@@ -4,6 +4,7 @@
 #include <string>
 #include "Core.h"
 #include "Types.h"
+#include "Delegate.h"
 namespace cart {
 
     class LayoutComponent;
@@ -13,10 +14,13 @@ namespace cart {
         bool RegisterComponent(weak<LayoutComponent> comp);
         bool RemoveComponent(const std::string& id);
         void UpdateLayout();       
-        const Vector2 Size();
         void SafeRect(Rectangle rect);
         const Rectangle SafeRect()const { return m_safeRect; };
+        const Vector2 Size();
         float Scale();
+
+        Delegate<> onScreenSizeChange;
+
         ~UICanvas();
 	private:
         UICanvas();

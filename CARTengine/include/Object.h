@@ -24,7 +24,7 @@ namespace cart
 	protected:
 		std::string m_id;
 		bool m_isReady;
-	private:
 		bool m_isPendingDestroy;
+	private:
 	};
 }

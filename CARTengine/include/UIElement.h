@@ -62,22 +62,22 @@ namespace cart {
 		weak<UIElement> parent();
 		void parent(weak<UIElement> ui);
 	protected:
+		SHAPE_TYPE m_shapeType;
+		bool m_pendingUpdate;
+		bool m_isExcludedFromParentAutoControl;
 		Vector2 m_rawlocation;	
 		Vector2 m_pivot;
-		std::vector<shared<UIElement>> m_children = {};
-		std::vector <shared<UIButton>> m_slides = {};
-		//virtual void UpdateLocation();		
-		bool m_pendingUpdate;
 		Vector2 m_defaultSize;
-		bool m_isExcludedFromParentAutoControl;
-		SHAPE_TYPE m_shapeType;
+		Rectangle m_anchor;
 		shared<LayoutComponent> m_layout;
 		weak<UIElement> m_parent;
-		Rectangle m_anchor;
+		std::vector <shared<UIButton>> m_slides = {};
+		std::vector<shared<UIElement>> m_children = {};
 
+		virtual void OnScreenSizeChange();
+		virtual void OnLayoutChange();
+		virtual void OnChildReady(const std::string& id);
 
-	private:
-		void OnChildReady(const std::string& id);
 	};
 
 }

@@ -19,6 +19,8 @@ namespace cart
     }
     void LayoutComponent::Destroy()
     {
+		m_owner.reset();
+		m_isEnabled = false;
     }
 
     void LayoutComponent::Update()
@@ -27,6 +29,8 @@ namespace cart
 
     bool LayoutComponent::UpdateLayout(Vector2 size, float scale, const Rectangle& safeRect)
     {
+		if (!m_isEnabled)return false; // do nothing;
+
 		Logger::Get()->Trace(std::format("LayoutComponent::UpdateLayout() ======== {} ========== ", GetId()));
 		
 		auto parent = m_owner.get()->parent();
@@ -92,8 +96,8 @@ namespace cart
 		int cy = top + availH / 2;*/
 
 		// place element at left top of anchor rect with clamping
-		int cx = left + (m_Rect.x * scale) - (ownerpivot.x * scale);
-		int cy = top + (m_Rect.y * scale) - (ownerpivot.y * scale);
+		int cx = left + (m_Rect.x * scale);
+		int cy = top + (m_Rect.y * scale);
 
 		Vector2 screenSize, screenLoc;
 		screenSize.x = std::min(pixelW, availW);
@@ -106,7 +110,7 @@ namespace cart
 
 		m_owner.get()->SetSize(screenSize);
 		m_owner.get()->SetLocation(screenLoc);
-
+		m_owner.get()->SetPivot({ ownerpivot.x * scale, ownerpivot.y * scale });
 		// Safety check: is element outside safeRect?
 		if (screenLoc.x < safeRect.x || screenLoc.y < safeRect.y ||
 			screenLoc.x + screenSize.x > safeRect.x + screenSize.x ||
@@ -117,6 +121,8 @@ namespace cart
 		//Logger::Get()->Trace(std::format("\n{} Layout updated x {} | y {} \n width {} | height {}\n", m_Id, screenLoc.x, screenLoc.y, screenSize.x, screenSize.y));
 		Logger::Get()->Trace(std::format("LayoutComponent::UpdateLayout() {}  Updated Successfully. ", GetId()));
 		Logger::Get()->Trace(std::format("LayoutComponent::END ======== {} ========== \n", GetId()));
+
+		onLayoutChange.Broadcast();
 		m_isUpdated = true;
 		return m_isUpdated;
 		
@@ -130,6 +136,7 @@ namespace cart
 	void LayoutComponent::SetForUpdate()
 	{
 		m_isUpdated = false;
+
 	}
 
 	bool LayoutComponent::IsOwnerReady()

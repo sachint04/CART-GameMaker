@@ -32,7 +32,6 @@ namespace cart {
 		m_pivot = { 0.f, 0.f };
 	}
 
-
 #pragma endregion
 
 #pragma region  Initialization
@@ -50,6 +49,7 @@ namespace cart {
 		if (m_children.size() == 0) {
 			Actor::Start();// There are no childres hence set Ready
 		}
+		
 		//if (m_parent.expired()) {
 		//	UICanvas::Get().lock()->UpdateLayout();// Update Layout 
 		//}
@@ -76,7 +76,6 @@ namespace cart {
 
 	}
 #pragma endregion
-
 
 #pragma region Set Properties
 	void UIElement::SetUIProperties(UI_Properties _prop)
@@ -130,7 +129,10 @@ namespace cart {
 	
 	Rectangle UIElement::GetBounds() {
 		//	return{ m_location.x - m_pivot.x, m_location.y - m_pivot.y, m_width * m_scale,m_height * m_scale };
-		return{ m_location.x, m_location.y, m_width * m_scale,m_height * m_scale };
+		if (m_shapeType == SHAPE_TYPE::CIRCLE) {
+			return { m_location.x - m_pivot.x - m_width * 0.5f, m_location.y - m_pivot.y - m_height * 0.5f, m_width * 2.f, m_height * 2.f };// shape size will change for cirle;
+		}
+		return{ m_location.x - m_pivot.x, m_location.y - m_pivot.y, m_width * m_scale,m_height * m_scale };
 	}
 
 	void UIElement::AddComponent(COMPONENT_TYPE type)
@@ -143,6 +145,7 @@ namespace cart {
 					LayoutComponent comp{ std::string{GetId() + "_layout"}, owner, {0.f, 1.f, 0.f, 1.f}, {m_location.x, m_location.y, m_width, m_height} };
 					m_layout = std::make_shared<LayoutComponent>(comp);
 					UICanvas::Get().lock()->RegisterComponent(m_layout);
+					m_layout.get()->onLayoutChange.BindAction(GetWeakRef(), &UIElement::OnLayoutChange);
 				}
 				else {
 					Logger::Get()->Error(std::format("UIElement::AddComponent() LAYOUT_COMPONENT is already exists in {}", GetId()));
@@ -174,15 +177,7 @@ namespace cart {
 
 	void UIElement::SetLocation(Vector2 _location)
 	{
-		Vector2 offset = { _location.x - m_location.x , _location.y - m_location.y };
 		Actor::SetLocation(_location);
-	//	UpdateLocation();
-		/*for (auto iter = m_children.begin(); iter != m_children.end(); ++iter)
-		{		
-			Vector2 loc = iter->get()->GetLocation();
-			Vector2 newloc = { loc.x + offset.x, loc.y + offset.y };
-			iter->get()->SetLocation(newloc);
-		}*/
 	}
 
 	void UIElement::SetPivot(Vector2 _pivot)
@@ -204,16 +199,18 @@ namespace cart {
 	{
 		if (m_shapeType == SHAPE_TYPE::CIRCLE)
 		{
-			DrawCircle(m_location.x + m_width / 2.f, m_location.y + m_width / 2.f, m_width, m_color);
+			DrawCircle(m_location.x + m_width / 2.f  - m_pivot.x, m_location.y + m_width / 2.f  - m_pivot.y, m_width, m_color);
+			//FOR TESTING
+			//DrawRectangleLines(m_location.x - m_pivot.x - m_width * 0.5f, m_location.y - m_pivot.y - m_height * 0.5f, m_width * 2.f, m_height * 2.f, GREEN);
 
 		}
 		else if (m_shapeType == SHAPE_TYPE::ROUNDED_RECTANGLE)
 		{
-			DrawRectangleRounded({  m_location.x,  m_location.y,  m_width , m_height }, 0.2f * UICanvas::Get().lock()->Scale(), 2, m_color);
+			DrawRectangleRounded({  m_location.x - m_pivot.x,  m_location.y - m_pivot.y,  m_width , m_height }, 0.2f * UICanvas::Get().lock()->Scale(), 2, m_color);
 		}
 		else 
 		{
-			DrawRectangle(m_location.x, m_location.y, m_width, m_height, m_color);
+			DrawRectangle(m_location.x - m_pivot.x, m_location.y - m_pivot.y, m_width, m_height, m_color);
 			//DrawRectangle(m_location.x, m_location.y, m_width, m_height, m_color);
 		}
 	}
@@ -281,10 +278,10 @@ namespace cart {
 	weak<UIButton> UIElement::AddButton(const std::string& id, Btn_Text_Properties _prop)
 	{
 		weak<UIButton> _btn = m_owningworld->SpawnActor<UIButton>(id);
+		AddChild(_btn);
 		_btn.lock()->SetButtonProperties(_prop);
 		_btn.lock()->SetVisible(true);
 		_btn.lock()->Init();
-		AddChild(_btn);
 		return _btn;
 	}
 
@@ -346,11 +343,24 @@ namespace cart {
 		//onReady.Broadcast(GetId());
 	}
 
+	void UIElement::OnScreenSizeChange()
+	{
+		// Add  Concrete Implemtation
+	}
+
+	void UIElement::OnLayoutChange()
+	{
+		// Add  Concrete Implemtation
+//		m_layout.get()->onLayoutChange.BindAction(GetWeakRef(), &UIElement::OnLayoutChange);
+	}
+
 
 #pragma endregion
 
 #pragma region  Cleanup
 	void UIElement::Destroy() {
+		if (m_isPendingDestroy)return;
+
 		for (auto iter = m_children.begin(); iter != m_children.end();)
 		{
 			iter->get()->Destroy();
@@ -358,6 +368,11 @@ namespace cart {
 			iter = m_children.erase(iter);
 		}
 		m_children.clear();	
+		if (m_layout) {
+			UICanvas::Get().lock()->RemoveComponent(m_layout.get()->GetId());			
+			m_layout.get()->Destroy();
+			m_layout.reset();
+		};
 		
 		SetVisible(false);
 		Actor::Destroy();

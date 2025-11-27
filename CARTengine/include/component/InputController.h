@@ -14,6 +14,8 @@ namespace cart
 	
 		void Notify(const std::string& event);
 		void RegisterUI(weak<Object> ui);
+		void RemoveUI(const std::string& id);
+		void Clear();
 		bool IsMouseOver(weak<Object> ui);
 		~InputController();
 		std::vector<weak<UIElement>> m_uilist = {};

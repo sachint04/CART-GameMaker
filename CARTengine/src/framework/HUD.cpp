@@ -24,12 +24,16 @@ namespace cart
 	void HUD::Init()
 	{		
 		
-		m_isReady = true;
+		UIElement::Init();
+	}
+
+	void HUD::Start() {
+
 		int w = GetScreenWidth();
 		int h = GetScreenHeight();
 		int barwidth = 300;
 		int barheight = 20;
-		ProgressView pview = { m_owningworld, std::string{ "progressview" }, true };		
+		ProgressView pview = { m_owningworld, std::string{ "progressview" }, true };
 		m_progressview = std::make_shared<ProgressView>(pview);
 		ProgressVeiw_Properties pprop = {};
 		pprop.size = { (float)w, (float)h };
@@ -42,10 +46,8 @@ namespace cart
 		m_progressview.get()->Init();
 		m_progressview.get()->SetVisible(false);
 		AddChild(m_progressview);
-		UIElement::Init();
-	}
 
-	void HUD::Start() {
+		UIElement::Start();
 	}
 
 	bool HUD::IsMouseOverUI(Vector2 _locmouse)
@@ -85,6 +87,7 @@ namespace cart
 
 	void HUD::ShowProgress(float v, std::string m)
 	{
+		if (!m_progressview)return;
 		if (v >= 0 && v < 1.f) {
 			m_progressview.get()->SetVisible(true);
 			m_progressview.get()->ShowProgress(v, m);

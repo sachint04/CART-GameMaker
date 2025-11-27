@@ -47,9 +47,8 @@ namespace cart {
 
 	void UIButton::Init()
 	{
-
-		UIElement::Init();
 		m_owningworld->GetInputController()->RegisterUI(GetWeakRef());
+		UIElement::Init();
 
 		/*if (m_text.size() > 0) {
 			m_font = AssetManager::Get().LoadFontAsset(m_fontstr, m_fontsize);
@@ -141,8 +140,6 @@ namespace cart {
 						MouseHovered();
 					}
 				}
-
-
 			}
 			else {
 				if (m_touch) { // Mouse is out of bound while dragging
@@ -159,9 +156,9 @@ namespace cart {
 						ButtonDrag(tPos);// keep Dragging
 					}
 				}
-				/*if (m_IsMouseOver) {
+				if (m_IsMouseOver) {
 					MouseOut();
-				}*/
+				}
 				/*if (m_IsButtonDown) {
 					ButtonUp(tPos);
 				}*/
@@ -193,13 +190,8 @@ namespace cart {
 					m_font = AssetManager::Get().LoadFontAsset(m_fontstr, std::ceil(m_fontsize *  UICanvas::Get().lock()->Scale()));			
 					DrawTextEx(*m_font, m_text.c_str(), m_fontLocation, std::ceilf(m_fontsize * m_scale * UICanvas::Get().lock()->Scale()), std::ceil(m_fontspace * m_scale * UICanvas::Get().lock()->Scale()), m_textcolor);
 			}
-		
-		
+
 	}
-
-
-
-
 
 
 #pragma endregion
@@ -390,16 +382,18 @@ namespace cart {
 
 #pragma region BUTTON STATE
 	
-	Rectangle UIButton::GetBounds() 
+	/*Rectangle UIButton::GetBounds() 
 	{	
 		return { m_location.x, m_location.y, (float)m_width, (float)m_height };
-	}
+	}*/
 
 #pragma endregion
 
 #pragma region CleanUp
 
 	void UIButton::Destroy() {
+		if (m_isPendingDestroy)return;
+
 		m_textsize = {};
 		m_fontLocation = {};
 		m_locmouse = {};
@@ -417,6 +411,7 @@ namespace cart {
 		m_texturesourcedisable = {};
 		m_font.reset();
 		SetMouseCursor(0);
+		m_owningworld->GetInputController()->RemoveUI(GetId());
 		UIElement::Destroy();
 	}
 

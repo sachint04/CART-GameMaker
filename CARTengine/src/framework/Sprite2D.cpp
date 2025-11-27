@@ -204,7 +204,7 @@ namespace cart {
 		float tmpscalex = (float)m_width / (float)m_texture2d.get()->width;
 		float tmpscaley = (float)m_height / (float)m_texture2d.get()->height;
 
-		m_textureLocation = m_location;
+		m_textureLocation = { m_location.x - m_pivot.x, m_location.y - m_pivot.y };
 
 		if (tmpscalex == 1 && tmpscaley == 1)return;
 
@@ -255,6 +255,8 @@ namespace cart {
 
 	void Sprite2D::Destroy()
 	{		
+		if (m_isPendingDestroy)return;
+
 		m_texture2d.reset();
 		UIElement::Destroy();
 	}

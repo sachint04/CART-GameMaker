@@ -115,6 +115,8 @@ namespace cart {
 
 	Text::~Text()
 	{
+		if (m_isPendingDestroy)return;
+
 		m_sharedfont.reset();
 	//	LOG("%s Text Deleted!", m_id.c_str());
 	}

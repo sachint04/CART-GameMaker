@@ -29,7 +29,7 @@ namespace cart{
 	}
 	void ProgressView::Start()
 	{
-	
+		UIElement::Start();
 	}
 #pragma endregion
 

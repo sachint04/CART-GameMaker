@@ -41,6 +41,10 @@ namespace cart {
 	{
 		if (m_visible == false)return;
 		UIElement::Draw(_deltaTime);		
+		
+		if(!m_sharedfont)
+		m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, std::ceil(m_fontsize * UICanvas::Get().lock()->Scale()));
+
 		m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), std::ceil(m_fontsize * UICanvas::Get().lock()->Scale()), m_fontspacing * UICanvas::Get().lock()->Scale());
 		DrawRectangle(m_location.x, m_location.y, m_width, m_height, m_background);	
 
@@ -49,6 +53,10 @@ namespace cart {
 
 	void Text::UpdateTextLocation()
 	{				
+		if (!m_sharedfont)
+			m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, std::ceil(m_fontsize * UICanvas::Get().lock()->Scale()));
+		m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), std::ceil(m_fontsize * UICanvas::Get().lock()->Scale()), m_fontspacing * UICanvas::Get().lock()->Scale());
+
 		switch (m_align)
 		{
 		case LEFT:
@@ -88,7 +96,6 @@ namespace cart {
 		AssetManager::Get().UnloadFontAsset(m_font, m_fontsize);
 		m_font = strfnt;
 	}
-
 	std::string Text::GetFontName() {
 		return m_font;
 	}
@@ -104,7 +111,6 @@ namespace cart {
 	{
 		m_textColor = col;
 	}
-
 	void Text::UpdateText(const std::string& str) {
 		m_text = str;
 	}

@@ -6,11 +6,13 @@ namespace cart {
 
 	class TextInput : public Text
 	{
-		
+	protected:
+		void OnScreenSizeChange();
 	public:
 		TextInput(World* _owningworld, const std::string& _id);
 		~TextInput();
 		void Init()override;
+		void Start()override;
 		void Update(float _deltaTime)override;
 		void Draw(float _deltaTime)override;
 		void Destroy()override;
@@ -19,6 +21,7 @@ namespace cart {
 		void SetFontName(const std::string& strfnt)override;
 		float GetFontSize() { return m_fontsize; };
 		void SetFontSize(float size) override;
+		void UpdateLayout();
 	private:
 		int m_charLimit;
 		int m_curletterindex;
@@ -35,7 +38,7 @@ namespace cart {
 		bool m_isDeleteKey;
 		double m_keyWaitTimer;
 		double m_backspacekeyWaitTimer;
-		int m_textmargin;
+		float m_textmargin;
 		bool m_touch;
 		Vector2 m_touchstartpos;
 		Vector2 m_touchendpos;

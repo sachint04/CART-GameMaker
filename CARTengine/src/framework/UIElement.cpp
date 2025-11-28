@@ -38,6 +38,7 @@ namespace cart {
 	// VIRTUAL METHOD 
 	void UIElement::Init()
 	{
+		UICanvas::Get().lock()->onScreenSizeChange.BindAction(GetWeakRef(), &UIElement::OnScreenSizeChange);
 		for (auto iter = m_children.begin(); iter != m_children.end(); ++iter)
 		{
 			iter->get()->Init();
@@ -197,6 +198,7 @@ namespace cart {
 
 	void UIElement::DrawBGColor()
 	{
+		float scScale = UICanvas::Get().lock()->Scale();
 		if (m_shapeType == SHAPE_TYPE::CIRCLE)
 		{
 			DrawCircle(m_location.x + m_width / 2.f  - m_pivot.x, m_location.y + m_width / 2.f  - m_pivot.y, m_width, m_color);
@@ -206,7 +208,7 @@ namespace cart {
 		}
 		else if (m_shapeType == SHAPE_TYPE::ROUNDED_RECTANGLE)
 		{
-			DrawRectangleRounded({  m_location.x - m_pivot.x,  m_location.y - m_pivot.y,  m_width , m_height }, 0.2f * UICanvas::Get().lock()->Scale(), 2, m_color);
+			DrawRectangleRounded({  m_location.x - m_pivot.x,  m_location.y - m_pivot.y,  m_width , m_height }, 0.1f * scScale, 2 * scScale, m_color);
 		}
 		else 
 		{

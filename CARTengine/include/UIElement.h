@@ -59,6 +59,10 @@ namespace cart {
 		void SetExcludeFromParentAutoControl(bool _flag);
 		bool IsExcludedFromParentAutoControl() { return m_isExcludedFromParentAutoControl; };
 		
+		virtual void OnChildReady(const std::string& id);
+		virtual void OnScreenSizeChange();
+		virtual void OnLayoutChange();
+		
 		weak<UIElement> parent();
 		void parent(weak<UIElement> ui);
 	protected:
@@ -74,9 +78,6 @@ namespace cart {
 		std::vector <shared<UIButton>> m_slides = {};
 		std::vector<shared<UIElement>> m_children = {};
 
-		virtual void OnScreenSizeChange();
-		virtual void OnLayoutChange();
-		virtual void OnChildReady(const std::string& id);
 
 	};
 

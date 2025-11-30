@@ -41,7 +41,9 @@ namespace cart {
         /// <param name="fontSize"></param>
         /// <returns></returns>
         shared<Font> LoadFontAsset(const std::string& path, int fontSize);
-        /// <summary>
+      
+       
+       /// <summary>
         /// Add Texture2D to current pool of Textures
         /// </summary>
         /// <param name="image"></param>
@@ -50,6 +52,7 @@ namespace cart {
         /// <returns></returns>
         shared<Texture2D> AddTexture( Image& image, std::string& path, TEXTURE_DATA_STATUS status = TEXTURE_DATA_STATUS::UNLOCKED);
       //  shared<Texture2D> UpdateTexture( Image& image, std::string& path, TEXTURE_DATA_STATUS status = TEXTURE_DATA_STATUS::UNLOCKED);
+                     
         bool ReplaceTextureFromImage(const std::string& path, Image image);
         bool UpdateTextureFromData(const std::string& path, Rectangle rect, Color* pixels);
         bool ResizeImage(const std::string& path, int width, int height);
@@ -84,9 +87,12 @@ namespace cart {
         int preloadId = 0;
         bool m_isLoading;
         void LoadAsset_Async();
+
         shared<Texture2D> LoadTexture(const std::string& path, Dictionary<std::string, TextureData>& constainer, TEXTURE_DATA_STATUS status = TEXTURE_DATA_STATUS::UNLOCKED);        
-        void OnPreloadAssetItemLoaded(std::string callbackId, std::string path, unsigned char* data, int size);
         shared<Font> LoadFontMap(const std::string& path, int fontSize, Dictionary<std::string, shared<Font>>& constainer);    
+
+        void OnPreloadAssetItemLoaded(std::string callbackId, std::string path, unsigned char* data, int size);
+       
     };
 
 
@@ -121,4 +127,7 @@ namespace cart {
         LoadAsset_Async();
 
     }
+    
+   
+   
 }

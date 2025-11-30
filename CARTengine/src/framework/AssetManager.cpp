@@ -234,7 +234,7 @@ namespace cart {
     shared<Font> AssetManager::LoadFontAsset(const std::string& path, int fontSize) {      
         return LoadFontMap(path, fontSize, m_fontLoadedMap);
     }
-   
+
     shared<Font> AssetManager::LoadFontMap(const std::string& path, int fontSize, Dictionary<std::string, shared<Font>>& constainer)
     {
         std::string strsize = std::to_string(fontSize);
@@ -254,8 +254,7 @@ namespace cart {
         Logger::Get()->Error(std::format("AssetManager::LoadFontMap() | Error!! Failed to load font {} ", path));
         return shared<Font> {nullptr};
     }
-
-   
+       
     bool AssetManager::UnloadFontAsset(const std::string& path, int fontsize)
     {
         std::string strsize = std::to_string(fontsize);
@@ -306,6 +305,7 @@ namespace cart {
         }
         LoadAsset_Async();// call for next load;
     }
+
 
 #pragma endregion
 

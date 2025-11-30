@@ -31,6 +31,13 @@ mergeInto(LibraryManager.library, {
 		const url = Module.UTF8ToString(_url);
 		//const filename = Module.UTF8ToString(_filename);
 		JSLoadAsset(id, url);
+	},
+	LoadFileFromDevice(_id, _format)
+	{
+		const id = Module.UTF8ToString(_id);
+		const format = Module.UTF8ToString(_format);
+		//const filename = Module.UTF8ToString(_filename);
+		JSLoadFileFromDevice(id, format);
 	}
 
 });

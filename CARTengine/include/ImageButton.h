@@ -38,7 +38,7 @@ namespace cart {
       //  void UpdateLocation() override;
         void SetLocation(Vector2 _location) override;
         void SetColor(Color _color)override;
-        void Destroy();
+        void Destroy() override;
         void UpdateTextLocation();
         void SetFontName(const std::string& strfnt);
 		~ImageButton();

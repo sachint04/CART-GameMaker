@@ -7,7 +7,7 @@ namespace cart {
 	class TextInput : public Text
 	{
 	protected:
-		void OnScreenSizeChange();
+		void OnScreenSizeChange() override;
 	public:
 		TextInput(World* _owningworld, const std::string& _id);
 		~TextInput();

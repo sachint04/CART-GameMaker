@@ -152,6 +152,9 @@ namespace cart {
 					Logger::Get()->Error(std::format("UIElement::AddComponent() LAYOUT_COMPONENT is already exists in {}", GetId()));
 				}
 			break;
+			case NO_LAYOUT :
+
+				break;
 		}
 	}
 

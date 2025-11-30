@@ -70,9 +70,6 @@ namespace cart {
         }
     }
 
-   
-
-
     std::string network::GetHost() {        
         std::string result = EM_Fetch::GetHost();
         return result;

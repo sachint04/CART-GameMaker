@@ -44,42 +44,29 @@ namespace cart {
 
 	void TransformCntrl::Start()
 	{
-		Btn_Text_Properties cntrlui = {};
-		cntrlui.color = GRAY;
-		cntrlui.size = { cntrlsize, cntrlsize };
-		cntrlui.btncol = GRAY;
-		cntrlui.overcol = GRAY;
-		cntrlui.downcol = ORANGE;
 
 
 
-		m_location = { m_targetInitState.x, m_targetInitState.y };
+
+		SetLocation({ m_targetInitState.x, m_targetInitState.y });
+
 
 		std::string btnid = "translate-btn";
-		Btn_Text_Properties btnprop = {};
-		btnprop.location = { m_location.x , m_location.y };
-		btnprop.size = { m_targetInitState.width, m_targetInitState.height };
-		btnprop.color = { 0 };
-		btnprop.btncol = { 0 };
-		btnprop.overcol = {0 };
-		btnprop.downcol = { 0 };
-		btnprop.size = { m_targetInitState.width   , m_targetInitState.height };
-
-
 		Btn_Text_Properties trn_prop = {};
 		trn_prop.location = { m_location.x + 10.f , m_location.y + 10.f };
 		trn_prop.size = { m_targetInitState.width - 20.f, m_targetInitState.height - 20.f};
 		trn_prop.color = { 0 };
-		trn_prop.btncol = { 255,0,255, 100 };
-		trn_prop.overcol = { 255,0,255, 200 };
-		trn_prop.downcol = { 255,0,255, 255 };
-		m_translateCntrl = AddButton(btnid, trn_prop);
+		trn_prop.btncol = { 0 };
+		trn_prop.overcol = { 0 };
+		trn_prop.downcol = {0};
+		m_translateCntrl = AddButton(btnid, trn_prop);// Translate Control
+
 		m_translateCntrl.lock()->onButtonDown.BindAction(GetWeakRef(), &TransformCntrl::onTranslateStart);
 		m_translateCntrl.lock()->onButtonDrag.BindAction(GetWeakRef(), &TransformCntrl::onTranslateContinue);
 		m_translateCntrl.lock()->onButtonOut.BindAction(GetWeakRef(), &TransformCntrl::onTranslateEnd);
 		m_translateCntrl.lock()->onButtonUp.BindAction(GetWeakRef(), &TransformCntrl::onButtonClick);
 		
-
+		//======================================
 
 		std::string id = "outline-cntrl";
 		UI_Properties lnui = {};
@@ -92,9 +79,11 @@ namespace cart {
 		m_outline.lock()->SetUIProperties(lnui);
 		m_outline.lock()->SetVisible(true);
 		m_outline.lock()->Init();
-		AddChild(m_outline);
+		AddChild(m_outline); // Outline
+		//======================================
 
-
+		Btn_Text_Properties cntrlui = {};
+		cntrlui.size = { cntrlsize, cntrlsize };
 		cntrlui.location = { m_targetInitState.x, m_targetInitState.y };
 		cntrlui.color = SKYBLUE;
 		cntrlui.btncol = SKYBLUE;
@@ -103,44 +92,43 @@ namespace cart {
 		cntrlui.pivot = { cntrlhalf, cntrlhalf };
 		cntrlui.shapetype = SHAPE_TYPE::CIRCLE;
 		id = "topleft-cntrl";
-		m_topleftCntrl = AddButton(id, cntrlui);
+		m_topleftCntrl = AddButton(id, cntrlui);// TOP LEFT control
 		m_topleftCntrl.lock()->onButtonDrag.BindAction(GetWeakRef(), &TransformCntrl::onScaleHandler);
 		m_topleftCntrl.lock()->onButtonDown.BindAction(GetWeakRef(), &TransformCntrl::onDragStart);
 		m_topleftCntrl.lock()->onButtonUp.BindAction(GetWeakRef(), &TransformCntrl::onDragEnd);
 		m_topleftCntrl.lock()->onButtonOut.BindAction(GetWeakRef(), &TransformCntrl::onDragOut);
 
-
-
-
+		//====================================== 
 
 		id = "topright-cntrl";
 		cntrlui.location = { m_targetInitState.x + m_targetInitState.width , m_targetInitState.y };
-		m_toprightCntrl = AddButton(id, cntrlui);
+		m_toprightCntrl = AddButton(id, cntrlui);// TOP RIGHT control
 		m_toprightCntrl.lock()->onButtonDrag.BindAction(GetWeakRef(), &TransformCntrl::onScaleHandler);
 		m_toprightCntrl.lock()->onButtonDown.BindAction(GetWeakRef(), &TransformCntrl::onDragStart);
 		m_toprightCntrl.lock()->onButtonUp.BindAction(GetWeakRef(), &TransformCntrl::onDragEnd);
 		m_toprightCntrl.lock()->onButtonOut.BindAction(GetWeakRef(), &TransformCntrl::onDragOut);
 
+		//==============================================
 
 		id = "bottomleft-cntrl";
 		cntrlui.location = { m_targetInitState.x, m_targetInitState.y + m_targetInitState.height };
-		m_bottomleftCntrl = AddButton(id, cntrlui);
+		m_bottomleftCntrl = AddButton(id, cntrlui);// BOTTOM LEFT control
 		m_bottomleftCntrl.lock()->onButtonDrag.BindAction(GetWeakRef(), &TransformCntrl::onScaleHandler);
 		m_bottomleftCntrl.lock()->onButtonDown.BindAction(GetWeakRef(), &TransformCntrl::onDragStart);
 		m_bottomleftCntrl.lock()->onButtonUp.BindAction(GetWeakRef(), &TransformCntrl::onDragEnd);
 		m_bottomleftCntrl.lock()->onButtonOut.BindAction(GetWeakRef(), &TransformCntrl::onDragOut);
 
+		//==============================================
 
 		id = "bottomright-cntrl";
 		cntrlui.location = { m_targetInitState.x + m_targetInitState.width , m_targetInitState.y + m_targetInitState.height };
-		m_bottomrightCntrl = AddButton(id, cntrlui);
+		m_bottomrightCntrl = AddButton(id, cntrlui);// BOTTOM RIGHT control
 		m_bottomrightCntrl.lock()->onButtonDrag.BindAction(GetWeakRef(), &TransformCntrl::onScaleHandler);
 		m_bottomrightCntrl.lock()->onButtonDown.BindAction(GetWeakRef(), &TransformCntrl::onDragStart);
 		m_bottomrightCntrl.lock()->onButtonUp.BindAction(GetWeakRef(), &TransformCntrl::onDragEnd);
 		m_bottomrightCntrl.lock()->onButtonOut.BindAction(GetWeakRef(), &TransformCntrl::onDragOut);
-
+		//=========================================================
 		id = "";
-		btnprop = {};
 		cntrlui = {};
 
 
@@ -262,18 +250,7 @@ namespace cart {
 		m_tempTargetLoc = { m_targetInitState.x , m_targetInitState.y };
 	
 	}
-	void TransformCntrl::Close()
-	{
-		m_outline.lock()->SetVisible(false);
 
-		m_topleftCntrl.lock()->Destroy();
-		m_toprightCntrl.lock()->Destroy();
-		m_bottomleftCntrl.lock()->Destroy();
-		m_bottomrightCntrl.lock()->Destroy();
-		m_translateCntrl.lock()->Destroy();
-		m_outline.lock()->Destroy();
-		SetVisible(false);
-	}
 	Rectangle TransformCntrl::GetBounds() 
 	{
 		Vector2 lt = m_topleftCntrl.lock()->GetLocation();
@@ -332,13 +309,13 @@ namespace cart {
 	{
 		if (m_isPendingDestroy)return;
 
-		m_topleftCntrl.lock()->Destroy();
-		m_toprightCntrl.lock()->Destroy();
-		m_bottomleftCntrl.lock()->Destroy();
-		m_bottomrightCntrl.lock()->Destroy();
-		m_translateCntrl.lock()->Destroy();
-		m_outline.lock()->Destroy();
 		UIElement::Destroy();
+		m_topleftCntrl.reset();
+		m_toprightCntrl.reset();
+		m_bottomleftCntrl.reset();
+		m_bottomrightCntrl.reset();
+		m_translateCntrl.reset();
+		m_outline.reset();
 	}
 	TransformCntrl::~TransformCntrl()
 	{

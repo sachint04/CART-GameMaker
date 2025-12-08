@@ -23,7 +23,7 @@ namespace cart {
 		void SetTextureColor(Color col) { m_textureColor = col; };
 		void ReEvaluteTexture();
 		std::string GetTexturePath()const{ return m_strTexture; };
-		void SetTexture(std::string& _texture);
+		void SetTexture(std::string _texture);
 		virtual Rectangle GetTextureBounds();
 		void SetScreenMask(const Image& strmask);
 		void TransformIntrupted();

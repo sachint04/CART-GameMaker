@@ -11,7 +11,7 @@ namespace cart {
 
 #pragma region  ENUMNS
     enum COMPONENT_TYPE {
-        NO_LAYOUT,
+        NO_COMPONENT,
         LAYOUT_COMPONENT
    };
     enum VEC_TYPE {
@@ -143,7 +143,7 @@ namespace cart {
     public:
         TEXTURE_DATA_STATUS texturestatus = TEXTURE_DATA_STATUS::UNLOCKED;
         TEXTURE_TYPE texturetype = TEXTURE_TYPE::TEXTURE_FULL;
-        COMPONENT_TYPE component = NO_LAYOUT;
+        COMPONENT_TYPE component = NO_COMPONENT;
         SHAPE_TYPE shapetype = SHAPE_TYPE::RECTANGLE;
         int linewidth = 0;
         std::string texture;
@@ -179,7 +179,7 @@ namespace cart {
         Color overcol;
         Color downcol;
         Color disablecol = DARKGRAY;
-        Color bordercol = GRAY;
+        Color bordercol = BLACK;
         Rectangle texturesourceover;
         Rectangle texturesourcedown;
         Rectangle texturesourcedisable;

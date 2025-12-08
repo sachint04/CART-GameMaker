@@ -89,7 +89,7 @@ namespace cart {
 		m_pivot = _prop.pivot;
 		m_anchor = _prop.anchor;
 		SetSize(_prop.size);
-		if (_prop.component != NO_LAYOUT)AddComponent(_prop.component);
+		if (_prop.component != NO_COMPONENT)AddComponent(_prop.component);
 	}
 #pragma endregion
 
@@ -138,6 +138,7 @@ namespace cart {
 
 	void UIElement::AddComponent(COMPONENT_TYPE type)
 	{
+		
 		switch (type)
 		{
 			case LAYOUT_COMPONENT :
@@ -147,12 +148,13 @@ namespace cart {
 					m_layout = std::make_shared<LayoutComponent>(comp);
 					UICanvas::Get().lock()->RegisterComponent(m_layout);
 					m_layout.get()->onLayoutChange.BindAction(GetWeakRef(), &UIElement::OnLayoutChange);
+					Actor::AddComponent(std::string{ GetId() + "_layout" }, m_layout);
 				}
 				else {
 					Logger::Get()->Error(std::format("UIElement::AddComponent() LAYOUT_COMPONENT is already exists in {}", GetId()));
 				}
 			break;
-			case NO_LAYOUT :
+			case NO_COMPONENT :
 
 				break;
 		}
@@ -342,10 +344,10 @@ namespace cart {
 			++iter;
 		}
 		Actor::Start();
-			UICanvas::Get().lock()->UpdateLayout();// Update Layout 
-		//if (m_parent.expired()) {
-		//}
-		//onReady.Broadcast(GetId());
+		
+		if(m_layout)
+		UICanvas::Get().lock()->UpdateLayout();// Update Layout 
+		
 	}
 
 	void UIElement::OnScreenSizeChange()
@@ -369,17 +371,10 @@ namespace cart {
 		for (auto iter = m_children.begin(); iter != m_children.end();)
 		{
 			iter->get()->Destroy();
-			iter->get()->SetVisible(false);
 			iter = m_children.erase(iter);
 		}
-		m_children.clear();	
-		if (m_layout) {
-			UICanvas::Get().lock()->RemoveComponent(m_layout.get()->GetId());			
-			m_layout.get()->Destroy();
-			m_layout.reset();
-		};
-		
 		SetVisible(false);
+		
 		Actor::Destroy();
 	}
 

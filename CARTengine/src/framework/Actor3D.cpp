@@ -121,7 +121,6 @@ namespace cart
 			DrawRectangleRounded(rect, 0.8f, 2, { 255,255, 255, 150 });
 			shared<Font> fnt = AssetManager::Get().LoadFontAsset(m_strfont, m_fontSize);
 			if (fnt) {
-
 				Vector2 fsize = MeasureTextEx(*fnt,m_label.c_str(), m_fontSize, m_fontSpace);
 				DrawTextEx(*fnt, m_label.c_str(), { rect.x + (rect.width / 2.f - (fsize.x / 2.f)), rect.y + (rect.height / 2.f - fsize.y /2.f) }, m_fontSize, m_fontSpace, BLACK);
 				fnt.reset();

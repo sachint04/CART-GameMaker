@@ -226,7 +226,6 @@ namespace cart {
 		m_texturesourceover = _prop.texturesourceover;
 		m_texturesourcedown = _prop.texturesourcedown;
 		m_texturesourcedisable = _prop.texturesourcedisable;
-
 	}
 	void ImageButton::SetButtonProperties(Btn_Text_Properties _prop)
 	{

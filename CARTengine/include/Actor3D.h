@@ -16,6 +16,7 @@ namespace cart
 		void Update3D(float _deltaTime, const Camera& camera);
 		void Draw3D(float _deltaTime, const Camera& camera);
 		void SetModel(Model model);
+		Model& GetModel(){ return m_model; };
 		void SetAnimations(ModelAnimation * animations, const int& count);
 		void PlayHoverAnim();
 		void PlayDefaultAnim();

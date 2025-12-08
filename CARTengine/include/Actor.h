@@ -3,9 +3,11 @@
 #include <raylib.h>
 #include "Object.h"
 #include "Delegate.h"
+#include "Core.h"
+#include "Types.h"
 namespace cart {
 	class World;
-	class Component;
+	class IComponent;
 	class Actor : public Object {
 
 	public:
@@ -34,11 +36,13 @@ namespace cart {
 		virtual void LoadAssets();
 		virtual void Init();
 		virtual void SetReady(bool flag);
-		virtual void AddComponent(Component& component);
-
 		virtual void AssetsLoadCompleted();
-		bool IsReady() { return m_isReady; };
+		virtual void Destroy();
 
+		void AddComponent(const std::string& id, weak<IComponent> component);
+		weak<IComponent> GetComponentById(const std::string& id);
+		bool HasComponent(COMPONENT_TYPE type);
+		bool IsReady() { return m_isReady; };
 		float GetRotation();
 		Color GetColor();
 		Vector2 GetLocation();
@@ -46,6 +50,8 @@ namespace cart {
 		Vector4 GetRotation3();
 		float GetScale();
 		Vector2 GetSize();
+		Vector3 GetSize3();
+
 		Vector2 GetWindowSize() const;
 		World* m_owningworld;
 	protected:
@@ -63,6 +69,6 @@ namespace cart {
 		bool m_isReady;
 		std::vector <std::string> m_preloadlist; //<url, filename>
 		std::string m_strloadMsg;
-		Dictionary<unsigned char, Component&> componentlist;
+		Dictionary<std::string, weak<IComponent>> m_componentlist;
 	};
 }

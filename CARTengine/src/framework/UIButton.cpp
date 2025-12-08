@@ -230,11 +230,10 @@ namespace cart {
 		m_defaulttexturecolor = _prop.textureColor;
 		m_borderwidth = _prop.borderwidth;
 		m_borderColor = _prop.bordercol;
-
 	}
 	void UIButton::SetButtonProperties(Btn_Text_Properties _prop)
 	{
-		UIElement::SetUIProperties(_prop);
+		//UIElement::SetUIProperties(_prop);
 		SetTextProperties(_prop);	
 		m_IsSelectable = _prop.isSelectable;
 

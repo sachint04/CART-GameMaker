@@ -2,6 +2,10 @@
 #include "World.h"
 #include "AssetManager.h"
 #include "Logger.h"
+#include "component/IComponent.h"
+#include "UICanvas.h"
+
+
 namespace cart {
 #pragma region Constructor & INIT
 
@@ -54,9 +58,29 @@ namespace cart {
 		m_isReady = flag;
 		onReady.Broadcast(GetId());
 	}
-	void Actor::AddComponent(Component& component)
+	void Actor::AddComponent(const std::string& id, weak<IComponent> component)
 	{
-		componentlist.insert({ static_cast<unsigned char>(componentlist.size()), component });
+		m_componentlist.insert({id, component });
+	}
+
+	weak<IComponent> Actor::GetComponentById(const std::string& id)
+	{
+		auto find = m_componentlist.find(id);
+		if (find != m_componentlist.end()) {
+			return find->second;
+		}
+		return  shared<IComponent>{nullptr};
+	}
+
+	bool Actor::HasComponent(COMPONENT_TYPE type)
+	{
+		for (auto iter = m_componentlist.begin(); iter != m_componentlist.end(); iter++)
+		{
+			if (iter->second.lock()->GetType() == type) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	Vector2 Actor::GetWindowSize() const
@@ -149,6 +173,11 @@ namespace cart {
 	{
 		return { m_width, m_height };
 	}
+
+	Vector3 Actor::GetSize3()
+	{
+		return { m_width, m_height, m_zSize };
+	}
 	
 	void Actor::Update(float _deltaTime)
 	{
@@ -193,6 +222,19 @@ namespace cart {
 	{
 		Logger::Get()->Trace(std::format("{} Asset Load complete!", GetId()));
 		Start();
+	}
+
+	void Actor::Destroy()
+	{
+		if (m_isPendingDestroy)return;
+		for (auto iter = m_componentlist.begin(); iter != m_componentlist.end();)
+		{
+			UICanvas::Get().lock()->RemoveComponent(iter->first);
+			iter->second.lock()->Destroy();
+			iter = m_componentlist.erase(iter);
+		}
+		m_preloadlist.clear();
+		Object::Destroy();
 	}
 
 	void Actor::SetVisible(bool _flag)

@@ -15,7 +15,7 @@ namespace cart
 		{
 			std::function<bool(Args...)> callbackFunc = [obj, callback](Args... args)->bool
 			{
-				if (!obj.expired())
+				if (!obj.expired() )
 				{
 					(static_cast<ClassName*>(obj.lock().get())->*callback)(args...);
 					return true;

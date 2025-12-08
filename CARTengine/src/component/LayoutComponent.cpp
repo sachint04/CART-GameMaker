@@ -4,10 +4,11 @@
 #include "UIElement.h"
 #include "UICanvas.h"
 #include "Logger.h"
+#include "Types.h"
 namespace cart
 {
     LayoutComponent::LayoutComponent(const std::string& id, shared<UIElement> ui, Rectangle Anchor, Rectangle rect)
-		:IComponent{id},
+		:IComponent{id, LAYOUT_COMPONENT},
 		m_owner{ui},
 		m_anchorMinX{ Anchor.x },
 		m_anchorMaxX{ Anchor.y },

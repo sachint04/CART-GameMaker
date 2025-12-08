@@ -108,7 +108,7 @@ namespace cart {
 		
 		//ImageResize(imageref, m_textureSize.x, m_textureSize.y);
 	}
-	void Sprite2D::SetTexture(std::string& _texture)
+	void Sprite2D::SetTexture(std::string _texture)
 	{
 		/*if (m_texture2d) {
 			if (m_textureStatus == LOCKED) {

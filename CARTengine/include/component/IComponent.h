@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "Types.h"
 namespace cart {
 
 	class IComponent{
@@ -7,8 +8,8 @@ namespace cart {
 		virtual void Destroy() = 0;
 		virtual void Update() = 0;
 
-		IComponent(const std::string& id) :m_Id{ id }, m_isEnabled{true} {};
-		std::string type() {
+		IComponent(const std::string& id, COMPONENT_TYPE type) :m_Id{ id }, m_type{type}, m_isEnabled { true } {};
+		COMPONENT_TYPE GetType() {
 			return m_type;
 		};
 
@@ -20,7 +21,7 @@ namespace cart {
 	protected :
 		bool m_isEnabled;
 		std::string m_Id;
-		std::string m_type;
+		COMPONENT_TYPE m_type = COMPONENT_TYPE::NO_COMPONENT;
 
 
 	};

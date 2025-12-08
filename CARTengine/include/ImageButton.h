@@ -49,6 +49,7 @@ namespace cart {
         
 	private:
         int m_margin;
+        float m_borderwidth;
         Vector2 m_textsize;
         Vector2 m_fontLocation;
         Vector2 m_locmouse;
@@ -65,13 +66,12 @@ namespace cart {
         Color m_ButtonDownColor;
         Color m_ButtonHoverColor;
         Color m_ButtonDisableColor;
+        Color m_borderColor;
         bool m_IsButtonDown;
         bool m_IsMouseOver;
         bool m_IsSelected;
         bool m_IsSelectable;
         shared<Font> m_font;
-        int m_borderwidth;
-        Color m_borderColor;
         Rectangle m_texturesourcedefault;
         Rectangle m_texturesourceover;
         Rectangle m_texturesourcedown;

@@ -24,7 +24,6 @@ namespace  cart {
 		void Start() override;
 		void Destroy()override;
 		void Reset();
-		void Close();
 		Rectangle GetBounds() override;
 
 		void Update(float _deltaTime) override;

@@ -38,6 +38,14 @@ mergeInto(LibraryManager.library, {
 		const format = Module.UTF8ToString(_format);
 		//const filename = Module.UTF8ToString(_filename);
 		JSLoadFileFromDevice(id, format);
+	},
+	ShowSpinnerView(_msg){
+		const msg = Module.UTF8ToString(_msg);
+		JSShowSpinnerView(msg);
+	},
+	HideSpinnerView()
+	{
+		JSHideSpinnerView();
 	}
 
 });

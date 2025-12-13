@@ -30,6 +30,8 @@ extern "C" {
     extern void Upload(const char* uid, const char* url, const char* dir, const uintptr_t* imageData, int w, int h, const char* filename);
     extern void LoadAssetHTTP(const char* uid, const char* url);
     extern void LoadFileFromDevice(const char* uid, const char* format);
+    extern void ShowSpinnerView(const char* msg);
+    extern void HideSpinnerView();
 #endif
 
 #ifdef __cplusplus
@@ -97,6 +99,9 @@ namespace cart {
         const char* urlptr = url.c_str();
         const char* idptr = uid.c_str();
         const char* conptr = where.c_str();
+        std::string msg = "loading...";
+        const char* msgptr = msg.c_str();
+        ShowSpinnerView(msgptr);
         GetHTTP(idptr, urlptr, conptr);
         mCallbacks.insert({ uid, callbackFunc });
 #endif
@@ -123,6 +128,9 @@ namespace cart {
          const char* urlptr = url.c_str();
          const char* dataptr = data.c_str();
          const char* conptr = where.c_str();
+         std::string msg = "saving...";
+         const char* msgptr = msg.c_str();
+         ShowSpinnerView(msgptr);
          PostHTTP(idptr, urlptr, dataptr, conptr);
         mCallbacks.insert({ uid, callbackFunc });
 #endif
@@ -148,6 +156,10 @@ namespace cart {
         const char* urlptr = url.c_str();
         const char* idptr = uid.c_str();
        // const char* dirptr = dir.c_str();
+        std::string msg = "uploading...";
+        const char* msgptr = msg.c_str();
+        ShowSpinnerView(msgptr);
+
         Upload(idptr, urlptr, dir.c_str(), imageData, width, height, filename.c_str());
         mCallbacks.insert({ uid, callbackFunc });
 #endif
@@ -174,9 +186,11 @@ namespace cart {
         std::string uid = std::string{ id + "," + nid};
         const char* urlptr = url.c_str();
         const char* idptr = uid.c_str();
-        
         m_LoadAssetCallbacks.insert({ nid, callbackFunc });
 #ifdef __EMSCRIPTEN__
+        std::string msg = "Preparing...";
+        const char* msgptr = msg.c_str();
+        ShowSpinnerView(msgptr);
         LoadAssetHTTP(idptr, urlptr);
 #endif
        
@@ -205,6 +219,9 @@ namespace cart {
 
         m_LoadAssetCallbacks.insert({ nid, callbackFunc });
 #ifdef __EMSCRIPTEN__
+        std::string msg = "loading...";
+        const char* msgptr = msg.c_str();
+        ShowSpinnerView(msgptr);
         LoadFileFromDevice(idptr, formatptr);
 #endif
 

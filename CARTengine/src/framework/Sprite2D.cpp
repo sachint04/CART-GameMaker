@@ -39,23 +39,39 @@ namespace cart {
 
 		if (m_strTexture.size() > 0 ) {
 			//m_textureLocation = m_location;
-		
 			m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
-			
-			if (m_texture2d == nullptr) return;
 
 			if (m_texturetype == TEXTURE_FULL) {
-				if (m_bAspectRatio)
+				
+				/*if (m_bMasked && !m_bIsScaling) {
+					UpdateMask();
+				}*/
+				if (m_texture2d) {
+
+					if (m_bAspectRatio) {
+
+						UpdateAspectRatio();
+					
+						int w = m_texture2d.get()->width;
+						int h = m_texture2d.get()->height;
+						m_textureLocation = {
+									(GetBounds().x + GetBounds().width / 2.f) - ((float)w / 2.f),
+									(GetBounds().y + GetBounds().height / 2.f) - ((float)h / 2.f)
+						};
+					}
+					else {
+						m_textureLocation = { m_location.x - m_pivot.x, m_location.y - m_pivot.y };
+					}
+				}
+				/*if (m_bAspectRatio)
 				{
 					UpdateAspectRatio();
 				}
 				else {
-				
+
 					ResizeImage();
-				}
-				if (m_bMasked && !m_bIsScaling) {
-					UpdateMask();
-				}
+				}*/
+				
 			}
 			else if (m_texturetype == TEXTURE_PART) {
 				m_textureLocation = m_location;
@@ -71,9 +87,9 @@ namespace cart {
 
 		if (m_strTexture.size() > 0) {
 			
-			m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
-
-			if (m_texture2d == nullptr) return;
+			if (!m_texture2d) {
+				m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
+			}
 
 			if (m_texturetype == TEXTURE_PART) {// Render PART OF TEXTURE			
 				DrawTextureRec(*m_texture2d, m_texturesource, m_textureLocation, m_textureColor);
@@ -81,6 +97,7 @@ namespace cart {
 			else {			
 				DrawTextureEx(*m_texture2d, m_textureLocation, m_rotation, 1.f, m_textureColor);
 			}
+
 		}
 	}
 
@@ -118,21 +135,43 @@ namespace cart {
 			m_texture2d = nullptr;
 		}*/
 		m_strTexture = _texture;
-		if (m_strTexture.size() > 0 && !m_pendingUpdate && m_visible ) {
+		/*if (m_strTexture.size() > 0 && !m_pendingUpdate && m_visible ) {
 			m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
-		}
+		}*/
 
 	}
 	void Sprite2D::SetSize(Vector2 _size) {
 		UIElement::SetSize(_size);	
-		
 		m_textureSize = _size;
 		m_bIsScaling = true;
 		
+		if (m_bAspectRatio)
+		{
+			UpdateAspectRatio();
+		}
+		else {
+
+			ResizeImage();
+		}		
+		if (m_bMasked && !m_bIsScaling) {
+			UpdateMask();
+		}
 	}
 	void Sprite2D::SetLocation(Vector2 _location)
 	{
 		UIElement::SetLocation(_location);
+		
+		if (m_bAspectRatio)
+		{
+			UpdateAspectRatio();
+		}
+		else {
+
+			ResizeImage();
+		}
+		if (m_bMasked && !m_bIsScaling) {
+			UpdateMask();
+		}
 	}
 	/*void Sprite2D::UpdateLocation()
 	{
@@ -200,6 +239,7 @@ namespace cart {
 	}
 	void Sprite2D::ResizeImage() {
 		m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
+		if (!m_texture2d)return;
 
 		float tmpscalex = (float)m_width / (float)m_texture2d.get()->width;
 		float tmpscaley = (float)m_height / (float)m_texture2d.get()->height;
@@ -221,31 +261,43 @@ namespace cart {
 		}
 	
 	}
-	void Sprite2D::UpdateAspectRatio()
+	bool Sprite2D::UpdateAspectRatio()
 	{
+		m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
+		if (!m_texture2d) {
+			return false;
+		}
+		// aspect ration does not match.. update texture;
 		Image* img = AssetManager::Get().GetImage(m_strTexture);
 		float ratio = (float)img->width / (float)img->height;
 		float w = (ratio > 1) ? m_width : m_width * ratio;
 		float h = (ratio < 1) ? m_height : m_height / ratio;
 		m_textureSize = { w,h };
-		Image copy = ImageCopy(*img);
-		ImageResize(&copy,  w, h);
-		if (AssetManager::Get().ReplaceTextureFromImage(m_strTexture, copy))
-		{
-			//Logger::Get()->Trace(" Sprite2D::UpdateAspectRatio() Image Resized maintained Aspect Ratio");
-		}
-		else {
-			Logger::Get()->Warn(" Sprite2D::UpdateAspectRatio() FAILED!! Image Resized maintained Aspect Ratio");
-		}
-		m_textureLocation = {
-							(GetBounds().x + GetBounds().width / 2.f) - (w / 2.f),
-							(GetBounds().y + GetBounds().height  / 2.f) - (h / 2.f)
-							};
-		UnloadImage(copy);
 
+		if (m_texture2d->width != (int)w || m_texture2d->height != (int)h) {
+			Image copy = ImageCopy(*img);
+			ImageResize(&copy,  w, h);
+			if (AssetManager::Get().ReplaceTextureFromImage(m_strTexture, copy))
+			{
+				//Logger::Get()->Trace(" Sprite2D::UpdateAspectRatio() Image Resized maintained Aspect Ratio");
+			}
+			else {
+				Logger::Get()->Warn(" Sprite2D::UpdateAspectRatio() FAILED!! Image Resized maintained Aspect Ratio");
+			}
+			m_textureLocation = {
+								(GetBounds().x + GetBounds().width / 2.f) - (w / 2.f),
+								(GetBounds().y + GetBounds().height  / 2.f) - (h / 2.f)
+								};
+			UnloadImage(copy);
+		}
+		return true;
 	}
 	void Sprite2D::TransformIntrupted() {
+		if (m_bMasked) {
+			UpdateMask();
+		}
 		m_bIsScaling = false;
+
 	}
 
 #pragma endregion

@@ -358,7 +358,8 @@ namespace cart {
 	void UIElement::OnLayoutChange()
 	{
 		// Add  Concrete Implemtation
-//		m_layout.get()->onLayoutChange.BindAction(GetWeakRef(), &UIElement::OnLayoutChange);
+
+		//m_layout.get()->onLayoutChange.BindAction(GetWeakRef(), &UIElement::OnLayoutChange);
 	}
 
 

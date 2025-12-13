@@ -32,7 +32,7 @@ namespace cart {
 	protected:
 		void UpdateMask();
 		void ResizeImage();
-		void UpdateAspectRatio();
+		bool UpdateAspectRatio();
 		TEXTURE_TYPE  m_texturetype = TEXTURE_FULL;
 		std::string m_imgstr;
 		std::string m_strTexture;

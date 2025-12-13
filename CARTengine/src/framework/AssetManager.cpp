@@ -289,21 +289,22 @@ namespace cart {
             else {
                Logger::Get()->Error(std::format(" AssetManager::OnPreloadAssetItemLoaded() Invalid image \n[{}] \0", path));
             }
-                UnloadFileData(data);
+            UnloadFileData(data);
+        
+            std::vector<Preload_Data>::iterator iter = m_preloadlist.begin();// Unload loaded/failed path from the list
+            if (iter != m_preloadlist.end())//  has preload data
+            {
+                if (iter->uid.compare(callbackId) == 0)
+                {
+                    iter->list.erase(iter->list.begin());// remove first path from list  
+                }
+            }
         }
         else {
             Logger::Get()->Error(std::format("AsssetManager:: OnPreloadAssetItemLoaded() FAILED item\n [{}]\0", path));
         }
+            LoadAsset_Async();// call for next load;
 
-        std::vector<Preload_Data>::iterator iter = m_preloadlist.begin();// Unload loaded/failed path from the list
-        if (iter != m_preloadlist.end())//  has preload data
-        {
-            if (iter->uid.compare(callbackId) == 0)
-            {
-                iter->list.erase(iter->list.begin());// remove first path from list  
-            }
-        }
-        LoadAsset_Async();// call for next load;
     }
 
 

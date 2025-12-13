@@ -17,6 +17,10 @@ namespace cart {
 
     void network::HTTPCallback(std::string& uid, std::string& response, std::string& data) {        
        Logger::Get()->Trace(std::format("network::HTTPCallback id {} \n", uid));
+#ifdef  __EMSCRIPTEN__
+       HideSpinnerView();
+#endif //  __EMSCRIPTEN__
+
         for (auto iter = mCallbacks.begin(); iter != mCallbacks.end();)
         {
             if (iter->first.compare(uid) == 0)
@@ -33,6 +37,11 @@ namespace cart {
 
     void network::LoadAssetHTTPCallback(std::string& uid,  std::string url, unsigned char* data, int size) {
         // Prepare correct snap location list
+
+#ifdef  __EMSCRIPTEN__
+        HideSpinnerView();
+#endif //  __EMSCRIPTEN__
+
         auto trim = [](std::string& s)
         {
             s.erase(0, s.find_first_not_of(" \t\n\r\f\v"));

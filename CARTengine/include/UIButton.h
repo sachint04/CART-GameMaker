@@ -72,8 +72,6 @@ namespace cart {
         bool m_IsSelected;
         bool m_IsSelectable;
         shared<Font> m_font;
-        int m_borderwidth;
-        Color m_borderColor;
         Rectangle m_texturesourcedefault;
         Rectangle m_texturesourceover;
         Rectangle m_texturesourcedown;

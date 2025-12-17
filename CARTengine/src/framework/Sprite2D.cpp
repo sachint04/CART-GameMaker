@@ -267,16 +267,28 @@ namespace cart {
 		if (!m_texture2d) {
 			return false;
 		}
-		// aspect ration does not match.. update texture;
 		Image* img = AssetManager::Get().GetImage(m_strTexture);
-		float ratio = (float)img->width / (float)img->height;
-		float w = (ratio > 1) ? m_width : m_width * ratio;
-		float h = (ratio < 1) ? m_height : m_height / ratio;
-		m_textureSize = { w,h };
+		float stageratio = m_width / m_height;
 
-		if (m_texture2d->width != (int)w || m_texture2d->height != (int)h) {
+		int bw = (stageratio > 1.f) ? m_width / stageratio : m_width ;
+		int bh = (stageratio <  1.f) ? m_height * stageratio : m_height;
+		Vector2 stagesquare = { (float)bw , (float)bh};
+
+		
+		float targetratio = (img->width	> img->height)? stagesquare.x / img->width : stagesquare.x / img->height;
+		int w = img->width * targetratio;
+		int h = img->height * targetratio;
+
+		float diffratio = std::min( m_width /(float)w  , m_height / (float)h );
+		if (diffratio > 1) {
+			w *= diffratio;
+			h *= diffratio;
+		}
+			m_textureSize = { (float)w , (float)h };
+
+		if (m_texture2d->width != (int)m_textureSize.x || m_texture2d->height != (int)m_textureSize.y) {
 			Image copy = ImageCopy(*img);
-			ImageResize(&copy,  w, h);
+			ImageResize(&copy, m_textureSize.x, m_textureSize.y);
 			if (AssetManager::Get().ReplaceTextureFromImage(m_strTexture, copy))
 			{
 				//Logger::Get()->Trace(" Sprite2D::UpdateAspectRatio() Image Resized maintained Aspect Ratio");
@@ -285,8 +297,8 @@ namespace cart {
 				Logger::Get()->Warn(" Sprite2D::UpdateAspectRatio() FAILED!! Image Resized maintained Aspect Ratio");
 			}
 			m_textureLocation = {
-								(GetBounds().x + GetBounds().width / 2.f) - (w / 2.f),
-								(GetBounds().y + GetBounds().height  / 2.f) - (h / 2.f)
+								(GetBounds().x + GetBounds().width / 2.f) - (m_textureSize.x / 2.f),
+								(GetBounds().y + GetBounds().height  / 2.f) - (m_textureSize.y / 2.f)
 								};
 			UnloadImage(copy);
 		}

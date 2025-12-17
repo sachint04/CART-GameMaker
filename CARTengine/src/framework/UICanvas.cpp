@@ -11,6 +11,8 @@ extern int DEFAULT_CANVAS_WIDTH;
 extern int DEFAULT_CANVAS_HEIGHT;
 extern int SCREEN_WIDTH;
 extern int SCREEN_HEIGHT;
+extern float CANVAS_STRECH_X;
+extern float CANVAS_STRECH_Y;
 namespace cart {
     shared<UICanvas> UICanvas::canvas_{ nullptr };
 
@@ -66,7 +68,16 @@ namespace cart {
 
             }
         }
+        float scaleX = (float)SCREEN_WIDTH / (float)DEFAULT_CANVAS_WIDTH;
+        float scaleY = (float)SCREEN_HEIGHT / (float)DEFAULT_CANVAS_HEIGHT;
+        float scale = std::min(scaleX, scaleY);
         
+        if (scaleX <= scaleY)scaleY = std::max(scale, CANVAS_STRECH_Y);
+        if (scaleX > scaleY)scaleX = std::max(scale, CANVAS_STRECH_X);
+
+       /* float scaleX = std::max(CANVAS_STRECH_X, (float)SCREEN_WIDTH / (float)DEFAULT_CANVAS_WIDTH);
+        float scaleY = std::max(CANVAS_STRECH_Y, (float)SCREEN_HEIGHT / (float)DEFAULT_CANVAS_HEIGHT);*/
+
         for (auto iter = elemlist.begin(); iter != elemlist.end();)
         {         
             if (iter->second.expired())
@@ -76,10 +87,9 @@ namespace cart {
             else {
                 if (iter->second.lock()->IsOwnerReady() && !iter->second.lock()->IsUpdated())
                 {
+
                     iter->second.lock()->UpdateLayout({ (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT },
-                        std::min((float)SCREEN_WIDTH / (float)DEFAULT_CANVAS_WIDTH,
-                            (float)SCREEN_HEIGHT / (float)DEFAULT_CANVAS_HEIGHT),
-                        m_safeRect);
+                        scaleX, scaleY, m_safeRect);
                   
                 }
                 ++iter;
@@ -104,7 +114,9 @@ namespace cart {
         return std::min((float)SCREEN_WIDTH / (float)DEFAULT_CANVAS_WIDTH,
             (float)SCREEN_HEIGHT / (float)DEFAULT_CANVAS_HEIGHT);
     }
-
+    Vector2 UICanvas::GetDefaultCanvasSize() {
+        return { (float)DEFAULT_CANVAS_WIDTH, (float)DEFAULT_CANVAS_HEIGHT };
+    }
     UICanvas::~UICanvas() {
     }
 }

@@ -60,17 +60,17 @@ namespace cart {
 		switch (m_align)
 		{
 		case LEFT:
-			m_textLocation = { m_location.x,
-								m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 };
+			m_textLocation = { m_location.x - m_pivot.x,
+								m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 - m_pivot.y } ;
 			break;
 		case CENTER:
-			m_textLocation = { m_location.x + (m_width * m_scale / 2) - (m_textsize.x * m_scale) / 2, 
-								m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 };
+			m_textLocation = { m_location.x + (m_width * m_scale / 2) - (m_textsize.x * m_scale) / 2  -m_pivot.x,
+								m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 - m_pivot.y };
 			break;
 
 		case RIGHT:
-			m_textLocation = { m_location.x + (m_width * m_scale) - (m_textsize.x * m_scale), 
-								m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 };
+			m_textLocation = { m_location.x + (m_width * m_scale) - (m_textsize.x * m_scale) - m_pivot.x,
+								m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 - m_pivot.y };
 			break;
 		}
 

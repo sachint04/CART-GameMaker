@@ -156,6 +156,9 @@ namespace cart {
         Vector2 pivot;
         Rectangle texturesource;
         Rectangle anchor = {0,0,1.f,1.f};
+        float roundness = 0.5f;
+        int borderwidth;
+        Color bordercol;
 
     };
 
@@ -174,12 +177,10 @@ namespace cart {
     public:
         ALIGN align = ALIGN::LEFT;
         bool isSelectable;
-        int borderwidth = 0;
         Color btncol;
         Color overcol;
         Color downcol;
         Color disablecol = DARKGRAY;
-        Color bordercol = BLACK;
         Rectangle texturesourceover;
         Rectangle texturesourcedown;
         Rectangle texturesourcedisable;

@@ -35,8 +35,6 @@ namespace cart {
 		m_IsMouseOver{ false },
 		m_IsSelected{ false },
 		m_IsSelectable{ false },
-		m_borderwidth{ 0 },
-		m_borderColor{ GRAY },
 		m_texturesourcedefault{},
 		m_texturesourceover{},
 		m_texturesourcedown{},
@@ -75,7 +73,7 @@ namespace cart {
 		if (!m_visible || m_pendingUpdate)return;
 		if (m_fontstr.size() > 0) {
 			m_font = AssetManager::Get().LoadFontAsset(m_fontstr, std::ceil(m_fontsize * UICanvas::Get().lock()->Scale()));
-			m_textsize = MeasureTextEx(*m_font, m_text.c_str(),  std::ceil(m_fontsize * UICanvas::Get().lock()->Scale()), std::ceil(2.f * UICanvas::Get().lock()->Scale()));
+			m_textsize = MeasureTextEx(*m_font, m_text.c_str(),  std::ceil(m_fontsize * UICanvas::Get().lock()->Scale()), std::ceil(m_fontspace * UICanvas::Get().lock()->Scale()));
 			UpdateTextLocation();
 		}
 		
@@ -179,12 +177,7 @@ namespace cart {
 				DrawRectangle(m_location.x - 10.f, m_location.y - 10.f, m_width + 20.f, m_height + 20.f, m_color);
 			}
 
-			if (m_borderwidth > 0)
-			{
-				Rectangle rect = { m_location.x , m_location.y, (float)m_width - m_borderwidth, (float)m_height - m_borderwidth };
-				DrawRectangleLinesEx(rect, m_borderwidth, m_borderColor);
-
-			}
+			
 			
 			if (m_text.size() > 0) {
 					m_font = AssetManager::Get().LoadFontAsset(m_fontstr, std::ceil(m_fontsize *  UICanvas::Get().lock()->Scale()));			
@@ -228,8 +221,7 @@ namespace cart {
 		m_ButtonDisableColor = _prop.disablecol;
 		m_IsSelectable = _prop.isSelectable;
 		m_defaulttexturecolor = _prop.textureColor;
-		m_borderwidth = _prop.borderwidth;
-		m_borderColor = _prop.bordercol;
+
 	}
 	void UIButton::SetButtonProperties(Btn_Text_Properties _prop)
 	{
@@ -402,8 +394,7 @@ namespace cart {
 		m_texthovercolor = {};
 		m_ButtonDefaultColor = {};
 		m_ButtonDownColor = {};
-		m_ButtonHoverColor = {};
-		m_borderColor = {};
+		m_ButtonHoverColor = {};		
 		m_texturesourcedefault = {};
 		m_texturesourceover = {};
 		m_texturesourcedown = {};

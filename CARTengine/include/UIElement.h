@@ -62,19 +62,21 @@ namespace cart {
 		virtual void OnChildReady(const std::string& id);
 		virtual void OnScreenSizeChange();
 		virtual void OnLayoutChange();
-		
 		weak<UIElement> parent();
 		void parent(weak<UIElement> ui);
 	protected:
 		SHAPE_TYPE m_shapeType;
+		int m_borderwidth;
 		bool m_pendingUpdate;
 		bool m_isExcludedFromParentAutoControl;
+		float m_roundness;
 		Vector2 m_rawlocation;	
 		Vector2 m_pivot;
 		Vector2 m_defaultSize;
 		Rectangle m_anchor;
 		shared<LayoutComponent> m_layout;
 		weak<UIElement> m_parent;
+		Color m_borderColor;
 		std::vector <shared<UIButton>> m_slides = {};
 		std::vector<shared<UIElement>> m_children = {};
 

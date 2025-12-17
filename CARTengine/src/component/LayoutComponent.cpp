@@ -5,6 +5,7 @@
 #include "UICanvas.h"
 #include "Logger.h"
 #include "Types.h"
+
 namespace cart
 {
     LayoutComponent::LayoutComponent(const std::string& id, shared<UIElement> ui, Rectangle Anchor, Rectangle rect)
@@ -28,7 +29,7 @@ namespace cart
     {
     }
 
-    bool LayoutComponent::UpdateLayout(Vector2 size, float scale, const Rectangle& safeRect)
+    bool LayoutComponent::UpdateLayout(Vector2 size, float scaleX, float scaleY, const Rectangle& safeRect)
     {
 		if (!m_isEnabled)return false; // do nothing;
 
@@ -44,7 +45,7 @@ namespace cart
 				if (!parent.lock()->GetLayoutComponent().lock()->IsUpdated()) 
 				{
 					// owner not updated
-					if (parent.lock()->GetLayoutComponent().lock()->UpdateLayout(size, scale, safeRect))// Update Parent first
+					if (parent.lock()->GetLayoutComponent().lock()->UpdateLayout(size, scaleX, scaleY, safeRect))// Update Parent first
 					{
 						// update parent first
 						parentRect = { parent.lock()->GetLocation().x - parent.lock()->GetPivot().x,
@@ -81,27 +82,37 @@ namespace cart
 			
 
 		Vector2 ownerpivot = m_owner.get()->GetPivot();
-		int left = parentRect.x + int(parentRect.width * m_owner.get()->GetAnchor().x);
-		int right = parentRect.x + int(parentRect.width * m_owner.get()->GetAnchor().width);
-		int top = parentRect.y + int(parentRect.height * m_owner.get()->GetAnchor().y);
-		int bottom = parentRect.y + int(parentRect.height * m_owner.get()->GetAnchor().height);
+		Rectangle anchor = m_owner.get()->GetAnchor();
+
+		int left = parentRect.x;
+		int right = parentRect.x + int(parentRect.width);
+		int top = parentRect.y ;
+		int bottom = parentRect.y + int(parentRect.height);
 		int availW = std::max(0, right - left);
 		int availH = std::max(0, bottom - top);
 
 		// element pixel size based on design size and scale
-		int pixelW = std::max(1, int(m_Rect.width * scale));
-		int pixelH = std::max(1, int(m_Rect.height * scale));
+		int pixelW = std::max(1, int(m_Rect.width * scaleX));
+		int pixelH = std::max(1, int(m_Rect.height * scaleY));
 
-		// place element at center of anchor rect with clamping
-		/*int cx = left + availW / 2;
-		int cy = top + availH / 2;*/
+		 //place element at center of anchor rect with clamping
+		//int cx = left + availW / 2;
+		//int cy = top + availH / 2;
 
 		// place element at left top of anchor rect with clamping
-		int cx = left + (m_Rect.x * scale);
-		int cy = top + (m_Rect.y * scale);
+		int anchorLeft = parentRect.width * anchor.x;
+		int anchorRight = parentRect.width * anchor.width ;
+		int anchorTop = parentRect.height * anchor.y;
+		int anchorBottom = parentRect.height * anchor.height ;
+
+		Vector2 midAnchor = {	parentRect.x + anchorLeft + (anchorRight - anchorLeft) / 2.f,
+								parentRect.y + anchorTop + (anchorBottom - anchorTop) / 2.f };
+
+		int cx =  midAnchor.x + (m_Rect.x * scaleX);
+		int cy =  midAnchor.y + (m_Rect.y * scaleY);
 
 		Vector2 screenSize, screenLoc;
-		screenSize.x = std::min(pixelW, availW);
+		screenSize.x =  std::min(pixelW, availW);
 		screenSize.y = std::min(pixelH, availH);
 		//screenLoc.x = cx - screenSize.x / 2;
 		//screenLoc.y = cy - screenSize.y / 2;
@@ -111,7 +122,7 @@ namespace cart
 
 		m_owner.get()->SetSize(screenSize);
 		m_owner.get()->SetLocation(screenLoc);
-		m_owner.get()->SetPivot({ ownerpivot.x * scale, ownerpivot.y * scale });
+		m_owner.get()->SetPivot({ ownerpivot.x * scaleX, ownerpivot.y * scaleY });
 		// Safety check: is element outside safeRect?
 		if (screenLoc.x < safeRect.x || screenLoc.y < safeRect.y ||
 			screenLoc.x + screenSize.x > safeRect.x + screenSize.x ||

@@ -18,7 +18,7 @@ namespace cart {
         const Rectangle SafeRect()const { return m_safeRect; };
         const Vector2 Size();
         float Scale();
-
+        Vector2 GetDefaultCanvasSize();
         Delegate<> onScreenSizeChange;
 
         ~UICanvas();

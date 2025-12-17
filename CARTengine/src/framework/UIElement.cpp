@@ -25,7 +25,10 @@ namespace cart {
 		m_defaultSize{},
 		m_isExcludedFromParentAutoControl{ isExcludedFromParentAutoControl },
 		m_shapeType{ SHAPE_TYPE::RECTANGLE },
-		m_parent{ shared<UIElement>{nullptr} }
+		m_parent{ shared<UIElement>{nullptr} },
+		m_roundness{0.5f},
+		m_borderwidth{0},
+		m_borderColor{ GRAY }
 
 	{
 		m_anchor = { 0.f, 0.f, 1.f, 1.f }; 
@@ -88,6 +91,9 @@ namespace cart {
 		m_color = _prop.color;
 		m_pivot = _prop.pivot;
 		m_anchor = _prop.anchor;
+		m_roundness = _prop.roundness;
+		m_borderwidth = _prop.borderwidth;
+		m_borderColor = _prop.bordercol;
 		SetSize(_prop.size);
 		if (_prop.component != NO_COMPONENT)AddComponent(_prop.component);
 	}
@@ -133,6 +139,7 @@ namespace cart {
 		if (m_shapeType == SHAPE_TYPE::CIRCLE) {
 			return { m_location.x - m_pivot.x - m_width * 0.5f, m_location.y - m_pivot.y - m_height * 0.5f, m_width * 2.f, m_height * 2.f };// shape size will change for cirle;
 		}
+		
 		return{ m_location.x - m_pivot.x, m_location.y - m_pivot.y, m_width * m_scale,m_height * m_scale };
 	}
 
@@ -213,11 +220,24 @@ namespace cart {
 		}
 		else if (m_shapeType == SHAPE_TYPE::ROUNDED_RECTANGLE)
 		{
-			DrawRectangleRounded({  m_location.x - m_pivot.x,  m_location.y - m_pivot.y,  m_width , m_height }, 0.1f * scScale, 2 * scScale, m_color);
+			DrawRectangleRounded({  m_location.x - m_pivot.x,  m_location.y - m_pivot.y,  m_width , m_height }, m_roundness * scScale, 2 * scScale, m_color);
+
+			if (m_borderwidth > 0)
+			{
+				Rectangle rect = { m_location.x , m_location.y, (float)m_width - m_borderwidth, (float)m_height - m_borderwidth };
+				DrawRectangleRoundedLinesEx(rect, m_roundness, 36 * m_scale, m_borderwidth * m_scale, m_borderColor);
+
+			}
 		}
 		else 
 		{
 			DrawRectangle(m_location.x - m_pivot.x, m_location.y - m_pivot.y, m_width, m_height, m_color);
+			if (m_borderwidth > 0)
+			{
+				Rectangle rect = { m_location.x , m_location.y, (float)m_width - m_borderwidth, (float)m_height - m_borderwidth };
+				DrawRectangleLinesEx(rect, m_borderwidth * m_scale, m_borderColor);
+
+			}
 			//DrawRectangle(m_location.x, m_location.y, m_width, m_height, m_color);
 		}
 	}

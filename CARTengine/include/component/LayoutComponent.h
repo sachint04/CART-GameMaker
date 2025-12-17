@@ -13,7 +13,7 @@ namespace cart {
 		// Inherited via IComponent
 		void Destroy() override;
 		void Update() override;
-		bool UpdateLayout(Vector2 size, float scale, const Rectangle& safeRect);
+		bool UpdateLayout(Vector2 size, float scaleX, float scaleY, const Rectangle& safeRect);
 		bool HasParent();
 		void SetForUpdate();
 		bool IsUpdated();

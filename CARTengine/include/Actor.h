@@ -43,6 +43,7 @@ namespace cart {
 		weak<IComponent> GetComponentById(const std::string& id);
 		bool HasComponent(COMPONENT_TYPE type);
 		bool IsReady() { return m_isReady; };
+		bool IsScaleLocked() { return m_isLockedScale; };
 		float GetRotation();
 		Color GetColor();
 		Vector2 GetLocation();
@@ -65,6 +66,7 @@ namespace cart {
 		Vector4 m_rotation3;
 		bool m_visible;
 		bool m_active;
+		bool m_isLockedScale;
 		Color m_color;
 		bool m_isReady;
 		std::vector <std::string> m_preloadlist; //<url, filename>

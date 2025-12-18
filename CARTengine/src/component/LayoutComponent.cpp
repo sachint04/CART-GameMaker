@@ -98,8 +98,15 @@ namespace cart
 		availH = std::max(0, bottom - top);
 
 		// element pixel size based on design size and scale
-		pixelW = std::max(1, int(m_Rect.width * scaleX));
-		pixelH = std::max(1, int(m_Rect.height * scaleY));
+		if ((m_owner.get()->HasTexture() && m_owner.get()->GetTextureType() == TEXTURE_PART) || m_owner.get()->IsScaleLocked()) {
+			pixelW = std::max(1, int(m_Rect.width ));
+			pixelH = std::max(1, int(m_Rect.height));
+		}
+		else {
+
+			pixelW = std::max(1, int(m_Rect.width * scaleX));
+			pixelH = std::max(1, int(m_Rect.height * scaleY));
+		}
 
 		// place element at left top of anchor rect with clamping
 		anchorLeft = parentRect.width * anchor.x;
@@ -119,7 +126,7 @@ namespace cart
 		m_owner.get()->SetSize({(float)w, (float)h});
 		
 		// Location
-		if (m_owner.get()->HasTexture() && m_owner.get()->GetTextureType() == TEXTURE_PART) {
+		if ((m_owner.get()->HasTexture() && m_owner.get()->GetTextureType() == TEXTURE_PART) || m_owner.get()->IsScaleLocked()) {
 			cx = midAnchor.x + m_Rect.x;
 			cy = midAnchor.y + m_Rect.y;
 		}

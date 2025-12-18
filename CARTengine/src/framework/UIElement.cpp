@@ -96,6 +96,7 @@ namespace cart {
 		m_borderwidth = _prop.borderwidth;
 		m_borderColor = _prop.bordercol;
 		m_roundnessSegments = _prop.roundnessSegments;
+		m_isLockedScale = _prop.blockscale;
 		SetSize(_prop.size);
 		if (_prop.component != NO_COMPONENT)AddComponent(_prop.component);
 	}

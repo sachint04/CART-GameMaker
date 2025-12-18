@@ -145,10 +145,14 @@ namespace cart {
         TEXTURE_TYPE texturetype = TEXTURE_TYPE::TEXTURE_FULL;
         COMPONENT_TYPE component = NO_COMPONENT;
         SHAPE_TYPE shapetype = SHAPE_TYPE::RECTANGLE;
-        int linewidth = 0;
+        bool blockscale;
         std::string texture;
+        int linewidth = 0;
+        int roundnessSegments = 0;
+        int borderwidth;
         float scale{ 1.f };
         float rotation;
+        float roundness = 0.5f;
         Color color = WHITE;
         Color textureColor =  WHITE ;
         Vector2 size;
@@ -156,11 +160,8 @@ namespace cart {
         Vector2 pivot;
         Rectangle texturesource;
         Rectangle anchor = {0,0,1.f,1.f};
-        float roundness = 0.5f;
-        int roundnessSegments = 0;
-        int borderwidth;
         Color bordercol;
-
+        
     };
 
 	struct Text_Properties : UI_Properties{

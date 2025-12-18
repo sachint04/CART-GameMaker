@@ -25,7 +25,8 @@ namespace cart {
 		m_zSize{1.f},
 		m_preloadlist{},
 		m_isReady{false},
-		m_strloadMsg{"Loading... "}
+		m_strloadMsg{"Loading... "},
+		m_isLockedScale{false}
 	{
 	}
 	void Actor::Start()

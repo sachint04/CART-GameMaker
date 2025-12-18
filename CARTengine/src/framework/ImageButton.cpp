@@ -170,14 +170,6 @@ namespace cart {
 				DrawRectangle(m_location.x, m_location.y, m_width, m_height, m_color);
 			}
 		}*/
-
-		if (m_borderwidth > 0)
-		{
-			//Rectangle rect = { m_location.x , m_location.y, (float)m_width - m_borderwidth, (float)m_height - m_borderwidth };
-			Rectangle rect = { m_location.x , m_location.y, (float)m_width - m_borderwidth, (float)m_height - m_borderwidth };
-			DrawRectangleLinesEx(rect, m_borderwidth, m_borderColor);
-
-		}
 		Color calcColor = { m_textcolor.r, m_textcolor.g, m_textcolor.b, m_color.a };
 		if (m_text.size() > 0) {
 				m_font = AssetManager::Get().LoadFontAsset(m_fontstr, m_fontsize);			

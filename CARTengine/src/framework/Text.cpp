@@ -55,22 +55,24 @@ namespace cart {
 	{				
 		if (!m_sharedfont)
 			m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, std::ceil(m_fontsize * UICanvas::Get().lock()->Scale()));
-		m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), std::ceil(m_fontsize * UICanvas::Get().lock()->Scale()), m_fontspacing * UICanvas::Get().lock()->Scale());
 
+		m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), std::ceil(m_fontsize * UICanvas::Get().lock()->Scale()), m_fontspacing * UICanvas::Get().lock()->Scale());
+		int px = (m_pivot.x * m_width);
+		int py = (m_pivot.y * m_height);
 		switch (m_align)
 		{
 		case LEFT:
-			m_textLocation = { m_location.x - m_pivot.x,
-								m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 - m_pivot.y } ;
+			m_textLocation = { m_location.x - px,
+								m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 - py } ;
 			break;
 		case CENTER:
-			m_textLocation = { m_location.x + (m_width * m_scale / 2) - (m_textsize.x * m_scale) / 2  -m_pivot.x,
-								m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 - m_pivot.y };
+			m_textLocation = { m_location.x + (m_width * m_scale / 2) - (m_textsize.x * m_scale) / 2  -px,
+								m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 - py };
 			break;
 
 		case RIGHT:
-			m_textLocation = { m_location.x + (m_width * m_scale) - (m_textsize.x * m_scale) - m_pivot.x,
-								m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 - m_pivot.y };
+			m_textLocation = { m_location.x + (m_width * m_scale) - (m_textsize.x * m_scale) - px,
+								m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 - py };
 			break;
 		}
 

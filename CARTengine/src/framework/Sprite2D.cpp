@@ -13,7 +13,6 @@ namespace cart {
 		m_textureColor{ WHITE },
 		m_bMasked{ false },
 		m_screenMask{},
-		m_texturetype{ TEXTURE_FULL },
 		m_texturesource{},
 		m_textureStatus{},
 		m_textureLocation{},
@@ -60,7 +59,9 @@ namespace cart {
 						};
 					}
 					else {
-						m_textureLocation = { m_location.x - m_pivot.x, m_location.y - m_pivot.y };
+						int px = (m_pivot.x * m_width);
+						int py = (m_pivot.y * m_height);
+						m_textureLocation = { m_location.x - px, m_location.y - py };
 					}
 				}
 				/*if (m_bAspectRatio)
@@ -94,7 +95,7 @@ namespace cart {
 			if (m_texturetype == TEXTURE_PART) {// Render PART OF TEXTURE			
 				DrawTextureRec(*m_texture2d, m_texturesource, m_textureLocation, m_textureColor);
 			}
-			else {			
+			else {	
 				DrawTextureEx(*m_texture2d, m_textureLocation, m_rotation, 1.f, m_textureColor);
 			}
 
@@ -141,18 +142,19 @@ namespace cart {
 
 	}
 	void Sprite2D::SetSize(Vector2 _size) {
-		UIElement::SetSize(_size);	
-		m_textureSize = _size;
-		m_bIsScaling = true;
-		
-		if (m_bAspectRatio)
-		{
-			UpdateAspectRatio();
-		}
-		else {
+		if (m_texturetype == TEXTURE_FULL) {
+			UIElement::SetSize(_size);	
+			m_textureSize = _size;
+			m_bIsScaling = true;
+			if (m_bAspectRatio)
+			{
+				UpdateAspectRatio();
+			}
+			else {
 
-			ResizeImage();
-		}		
+				ResizeImage();
+			}		
+		}
 		if (m_bMasked && !m_bIsScaling) {
 			UpdateMask();
 		}
@@ -160,17 +162,18 @@ namespace cart {
 	void Sprite2D::SetLocation(Vector2 _location)
 	{
 		UIElement::SetLocation(_location);
-		
-		if (m_bAspectRatio)
-		{
-			UpdateAspectRatio();
-		}
-		else {
+		if (m_texturetype == TEXTURE_FULL) {
+			if (m_bAspectRatio)
+			{
+				UpdateAspectRatio();
+			}
+			else {
 
-			ResizeImage();
-		}
-		if (m_bMasked && !m_bIsScaling) {
-			UpdateMask();
+				ResizeImage();
+			}
+			if (m_bMasked && !m_bIsScaling) {
+				UpdateMask();
+			}
 		}
 	}
 	/*void Sprite2D::UpdateLocation()
@@ -188,7 +191,7 @@ namespace cart {
 		m_textureStatus = _prop.texturestatus;
 	}
 	Rectangle Sprite2D::GetTextureBounds() {
-		//	return{ m_location.x - m_pivot.x, m_location.y - m_pivot.y, m_width * m_scale,m_height * m_scale };
+		//	return{ m_location.x - px, m_location.y - py, m_width * m_scale,m_height * m_scale };
 		return{ m_textureLocation.x, m_textureLocation.y, m_textureSize.x,  m_textureSize.y };
 	}
 	void Sprite2D::UpdateMask() {
@@ -210,7 +213,7 @@ namespace cart {
 			Logger::Get()->Error(" Sprite2D::UpdateMask() | ERROR! Screen Mask size does not match with screen size.");
 			return;
 		}
-		
+		int x, y, screenx, screeny, index;
 		if(imagepixel)delete imagepixel;
 
 		if (maskpixels)delete maskpixels;
@@ -220,13 +223,13 @@ namespace cart {
 
 		Rectangle rect = GetBounds();
 		for (int i = 0; i < m_ImgCopy.width * m_ImgCopy.height; i++) {
-			int y = ceil(i / m_ImgCopy.width);
-			int x = (i % (int)m_ImgCopy.width) + 1;
-			int screenx = m_textureLocation.x + x;
-			int screeny = m_textureLocation.y + y;
+			y = ceil(i / m_ImgCopy.width);
+			x = (i % (int)m_ImgCopy.width) + 1;
+			screenx = m_textureLocation.x + x;
+			screeny = m_textureLocation.y + y;
 			if (screenx < 0 || screenx >= GetScreenWidth() || screeny < 0 || screeny >= GetScreenHeight())continue;
 
-			int index = (screeny * GetScreenWidth()) + screenx;
+			index = (screeny * GetScreenWidth()) + screenx;
 			Color maskcol = maskpixels[index - 1];
 			imagepixel[i].a = maskcol.a;
 		}
@@ -240,16 +243,18 @@ namespace cart {
 	void Sprite2D::ResizeImage() {
 		m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
 		if (!m_texture2d)return;
+		int width, height; float tmpscalex, tmpscaley, px, py;
 
-		float tmpscalex = (float)m_width / (float)m_texture2d.get()->width;
-		float tmpscaley = (float)m_height / (float)m_texture2d.get()->height;
-
-		m_textureLocation = { m_location.x - m_pivot.x, m_location.y - m_pivot.y };
+		tmpscalex = (float)m_width / (float)m_texture2d.get()->width;
+		tmpscaley = (float)m_height / (float)m_texture2d.get()->height;
+		px = (m_pivot.x * m_width);
+		py = (m_pivot.y * m_height);
+		m_textureLocation = { m_location.x - px, m_location.y - py };
 
 		if (tmpscalex == 1 && tmpscaley == 1)return;
 
-		int width = (m_texture2d.get()->width * tmpscalex);
-		int height = (m_texture2d.get()->height * tmpscaley);
+		width = (m_texture2d.get()->width * tmpscalex);
+		height = (m_texture2d.get()->height * tmpscaley);
 
 		m_textureSize = { (float)width, (float)height };
 		if (m_textureStatus == LOCKED) {
@@ -267,19 +272,22 @@ namespace cart {
 		if (!m_texture2d) {
 			return false;
 		}
-		Image* img = AssetManager::Get().GetImage(m_strTexture);
-		float stageratio = m_width / m_height;
+		int bw, bh, w, h;
+		float stageratio, targetratio, diffratio;
 
-		int bw = (stageratio > 1.f) ? m_width / stageratio : m_width ;
-		int bh = (stageratio <  1.f) ? m_height * stageratio : m_height;
+		Image* img = AssetManager::Get().GetImage(m_strTexture);
+		stageratio = m_width / m_height;
+
+		bw = (stageratio > 1.f) ? m_width / stageratio : m_width ;
+		bh = (stageratio <  1.f) ? m_height * stageratio : m_height;
 		Vector2 stagesquare = { (float)bw , (float)bh};
 
 		
-		float targetratio = (img->width	> img->height)? stagesquare.x / img->width : stagesquare.x / img->height;
-		int w = img->width * targetratio;
-		int h = img->height * targetratio;
+		targetratio = (img->width	> img->height)? stagesquare.x / img->width : stagesquare.x / img->height;
+		w = img->width * targetratio;
+		h = img->height * targetratio;
 
-		float diffratio = std::min( m_width /(float)w  , m_height / (float)h );
+		diffratio = std::min( m_width /(float)w  , m_height / (float)h );
 		if (diffratio > 1) {
 			w *= diffratio;
 			h *= diffratio;
@@ -312,6 +320,11 @@ namespace cart {
 
 	}
 
+	bool Sprite2D::HasTexture()
+	{
+		return m_strTexture.size() > 0;
+	}
+	
 #pragma endregion
 
 
@@ -324,6 +337,8 @@ namespace cart {
 		m_texture2d.reset();
 		UIElement::Destroy();
 	}
+
+	
 
 	Sprite2D::~Sprite2D()
 	{

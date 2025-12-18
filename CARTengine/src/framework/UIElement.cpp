@@ -28,8 +28,9 @@ namespace cart {
 		m_parent{ shared<UIElement>{nullptr} },
 		m_roundness{0.5f},
 		m_borderwidth{0},
-		m_borderColor{ GRAY }
-
+		m_borderColor{ GRAY },
+		m_texturetype{ TEXTURE_FULL },
+		m_roundnessSegments{36}
 	{
 		m_anchor = { 0.f, 0.f, 1.f, 1.f }; 
 		m_pivot = { 0.f, 0.f };
@@ -94,6 +95,7 @@ namespace cart {
 		m_roundness = _prop.roundness;
 		m_borderwidth = _prop.borderwidth;
 		m_borderColor = _prop.bordercol;
+		m_roundnessSegments = _prop.roundnessSegments;
 		SetSize(_prop.size);
 		if (_prop.component != NO_COMPONENT)AddComponent(_prop.component);
 	}
@@ -109,6 +111,16 @@ namespace cart {
 	void UIElement::LoadAssets()
 	{
 		Actor::LoadAssets();
+	}
+
+	bool UIElement::HasTexture()
+	{
+		return false;
+	}
+
+	TEXTURE_TYPE UIElement::GetTextureType()
+	{
+		return m_texturetype;
 	}
 
 	void UIElement::SetActive(bool _flag)
@@ -135,12 +147,14 @@ namespace cart {
 	}
 	
 	Rectangle UIElement::GetBounds() {
-		//	return{ m_location.x - m_pivot.x, m_location.y - m_pivot.y, m_width * m_scale,m_height * m_scale };
+		int px = (m_pivot.x * m_width);
+		int py = (m_pivot.y * m_height);
+		//	return{ m_location.x - px, m_location.y - m_pivot.y, m_width * m_scale,m_height * m_scale };
 		if (m_shapeType == SHAPE_TYPE::CIRCLE) {
-			return { m_location.x - m_pivot.x - m_width * 0.5f, m_location.y - m_pivot.y - m_height * 0.5f, m_width * 2.f, m_height * 2.f };// shape size will change for cirle;
+			return { m_location.x - px- m_width * 0.5f, m_location.y - m_pivot.y - m_height * 0.5f, m_width * 2.f, m_height * 2.f };// shape size will change for cirle;
 		}
 		
-		return{ m_location.x - m_pivot.x, m_location.y - m_pivot.y, m_width * m_scale,m_height * m_scale };
+		return{ m_location.x - px, m_location.y - py, m_width * m_scale,m_height * m_scale };
 	}
 
 	void UIElement::AddComponent(COMPONENT_TYPE type)
@@ -211,31 +225,34 @@ namespace cart {
 	void UIElement::DrawBGColor()
 	{
 		float scScale = UICanvas::Get().lock()->Scale();
+		int px = (m_pivot.x * m_width);
+		int py = (m_pivot.y * m_height);
 		if (m_shapeType == SHAPE_TYPE::CIRCLE)
 		{
-			DrawCircle(m_location.x + m_width / 2.f  - m_pivot.x, m_location.y + m_width / 2.f  - m_pivot.y, m_width, m_color);
+			DrawCircle(m_location.x + m_width / 2.f  - (float)px, m_location.y + m_width / 2.f  - (float)py, m_width, m_color);
 			//FOR TESTING
-			//DrawRectangleLines(m_location.x - m_pivot.x - m_width * 0.5f, m_location.y - m_pivot.y - m_height * 0.5f, m_width * 2.f, m_height * 2.f, GREEN);
+			//DrawRectangleLines(m_location.x - px - m_width * 0.5f, m_location.y - m_pivot.y - m_height * 0.5f, m_width * 2.f, m_height * 2.f, GREEN);
 
 		}
 		else if (m_shapeType == SHAPE_TYPE::ROUNDED_RECTANGLE)
 		{
-			DrawRectangleRounded({  m_location.x - m_pivot.x,  m_location.y - m_pivot.y,  m_width , m_height }, m_roundness * scScale, 2 * scScale, m_color);
+			DrawRectangleRounded({  m_location.x - px,  m_location.y - py,  m_width , m_height }, m_roundness * scScale, 36 * scScale, m_color);
 
 			if (m_borderwidth > 0)
 			{
-				Rectangle rect = { m_location.x , m_location.y, (float)m_width - m_borderwidth, (float)m_height - m_borderwidth };
-				DrawRectangleRoundedLinesEx(rect, m_roundness, 36 * m_scale, m_borderwidth * m_scale, m_borderColor);
+				int bw = m_borderwidth * scScale;
+				DrawRectangleRoundedLinesEx(GetBounds(), m_roundness * scScale, m_roundnessSegments * scScale, (float)bw, m_borderColor);
 
 			}
 		}
 		else 
 		{
-			DrawRectangle(m_location.x - m_pivot.x, m_location.y - m_pivot.y, m_width, m_height, m_color);
+			DrawRectangle(m_location.x - px, m_location.y - py, m_width, m_height, m_color);
 			if (m_borderwidth > 0)
 			{
-				Rectangle rect = { m_location.x , m_location.y, (float)m_width - m_borderwidth, (float)m_height - m_borderwidth };
-				DrawRectangleLinesEx(rect, m_borderwidth * m_scale, m_borderColor);
+				int bw = m_borderwidth* scScale;
+				DrawRectangleRoundedLinesEx(GetBounds(), 0, 0, (float)bw, m_borderColor);
+				//DrawRectangleLinesEx(GetBounds(), (float)bw, m_borderColor);
 
 			}
 			//DrawRectangle(m_location.x, m_location.y, m_width, m_height, m_color);
@@ -245,12 +262,12 @@ namespace cart {
 	/*void UIElement::UpdateLocation()
 	{
 		m_rawlocation = { m_location.x * m_scale, m_location.y * m_scale };
-		m_location = { m_location.x - (m_pivot.x * m_scale) , m_location.y - (m_pivot.y * m_scale) };
+		m_location = { m_location.x - (px * m_scale) , m_location.y - (m_pivot.y * m_scale) };
 	}*/
 
 	Vector2 UIElement::GetPivot()
 	{
-		return { m_pivot.x * m_scale , m_pivot.y * m_scale };
+		return m_pivot;
 	}
 
 	Rectangle UIElement::GetAnchor()

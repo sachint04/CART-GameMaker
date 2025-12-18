@@ -74,7 +74,8 @@ namespace cart {
         
         if (scaleX <= scaleY)scaleY = std::max(scale, CANVAS_STRECH_Y);
         if (scaleX > scaleY)scaleX = std::max(scale, CANVAS_STRECH_X);
-
+        
+        m_safeRect = { 0,0,  (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT };
        /* float scaleX = std::max(CANVAS_STRECH_X, (float)SCREEN_WIDTH / (float)DEFAULT_CANVAS_WIDTH);
         float scaleY = std::max(CANVAS_STRECH_Y, (float)SCREEN_HEIGHT / (float)DEFAULT_CANVAS_HEIGHT);*/
 
@@ -114,6 +115,7 @@ namespace cart {
         return std::min((float)SCREEN_WIDTH / (float)DEFAULT_CANVAS_WIDTH,
             (float)SCREEN_HEIGHT / (float)DEFAULT_CANVAS_HEIGHT);
     }
+    
     Vector2 UICanvas::GetDefaultCanvasSize() {
         return { (float)DEFAULT_CANVAS_WIDTH, (float)DEFAULT_CANVAS_HEIGHT };
     }

@@ -16,7 +16,7 @@ namespace cart {
 		virtual void SetLocation(Vector2 _location) override;
 		//virtual void UpdateLocation() override;
 		virtual void Destroy() override;
-
+		virtual bool HasTexture() override;		
 		void MaintainAspectRatio(bool _flag) { m_bAspectRatio = _flag; };
 		bool IsAspectRatio() { return m_bAspectRatio; };
 		Color GetTextureColor() { return m_textureColor; };
@@ -33,7 +33,6 @@ namespace cart {
 		void UpdateMask();
 		void ResizeImage();
 		bool UpdateAspectRatio();
-		TEXTURE_TYPE  m_texturetype = TEXTURE_FULL;
 		std::string m_imgstr;
 		std::string m_strTexture;
 		Image m_ImgCopy;

@@ -89,7 +89,7 @@ namespace cart {
 		cntrlui.btncol = SKYBLUE;
 		cntrlui.overcol = ORANGE;
 		cntrlui.downcol = ORANGE;
-		cntrlui.pivot = { cntrlhalf, cntrlhalf };
+		cntrlui.pivot = { 0.5f, 0.5f };
 		cntrlui.shapetype = SHAPE_TYPE::CIRCLE;
 		id = "topleft-cntrl";
 		m_topleftCntrl = AddButton(id, cntrlui);// TOP LEFT control

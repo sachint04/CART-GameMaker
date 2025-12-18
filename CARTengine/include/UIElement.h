@@ -26,7 +26,6 @@ namespace cart {
 		virtual void SetUIProperties(UI_Properties _prop);
         virtual void SetSize(Vector2 _size) override;		
 		virtual void LoadAssets()override;
-
 		virtual void SetScale(float _scale) override;
 		virtual void SetActive(bool _flag) override;
 		virtual void SetLocation(Vector2 _location)override;		
@@ -38,6 +37,8 @@ namespace cart {
 		virtual void Notify(const std::string& strevent);
 		virtual void AssetsLoadCompleted()override;
 		virtual void UpdateLayout(int canvas_w, int canvas_h);
+		virtual bool HasTexture();
+		virtual TEXTURE_TYPE GetTextureType();
 		virtual Rectangle GetBounds();
 		virtual Vector2 GetPivot();
 		virtual Rectangle GetAnchor();
@@ -67,6 +68,7 @@ namespace cart {
 	protected:
 		SHAPE_TYPE m_shapeType;
 		int m_borderwidth;
+		int m_roundnessSegments;
 		bool m_pendingUpdate;
 		bool m_isExcludedFromParentAutoControl;
 		float m_roundness;
@@ -79,6 +81,7 @@ namespace cart {
 		Color m_borderColor;
 		std::vector <shared<UIButton>> m_slides = {};
 		std::vector<shared<UIElement>> m_children = {};
+		TEXTURE_TYPE  m_texturetype = TEXTURE_FULL;
 
 
 	};

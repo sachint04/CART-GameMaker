@@ -80,6 +80,15 @@ namespace cart {
 		UIElement::SetVisible(_flag);
 
 	}
+
+	void ColorPalette::EvaluateUI() {
+		colorsRecs.clear();
+		for (int i = 0; i < 21; i++)
+		{
+			Rectangle vec = { m_location.x + m_palatteiconsize * (i % 7) , m_location.y + (m_palatteiconsize * (i / 7)), m_palatteiconsize,m_palatteiconsize };
+			colorsRecs.push_back(vec);			
+		}
+	}
 #pragma endregion
 
 

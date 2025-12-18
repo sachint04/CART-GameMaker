@@ -14,6 +14,7 @@ namespace cart
 		void Update(float _deltaTime)override;
 		void Draw(float _deltaTime)override;
 		void SetVisible(bool _flag)override;
+		void EvaluateUI();
 		~ColorPalette();
 
 		Delegate<Color> onPicked;

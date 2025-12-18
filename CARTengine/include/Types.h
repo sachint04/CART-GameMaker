@@ -157,6 +157,7 @@ namespace cart {
         Rectangle texturesource;
         Rectangle anchor = {0,0,1.f,1.f};
         float roundness = 0.5f;
+        int roundnessSegments = 0;
         int borderwidth;
         Color bordercol;
 

@@ -32,11 +32,13 @@ namespace cart
     bool LayoutComponent::UpdateLayout(Vector2 size, float scaleX, float scaleY, const Rectangle& safeRect)
     {
 		if (!m_isEnabled)return false; // do nothing;
-
-		Logger::Get()->Trace(std::format("LayoutComponent::UpdateLayout() ======== {} ========== ", GetId()));
+		//Logger::Get()->Trace(std::format("LayoutComponent::UpdateLayout() ======== {} ========== ", GetId()));
 		
+		int left, right, top, bottom, availW, availH, pixelW, pixelH, anchorLeft, anchorRight, anchorTop, anchorBottom, w, h, cx, cy, parentx, parenty, parentw, parenth, anchorx, anchory;
+		Vector2 canvas_size, ownerpivot, midAnchor;
+		Rectangle parentRect, anchor;
 		auto parent = m_owner.get()->parent();
-		Rectangle parentRect = {};
+	
 		if (!parent.expired()) {
 			// has owner
 			if (parent.lock()->IsReady())
@@ -48,10 +50,11 @@ namespace cart
 					if (parent.lock()->GetLayoutComponent().lock()->UpdateLayout(size, scaleX, scaleY, safeRect))// Update Parent first
 					{
 						// update parent first
-						parentRect = { parent.lock()->GetLocation().x - parent.lock()->GetPivot().x,
-										parent.lock()->GetLocation().y - parent.lock()->GetPivot().y,
-										parent.lock()->GetSize().x,
-										parent.lock()->GetSize().y };
+						parentx = parent.lock()->GetLocation().x - (parent.lock()->GetPivot().x * parent.lock()->GetSize().x);
+						parenty = parent.lock()->GetLocation().y - (parent.lock()->GetPivot().y * parent.lock()->GetSize().y);
+						parentw = parent.lock()->GetSize().x;
+						parenth = parent.lock()->GetSize().y;
+						parentRect = { (float)parentx, (float)parenty, (float)parentw, (float)parenth };
 					}
 					else {
 						// owner failed to update
@@ -62,10 +65,11 @@ namespace cart
 				}
 				else {
 				// owner is already updated!!!
-					parentRect = { parent.lock()->GetLocation().x - parent.lock()->GetPivot().x,
-										parent.lock()->GetLocation().y - parent.lock()->GetPivot().y,
-										parent.lock()->GetSize().x,
-										parent.lock()->GetSize().y };
+					parentx = parent.lock()->GetLocation().x - (parent.lock()->GetPivot().x * parent.lock()->GetSize().x);
+					parenty = parent.lock()->GetLocation().y - (parent.lock()->GetPivot().y * parent.lock()->GetSize().y);
+					parentw = parent.lock()->GetSize().x;
+					parenth = parent.lock()->GetSize().y;
+					parentRect = { (float)parentx, (float)parenty, (float)parentw, (float)parenth };
 				}
 				
 			}
@@ -76,63 +80,67 @@ namespace cart
 			}
 		}
 		else {
-			Vector2 canvas_size = UICanvas::Get().lock()->Size();
-			parentRect = { 0, 0, (float)canvas_size.x, (float)canvas_size.y };
+			canvas_size = UICanvas::Get().lock()->Size();
+			parentx = 0;
+			parenty = 0;
+			parentw = canvas_size.x;
+			parenth = canvas_size.y;
+			parentRect = { (float)parentx, (float)parenty, (float)parentw, (float)parenth};
 		}
 			
+		anchor = m_owner.get()->GetAnchor();
 
-		Vector2 ownerpivot = m_owner.get()->GetPivot();
-		Rectangle anchor = m_owner.get()->GetAnchor();
-
-		int left = parentRect.x;
-		int right = parentRect.x + int(parentRect.width);
-		int top = parentRect.y ;
-		int bottom = parentRect.y + int(parentRect.height);
-		int availW = std::max(0, right - left);
-		int availH = std::max(0, bottom - top);
+		left = parentRect.x;
+		right = parentRect.x + int(parentRect.width);
+		top = parentRect.y ;
+		bottom = parentRect.y + int(parentRect.height);
+		availW = std::max(0, right - left);
+		availH = std::max(0, bottom - top);
 
 		// element pixel size based on design size and scale
-		int pixelW = std::max(1, int(m_Rect.width * scaleX));
-		int pixelH = std::max(1, int(m_Rect.height * scaleY));
-
-		 //place element at center of anchor rect with clamping
-		//int cx = left + availW / 2;
-		//int cy = top + availH / 2;
+		pixelW = std::max(1, int(m_Rect.width * scaleX));
+		pixelH = std::max(1, int(m_Rect.height * scaleY));
 
 		// place element at left top of anchor rect with clamping
-		int anchorLeft = parentRect.width * anchor.x;
-		int anchorRight = parentRect.width * anchor.width ;
-		int anchorTop = parentRect.height * anchor.y;
-		int anchorBottom = parentRect.height * anchor.height ;
+		anchorLeft = parentRect.width * anchor.x;
+		anchorRight = parentRect.width * anchor.width ;
+		anchorTop = parentRect.height * anchor.y;
+		anchorBottom = parentRect.height * anchor.height ;
 
-		Vector2 midAnchor = {	parentRect.x + anchorLeft + (anchorRight - anchorLeft) / 2.f,
-								parentRect.y + anchorTop + (anchorBottom - anchorTop) / 2.f };
+		anchorx = parentRect.x + anchorLeft + (anchorRight - anchorLeft) / 2.f;
+		anchory = parentRect.y + anchorTop + (anchorBottom - anchorTop) / 2.f;
+		midAnchor = {	(float)anchorx, (float)anchory};
 
-		int cx =  midAnchor.x + (m_Rect.x * scaleX);
-		int cy =  midAnchor.y + (m_Rect.y * scaleY);
+		// Size
 
-		Vector2 screenSize, screenLoc;
-		screenSize.x =  std::min(pixelW, availW);
-		screenSize.y = std::min(pixelH, availH);
-		//screenLoc.x = cx - screenSize.x / 2;
-		//screenLoc.y = cy - screenSize.y / 2;
+		w = std::min(pixelW, availW);
+		h = std::min(pixelH, availH);
 
-		screenLoc.x = cx;// -(screenSize.x / 2) + (m_ui.lock()->GetLocation().x * scale) - (m_ui.lock()->GetPivot().x * scale);
-		screenLoc.y = cy;// -(screenSize.y / 2) + (m_ui.lock()->GetLocation().y * scale) - (m_ui.lock()->GetPivot().y * scale);
+		m_owner.get()->SetSize({(float)w, (float)h});
+		
+		// Location
+		if (m_owner.get()->HasTexture() && m_owner.get()->GetTextureType() == TEXTURE_PART) {
+			cx = midAnchor.x + m_Rect.x;
+			cy = midAnchor.y + m_Rect.y;
+		}
+		else {
+			cx =  midAnchor.x + (m_Rect.x * scaleX);
+			cy =  midAnchor.y + (m_Rect.y * scaleY);
+		}
+		m_owner.get()->SetLocation({(float)cx, (float)cy});
+		
+	
 
-		m_owner.get()->SetSize(screenSize);
-		m_owner.get()->SetLocation(screenLoc);
-		m_owner.get()->SetPivot({ ownerpivot.x * scaleX, ownerpivot.y * scaleY });
 		// Safety check: is element outside safeRect?
-		if (screenLoc.x < safeRect.x || screenLoc.y < safeRect.y ||
-			screenLoc.x + screenSize.x > safeRect.x + screenSize.x ||
-			screenLoc.y + screenSize.y > safeRect.y + screenSize.y) {
+		if (cx < safeRect.x || cy < safeRect.y ||
+			cx + w > safeRect.x + w ||
+			cy + h > safeRect.y + h) {
 			// For demo we print; in real system we'd emit warning event
 			std::cout << "[WARN] Element '" << m_Id << "' overlaps safe area.\n";
 		}
 		//Logger::Get()->Trace(std::format("\n{} Layout updated x {} | y {} \n width {} | height {}\n", m_Id, screenLoc.x, screenLoc.y, screenSize.x, screenSize.y));
-		Logger::Get()->Trace(std::format("LayoutComponent::UpdateLayout() {}  Updated Successfully. ", GetId()));
-		Logger::Get()->Trace(std::format("LayoutComponent::END ======== {} ========== \n", GetId()));
+	//	Logger::Get()->Trace(std::format("LayoutComponent::UpdateLayout() {}  Updated Successfully. ", GetId()));
+	//	Logger::Get()->Trace(std::format("LayoutComponent::END ======== {} ========== \n", GetId()));
 
 		onLayoutChange.Broadcast();
 		m_isUpdated = true;

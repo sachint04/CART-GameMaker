@@ -27,7 +27,7 @@ namespace cart {
         Delegate<weak<Object>> onButtonHover;
         Delegate<weak<Object>> onButtonOut;
 
-        Rectangle GetBounds() override;
+      //  Rectangle GetBounds() override;
         void Init() override;
         void SetScale(float _scale) override;
         void SetUIProperties(UI_Properties _prop) override;

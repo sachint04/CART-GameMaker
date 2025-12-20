@@ -1,9 +1,11 @@
 #pragma once
+#include <functional>
 #include <raylib.h>
 #include <nlohmann/json.hpp>
 #include "Core.h"
 #include "DataFile.h"
 #include "network/network.h"
+#include "Object.h"
 
 extern int SCREEN_WIDTH;
 extern int SCREEN_HEIGHT;
@@ -36,14 +38,22 @@ namespace cart
 		void SetHTTPCallback(char* id, char* response, char* data);
 		void LoadAssetCallback(char* uid, char* url, unsigned char* data, int size);
 		void OnWindowResize(int w, int h);
+		void NotifyMobileInput(const char* input);
+		void RemoveMobileInputListener(std::string id);
+
 		DataFile& GetGameConfig(){ return m_gameConfig; };
 		json& GetGameConfigJSON() { return m_config_json; };
 		Vector2 GetWindowSize() const;
-		template<typename WorldType>
-		weak<WorldType> LoadWorld();
 		bool m_exit;
 		~Application();
 		virtual void Destroy();
+		
+		template<typename WorldType>
+		weak<WorldType> LoadWorld();
+		
+		template<typename ClassName>
+		void RegisterListernerToMobileInput(std::string id, weak<Object> obj, void(ClassName::* callback)(const char*));
+
 	protected:
 		virtual void Update(float deltaTime);
 		virtual void Draw(float deltaTime);
@@ -61,6 +71,10 @@ namespace cart
 		DataFile m_gameConfig;
 		json m_config_json;
 		Camera m_camera;
+
+	private:
+		Dictionary<std::string, std::function<bool(const char*)>> m_mobileInputListeners;
+
 		//shared<World> m_PendingWorld;
 	};
 	
@@ -72,5 +86,28 @@ namespace cart
 		m_CurrentWorld = newWorld;
 		//m_CurrentWorld->BeginPlayInternal();
 		return newWorld;
+	}
+
+	template<typename ClassName>
+	void Application::RegisterListernerToMobileInput(std::string id, weak<Object> obj, void(ClassName::* callback)(const char*))
+	{
+		auto found = m_mobileInputListeners.find(id);
+
+		if (found != m_mobileInputListeners.end())
+		{
+			Logger::Get()->Warn(std::format("Application::RegisterListernerToMobileInput() Warning! Listener - {} - is already added. ", id));
+			return;
+		}
+		// listener not found in lists of callbacks hence add 
+		std::function<bool(const char*)> callbackFunc = [obj, callback](const char* input)->bool
+		{
+			if (!obj.expired())
+			{
+				(static_cast<ClassName*>(obj.lock().get())->*callback)(input);
+				return true;
+			}
+			return false;
+		};
+		m_mobileInputListeners.insert({ id, callbackFunc });
 	}
 }

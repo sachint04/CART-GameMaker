@@ -30,7 +30,8 @@ namespace cart
 		m_dataModel{},
 		m_gameConfig{},
 		m_camera{},
-		m_config_json{}
+		m_config_json{},
+		m_mobileInputListeners{}
 	{
 		
 	}
@@ -167,4 +168,24 @@ namespace cart
 	void Application::OnWindowResize(int w, int h) {
 		SetWindowSize(w, h);
 	}
+
+	void Application::NotifyMobileInput(const char* input)
+	{
+		for (auto iter = m_mobileInputListeners.begin(); iter != m_mobileInputListeners.end(); ++iter)
+		{
+			if ((iter->second)(input))
+			{
+
+			};
+		}
+	}
+
+	void Application::RemoveMobileInputListener(std::string id)
+	{
+		auto found = m_mobileInputListeners.find(id);
+		if (found != m_mobileInputListeners.end()) {
+			m_mobileInputListeners.erase(found);
+		}
+	}
+	
 }

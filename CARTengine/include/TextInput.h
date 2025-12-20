@@ -1,7 +1,7 @@
 #pragma once
 #include "Text.h"
 #include <string>
-#define MAX_INPUT_CHARS     200
+#define MAX_INPUT_CHARS     600
 namespace cart {
 
 	class TextInput : public Text
@@ -22,7 +22,11 @@ namespace cart {
 		float GetFontSize() { return m_fontsize; };
 		void SetFontSize(float size) override;
 		void UpdateLayout();
+		void PrepareInput();
+		void ProcessInput();
+		void OnMobileInput(const char* input);
 	private:
+		int m_key;
 		int m_charLimit;
 		int m_curletterindex;
 		int m_letterCount = 0;
@@ -30,18 +34,27 @@ namespace cart {
 		int m_framesCounter = 0;
 		char name[MAX_INPUT_CHARS + 1] = "\0";
 	//	std::vector<std::string> lines;
-		std::vector<std::pair<std::pair<int, int>, Vector2>> m_lrange;
+		//std::vector<std::pair<std::pair<int, int>, Vector2>> m_lrange;
 		std::vector<std::pair<std::string, Vector2>> m_lines;
 		bool m_isBackspace;
 		bool m_isRightKey;
 		bool m_isLeftKey;
 		bool m_isDeleteKey;
+		bool m_touch;
+		bool m_hasUpated;
+
+		float m_textmargin;
+		float m_keydownWaitTimeMultiplyer;
+		float m_keydownMulitiplyerDuration;
+		float m_keydownActionDuration;
+		float m_tempkeydownActionDuration;
+		float m_keydownActionMinDuration;
 		double m_keyWaitTimer;
 		double m_backspacekeyWaitTimer;
-		float m_textmargin;
-		bool m_touch;
+
 		Vector2 m_touchstartpos;
 		Vector2 m_touchendpos;
+		Vector2 m_cursorLoc;
 	/*	shared<Font> fnt;*/
 		shared<Font> infofnt;
 		void TextLine(const std::vector<std::pair<std::string, Vector2>>& str);

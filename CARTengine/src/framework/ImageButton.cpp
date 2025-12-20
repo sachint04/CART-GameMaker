@@ -381,11 +381,12 @@ namespace cart {
 #pragma endregion
 
 #pragma region BUTTON STATE
-	
+	/*
 	Rectangle ImageButton::GetBounds() 
 	{	
 		return { m_location.x, m_location.y, (float)m_width, (float)m_height };
 	}
+	*/
 
 #pragma endregion
 

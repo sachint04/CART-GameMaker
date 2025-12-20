@@ -39,7 +39,8 @@ namespace cart {
 		if (m_strTexture.size() > 0 ) {
 			//m_textureLocation = m_location;
 			m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
-
+			int px = (m_pivot.x * m_width);
+			int py = (m_pivot.y * m_height);
 			if (m_texturetype == TEXTURE_FULL) {
 				
 				/*if (m_bMasked && !m_bIsScaling) {
@@ -59,8 +60,7 @@ namespace cart {
 						};
 					}
 					else {
-						int px = (m_pivot.x * m_width);
-						int py = (m_pivot.y * m_height);
+						
 						m_textureLocation = { m_location.x - px, m_location.y - py };
 					}
 				}
@@ -75,7 +75,7 @@ namespace cart {
 				
 			}
 			else if (m_texturetype == TEXTURE_PART) {
-				m_textureLocation = m_location;
+				m_textureLocation = { m_location.x - px, m_location.y - py };
 			}
 		}
 		m_bIsScaling = false;

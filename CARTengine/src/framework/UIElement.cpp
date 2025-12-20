@@ -241,7 +241,7 @@ namespace cart {
 
 			if (m_borderwidth > 0)
 			{
-				int bw = m_borderwidth * scScale;
+				int bw = std::max((int)(m_borderwidth * scScale), 1);
 				DrawRectangleRoundedLinesEx(GetBounds(), m_roundness * scScale, m_roundnessSegments * scScale, (float)bw, m_borderColor);
 
 			}
@@ -251,7 +251,7 @@ namespace cart {
 			DrawRectangle(m_location.x - px, m_location.y - py, m_width, m_height, m_color);
 			if (m_borderwidth > 0)
 			{
-				int bw = m_borderwidth* scScale;
+				int bw = std::max((int)(m_borderwidth* scScale), 1);
 				DrawRectangleRoundedLinesEx(GetBounds(), 0, 0, (float)bw, m_borderColor);
 				//DrawRectangleLinesEx(GetBounds(), (float)bw, m_borderColor);
 

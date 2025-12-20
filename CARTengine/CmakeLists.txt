@@ -92,6 +92,7 @@ set(ENGINE_SRC
 
 	${CMAKE_CURRENT_SOURCE_DIR}/include/cssparser/cparsecss.hpp
 	
+	${CMAKE_CURRENT_SOURCE_DIR}/include/utils/JSutils.h
 	)
 add_library(${CART_ENGINE_TARGET_NAME} 
 	STATIC

@@ -11,6 +11,7 @@ namespace cart
 	class HUD;
 	class GameStage;
 	class InputController;
+	class UICanvas;
 	class World : public Object
 	{
 
@@ -52,6 +53,7 @@ namespace cart
 		
 		template<typename HUDType, typename... Args>
 		weak<HUDType> SpawnHUD(Args... args);
+		static shared<UICanvas> UI_CANVAS;
 
 		void* m_sessionData = nullptr;
 		

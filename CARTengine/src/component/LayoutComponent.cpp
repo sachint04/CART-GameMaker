@@ -1,4 +1,5 @@
 #include "component/LayoutComponent.h"
+#include "World.h"
 #include "Object.h"
 #include "Actor.h"
 #include "UIElement.h"
@@ -80,7 +81,8 @@ namespace cart
 			}
 		}
 		else {
-			canvas_size = UICanvas::Get().lock()->Size();
+			
+			canvas_size = World::UI_CANVAS.get()->Size();
 			parentx = 0;
 			parenty = 0;
 			parentw = canvas_size.x;

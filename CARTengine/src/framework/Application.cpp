@@ -10,7 +10,12 @@
 #include "Logger.h"
 #include "HUD.h"
 #include "Logger.h"
+#include "CARTjson.h"
 
+
+#ifdef __EMSCRIPTEN__
+	#include "utils/MobileKeyboard.h"
+#endif // __EMSCRIPTEN__
 
 namespace cart
 {
@@ -168,6 +173,36 @@ namespace cart
 	void Application::OnWindowResize(int w, int h) {
 		SetWindowSize(w, h);
 	}
+	void Application::MobileKeyboardHide() {
+#ifdef __EMSCRIPTEN__
+		MobileKeyboard::Hide(true);
+#endif // __EMSCRIPTEN__
+	}
+
+	KeyboardStatus Application::GetTouchKeyboardStatus()
+	{
+#ifdef __EMSCRIPTEN__
+		return MobileKeyboard::GetStatus();
+#endif // __EMSCRIPTEN__
+		return KeyboardStatus::Done;
+	}
+
+	void Application::ToggleMobileWebKeyboard(const std::string& text,
+		KeyboardType type,
+		bool autocorrect,
+		bool multiline,
+		bool secure,
+		bool alert,
+		const std::string& placeholder,
+		int characterLimit)
+	{
+		std::string dtext = { "" };
+		std::string placeholders = std::string{ "type here .." };
+#ifdef __EMSCRIPTEN__
+		MobileKeyboard::TouchStart(text, type, autocorrect, multiline, secure, alert, placeholder, characterLimit);
+#endif // __EMSCRIPTEN__
+
+	}
 
 	void Application::NotifyMobileInput(const char* input)
 	{
@@ -186,6 +221,12 @@ namespace cart
 		if (found != m_mobileInputListeners.end()) {
 			m_mobileInputListeners.erase(found);
 		}
+	}
+
+	json& Application::SetEnviornmentSettings(char* _setting)
+	{	
+		Logger::Get()->Trace(std::format("Application::SetEnviornmentSettings  {}", std::string{ _setting }));
+		return CARTjson::readEnvSettings(std::string{ _setting });
 	}
 	
 }

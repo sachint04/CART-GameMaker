@@ -33,8 +33,8 @@ namespace cart {
 	void Text::Update(float _deltaTime)
 	{
 		if (!m_visible || m_pendingUpdate)return;
-		m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, std::ceil(m_fontsize * UICanvas::Get().lock()->Scale()));
-		m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), std::ceil(m_fontsize * UICanvas::Get().lock()->Scale()), 2.f * UICanvas::Get().lock()->Scale());
+		m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, std::ceil(m_fontsize *  World::UI_CANVAS.get()->Scale()));
+		m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), std::ceil(m_fontsize *  World::UI_CANVAS.get()->Scale()), 2.f *  World::UI_CANVAS.get()->Scale());
 		UpdateTextLocation();
 	}
 	void Text::Draw(float _deltaTime)
@@ -43,20 +43,20 @@ namespace cart {
 		UIElement::Draw(_deltaTime);		
 		
 		if(!m_sharedfont)
-		m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, std::ceil(m_fontsize * UICanvas::Get().lock()->Scale()));
+		m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, std::ceil(m_fontsize *  World::UI_CANVAS.get()->Scale()));
 
-		m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), std::ceil(m_fontsize * UICanvas::Get().lock()->Scale()), m_fontspacing * UICanvas::Get().lock()->Scale());
+		m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), std::ceil(m_fontsize *  World::UI_CANVAS.get()->Scale()), m_fontspacing *  World::UI_CANVAS.get()->Scale());
 		DrawRectangle(m_location.x, m_location.y, m_width, m_height, m_background);	
 
-		DrawTextEx(*m_sharedfont, m_text.c_str(), m_textLocation, m_fontsize * m_scale * UICanvas::Get().lock()->Scale(), 1, m_textColor);
+		DrawTextEx(*m_sharedfont, m_text.c_str(), m_textLocation, m_fontsize * m_scale *  World::UI_CANVAS.get()->Scale(), 1, m_textColor);
 	}
 
 	void Text::UpdateTextLocation()
 	{				
 		if (!m_sharedfont)
-			m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, std::ceil(m_fontsize * UICanvas::Get().lock()->Scale()));
+			m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, std::ceil(m_fontsize *  World::UI_CANVAS.get()->Scale()));
 
-		m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), std::ceil(m_fontsize * UICanvas::Get().lock()->Scale()), m_fontspacing * UICanvas::Get().lock()->Scale());
+		m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), std::ceil(m_fontsize *  World::UI_CANVAS.get()->Scale()), m_fontspacing *  World::UI_CANVAS.get()->Scale());
 		int px = (m_pivot.x * m_width);
 		int py = (m_pivot.y * m_height);
 		switch (m_align)

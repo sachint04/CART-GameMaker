@@ -30,7 +30,8 @@ namespace cart {
 		m_borderwidth{0},
 		m_borderColor{ GRAY },
 		m_texturetype{ TEXTURE_FULL },
-		m_roundnessSegments{36}
+		m_roundnessSegments{36},
+		m_isFocused{false}
 	{
 		m_anchor = { 0.f, 0.f, 1.f, 1.f }; 
 		m_pivot = { 0.f, 0.f };
@@ -42,7 +43,7 @@ namespace cart {
 	// VIRTUAL METHOD 
 	void UIElement::Init()
 	{
-		UICanvas::Get().lock()->onScreenSizeChange.BindAction(GetWeakRef(), &UIElement::OnScreenSizeChange);
+		 World::UI_CANVAS.get()->onScreenSizeChange.BindAction(GetWeakRef(), &UIElement::OnScreenSizeChange);
 		for (auto iter = m_children.begin(); iter != m_children.end(); ++iter)
 		{
 			iter->get()->Init();
@@ -56,7 +57,7 @@ namespace cart {
 		}
 		
 		//if (m_parent.expired()) {
-		//	UICanvas::Get().lock()->UpdateLayout();// Update Layout 
+		//	 World::UI_CANVAS.get()->UpdateLayout();// Update Layout 
 		//}
 		//onReady.Broadcast(GetId());
 
@@ -168,7 +169,7 @@ namespace cart {
 					shared<UIElement> owner = std::dynamic_pointer_cast<UIElement>(GetWeakRef().lock());
 					LayoutComponent comp{ std::string{GetId() + "_layout"}, owner, {0.f, 1.f, 0.f, 1.f}, {m_location.x, m_location.y, m_width, m_height} };
 					m_layout = std::make_shared<LayoutComponent>(comp);
-					UICanvas::Get().lock()->RegisterComponent(m_layout);
+					 World::UI_CANVAS.get()->RegisterComponent(m_layout);
 					m_layout.get()->onLayoutChange.BindAction(GetWeakRef(), &UIElement::OnLayoutChange);
 					Actor::AddComponent(std::string{ GetId() + "_layout" }, m_layout);
 				}
@@ -225,7 +226,7 @@ namespace cart {
 
 	void UIElement::DrawBGColor()
 	{
-		float scScale = UICanvas::Get().lock()->Scale();
+		float scScale =  World::UI_CANVAS.get()->Scale();
 		int px = (m_pivot.x * m_width);
 		int py = (m_pivot.y * m_height);
 		if (m_shapeType == SHAPE_TYPE::CIRCLE)
@@ -274,6 +275,11 @@ namespace cart {
 	Rectangle UIElement::GetAnchor()
 	{
 		return m_anchor;
+	}
+
+	void UIElement::SetFocused(bool _flag)
+	{
+		m_isFocused = _flag;
 	}
 	
 	void UIElement::SetExcludeFromParentAutoControl(bool _flag)
@@ -384,7 +390,7 @@ namespace cart {
 		Actor::Start();
 		
 		if(m_layout)
-		UICanvas::Get().lock()->UpdateLayout();// Update Layout 
+		 World::UI_CANVAS.get()->UpdateLayout();// Update Layout 
 		
 	}
 

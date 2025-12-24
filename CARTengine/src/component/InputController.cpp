@@ -32,6 +32,27 @@ namespace cart {
 		}
 	}
 
+	void InputController::SetFocus(const std::string& id)
+	{
+		if (m_curFocusedId.compare(id) == 0) return;
+		auto findcurrent = std::find_if(m_uilist.begin(), m_uilist.end(), [&](const weak<UIElement>& p) {
+			return !p.expired() && p.lock()->GetId().compare(m_curFocusedId) == 0;
+		});
+
+		if (findcurrent != m_uilist.end()) {// remove focus from current
+			findcurrent->lock().get()->SetFocused(false);
+		}
+
+		m_curFocusedId = ""; // reset current focus item
+		auto find = std::find_if(m_uilist.begin(), m_uilist.end(), [&](const weak<UIElement>& p) {
+			return !p.expired() && p.lock()->GetId().compare(id) == 0;
+		});
+		if (find != m_uilist.end()) {
+			find->lock().get()->SetFocused(true);
+			m_curFocusedId = id;
+		}
+	}
+
 	void InputController::Clear() {
 		m_uilist.clear();
 	}
@@ -39,12 +60,17 @@ namespace cart {
 	bool InputController::IsMouseOver(weak<Object> ui)
 	{
 		weak<UIElement> shr_ui = std::dynamic_pointer_cast<UIElement>(ui.lock());
-		for (int i = m_uilist.size() - 1; i >= 0; --i)
+		for (int i = 0; i < m_uilist.size(); ++i)
 		{
 			
 			if (m_uilist.at(i).expired() || !m_uilist.at(i).lock()->IsVisible())continue;
 			
-			if (CheckCollisionPointRec(GetMousePosition(), m_uilist.at(i).lock()->GetBounds())) {
+			Vector2 p = GetMousePosition();
+#ifdef __EMSCRIPTEN__
+			p = GetTouchPosition(0);
+#endif // __EMSCRIPTEN__
+
+			if (CheckCollisionPointRec(p, m_uilist.at(i).lock()->GetBounds())) {
 					return ui.lock() == m_uilist.at(i).lock();
 			}
 		}

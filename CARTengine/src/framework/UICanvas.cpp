@@ -1,10 +1,12 @@
 #include "UICanvas.h"
+#include <memory>
 #include <algorithm>
 #include <cctype>
 #include "Logger.h"
 #include "Application.h"
 #include "World.h"
 #include "component/LayoutComponent.h"
+#include "component/InputController.h"
 
 
 extern int DEFAULT_CANVAS_WIDTH;
@@ -14,18 +16,52 @@ extern int SCREEN_HEIGHT;
 extern float CANVAS_STRECH_X;
 extern float CANVAS_STRECH_Y;
 namespace cart {
-    shared<UICanvas> UICanvas::canvas_{ nullptr };
 
-    // Private constructor to prevent direct instantiation
-    UICanvas::UICanvas() :m_safeRect{}{
+#pragma region Constructor & Init
+
+
+     // Private constructor to prevent direct instantiation
+    UICanvas::UICanvas(World* _owningworld, const std::string& _id) :UIElement{ _owningworld,  _id }, m_safeRect {} {
     }
 
-    weak<UICanvas> UICanvas::Get() {
-        if (!canvas_) {
-            canvas_ = shared<UICanvas>{ new UICanvas };
-        }
-        return canvas_;
+    void UICanvas::Init()
+    {
+        UIElement::Init();
+        m_owningworld->GetInputController()->RegisterUI(GetWeakRef());
     }
+
+    void UICanvas::Start()
+    {
+        UIElement::Start();
+    }
+
+#pragma endregion
+
+
+#pragma region Loop
+
+
+    void UICanvas::Update(float _deltaTime)
+    {
+
+        bool bmoverui = m_owningworld->GetInputController()->IsMouseOver(GetWeakRef());
+        if (bmoverui) {
+           if (IsMouseButtonReleased(0)) {
+               m_owningworld->GetInputController()->SetFocus(GetId());
+            };
+       };
+    }
+
+    void UICanvas::Draw(float _deltaTime)
+    {
+        // do nothing
+    }
+        
+
+#pragma endregion
+  
+#pragma region Helpers
+
 
     bool UICanvas::RegisterComponent(weak<LayoutComponent> comp)// register to update layout when device size/res changes
     {
@@ -68,6 +104,8 @@ namespace cart {
 
             }
         }
+      
+
         float scaleX = (float)SCREEN_WIDTH / (float)DEFAULT_CANVAS_WIDTH;
         float scaleY = (float)SCREEN_HEIGHT / (float)DEFAULT_CANVAS_HEIGHT;
         float scale = std::min(scaleX, scaleY);
@@ -96,7 +134,7 @@ namespace cart {
                 ++iter;
             }
         }
-         
+
         onScreenSizeChange.Broadcast();
     }
 
@@ -104,7 +142,12 @@ namespace cart {
     {
         return { (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT };
     }
-
+    
+    Rectangle UICanvas::GetBounds()
+    {
+        return m_safeRect;
+    }
+    
     void UICanvas::SafeRect(Rectangle rect)
     {
         m_safeRect = rect;
@@ -119,6 +162,12 @@ namespace cart {
     Vector2 UICanvas::GetDefaultCanvasSize() {
         return { (float)DEFAULT_CANVAS_WIDTH, (float)DEFAULT_CANVAS_HEIGHT };
     }
+#pragma endregion
+
+#pragma region Destroy
+
+
     UICanvas::~UICanvas() {
     }
+#pragma endregion
 }

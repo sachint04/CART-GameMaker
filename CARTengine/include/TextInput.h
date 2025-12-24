@@ -1,6 +1,7 @@
 #pragma once
 #include "Text.h"
 #include <string>
+#include "Types.h"
 #define MAX_INPUT_CHARS     600
 namespace cart {
 
@@ -15,12 +16,17 @@ namespace cart {
 		void Start()override;
 		void Update(float _deltaTime)override;
 		void Draw(float _deltaTime)override;
-		void Destroy()override;
-		void SetText(const std::string &txt);
-		std::string GetInputText();
 		void SetFontName(const std::string& strfnt)override;
 		float GetFontSize() { return m_fontsize; };
 		void SetFontSize(float size) override;
+		void SetTextProperties(Text_Properties _props)override;
+		void SetFocused(bool _flag)override;
+		void Destroy()override;
+		
+
+
+		void SetText(const std::string &txt);
+		std::string GetInputText();
 		void UpdateLayout();
 		void PrepareInput();
 		void ProcessInput();
@@ -42,7 +48,7 @@ namespace cart {
 		bool m_isDeleteKey;
 		bool m_touch;
 		bool m_hasUpated;
-
+		bool m_bMobileInput;
 		float m_textmargin;
 		float m_keydownWaitTimeMultiplyer;
 		float m_keydownMulitiplyerDuration;

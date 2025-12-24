@@ -72,8 +72,8 @@ namespace cart {
 	{
 		if (!m_visible || m_pendingUpdate)return;
 		if (m_fontstr.size() > 0) {
-			m_font = AssetManager::Get().LoadFontAsset(m_fontstr, std::ceil(m_fontsize * UICanvas::Get().lock()->Scale()));
-			m_textsize = MeasureTextEx(*m_font, m_text.c_str(),  std::ceil(m_fontsize * UICanvas::Get().lock()->Scale()), std::ceil(m_fontspace * UICanvas::Get().lock()->Scale()));
+			m_font = AssetManager::Get().LoadFontAsset(m_fontstr, std::ceil(m_fontsize *  World::UI_CANVAS.get()->Scale()));
+			m_textsize = MeasureTextEx(*m_font, m_text.c_str(),  std::ceil(m_fontsize *  World::UI_CANVAS.get()->Scale()), std::ceil(m_fontspace *  World::UI_CANVAS.get()->Scale()));
 			UpdateTextLocation();
 		}
 		
@@ -126,7 +126,8 @@ namespace cart {
 					if (IsMouseButtonReleased(0)) { // Mouse/Touch Released
 						ButtonUp(tPos);
 						m_touch = false;
-					}else if (IsMouseButtonDown(0)) {// Dragging						
+					}else if (IsMouseButtonDown(0)) {// Dragging		
+						m_owningworld->GetInputController()->SetFocus(GetId());
 						ButtonDrag(tPos);
 					}
 				}
@@ -180,8 +181,8 @@ namespace cart {
 			
 			
 			if (m_text.size() > 0) {
-					m_font = AssetManager::Get().LoadFontAsset(m_fontstr, std::ceil(m_fontsize *  UICanvas::Get().lock()->Scale()));			
-					DrawTextEx(*m_font, m_text.c_str(), m_fontLocation, std::ceilf(m_fontsize * m_scale * UICanvas::Get().lock()->Scale()), std::ceil(m_fontspace * m_scale * UICanvas::Get().lock()->Scale()), m_textcolor);
+					m_font = AssetManager::Get().LoadFontAsset(m_fontstr, std::ceil(m_fontsize *   World::UI_CANVAS.get()->Scale()));			
+					DrawTextEx(*m_font, m_text.c_str(), m_fontLocation, std::ceilf(m_fontsize * m_scale *  World::UI_CANVAS.get()->Scale()), std::ceil(m_fontspace * m_scale *  World::UI_CANVAS.get()->Scale()), m_textcolor);
 			}
 
 	}

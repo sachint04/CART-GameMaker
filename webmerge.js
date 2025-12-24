@@ -46,7 +46,11 @@ mergeInto(LibraryManager.library, {
 	HideSpinnerView()
 	{
 		JSHideSpinnerView();
+	},
+	ToggleMobileKeyboard(_flag)
+	{
+		JSToggleMobileKeyboard(_flag);
 	}
-
+	
 });
 

@@ -8,11 +8,12 @@ namespace cart {
 	public:
 		Text( World* _owningworld, const std::string& _id);
 		~Text();
-		void SetTextProperties(Text_Properties _props);
 		void Init() override;
 		void Update(float _deltaTime) override;
 		void Draw(float _deltaTime) override;
 		void Destroy() override;
+	
+		virtual void SetTextProperties(Text_Properties _props);
 		virtual void SetFontName(const std::string& strfnt);
 		virtual std::string GetFontName();
 		virtual void SetFontSize(float size);

@@ -96,6 +96,23 @@ namespace cart {
         MATCH_WIDTH,    // maintain aspect raio according to width
         SCREEN_SIZE     // no aspect ratio - match screen/display size
     };
+
+    enum KeyboardStatus
+    {
+        Visible = 0,
+        Done = 1
+    };
+
+    enum KeyboardType
+    {
+        Default = 0,
+        NumbersAndPunctuation = 2,
+        URL = 3,
+        NumberPad = 4,
+        PhonePad = 5,
+        EmailAddress = 7
+    };
+
 #pragma endregion
 
 #pragma region STRUCTS

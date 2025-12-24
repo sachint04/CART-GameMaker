@@ -124,6 +124,7 @@ namespace cart {
 			else {
 				if (IsMouseButtonPressed(0)) {// Drading
 					ButtonDown(tPos);// Mouse /Touch  Pressed
+					m_owningworld->GetInputController()->SetFocus(GetId());
 					m_touch = true;
 				}
 				if (IsMouseButtonUp(0)) {// Mouse over the button //

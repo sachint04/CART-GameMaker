@@ -22,8 +22,11 @@ namespace cart
 			static void UpdateUserData(const json& data);
 			static std::string GetUserDataString();
 			static json& GetTemplateInfo();
+			static json& readEnvSettings(std::string _info);
+			static json& GetEnvSettings();
 			~CARTjson();
 		private:
+			static json m_envsetting;
 			static json m_config;
 			static json m_userdata;
 			static json m_sessiondata;

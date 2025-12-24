@@ -42,7 +42,7 @@ namespace cart {
 		virtual Rectangle GetBounds();
 		virtual Vector2 GetPivot();
 		virtual Rectangle GetAnchor();
-
+		virtual void SetFocused(bool _flag);
 		virtual void AddComponent(COMPONENT_TYPE type);
 		weak<LayoutComponent> GetLayoutComponent();
 
@@ -71,6 +71,7 @@ namespace cart {
 		int m_roundnessSegments;
 		bool m_pendingUpdate;
 		bool m_isExcludedFromParentAutoControl;
+		bool m_isFocused;
 		float m_roundness;
 		Vector2 m_rawlocation;	
 		Vector2 m_pivot;

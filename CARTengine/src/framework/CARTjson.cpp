@@ -2,6 +2,7 @@
 
 namespace cart
 {
+	json CARTjson::m_envsetting = {};
 	json CARTjson::m_config = {};
 	json CARTjson::m_userdata = {};
 	json CARTjson::m_templateinfo = {};
@@ -43,6 +44,7 @@ namespace cart
 		return m_templateinfo;
 
 	}
+	
 	json& CARTjson::readTemplateInfo(const char* _file)
 	{
 		char* strm = LoadFileText(_file);
@@ -64,11 +66,20 @@ namespace cart
 		m_userdata = json;
 	}
 
-
-
 	json& CARTjson::GetTemplateInfo()
 	{
 		return m_templateinfo;
+	}
+
+	json& CARTjson::readEnvSettings(std::string _info)
+	{		
+		m_envsetting = json::parse(_info);
+		return m_envsetting;		
+	}
+
+	json& CARTjson::GetEnvSettings()
+	{
+		return m_envsetting;
 	}
 
 	std::string CARTjson::GetUserDataString() {

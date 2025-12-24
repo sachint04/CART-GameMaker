@@ -11,10 +11,11 @@
 #include <limits> // Required for std::numeric_limits
 #include "component/InputController.h"
 #include "Logger.h"
+#include "UICanvas.h"
 namespace cart {
 
 	bool World::m_APP_SHOULD_WAIT = true;// IMP * APP WILL NOT START/("Run()") UNLESS TRUE 
-
+	shared<UICanvas> World::UI_CANVAS = nullptr;
 	
 	World::World(Application* owningApp)
 		:m_owningApp{ owningApp },

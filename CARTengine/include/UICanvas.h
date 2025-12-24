@@ -5,12 +5,18 @@
 #include "Core.h"
 #include "Types.h"
 #include "Delegate.h"
+#include "UIElement.h"
 namespace cart {
 
     class LayoutComponent;
-	class UICanvas {
+	class UICanvas : public UIElement {
 	public:           
-        static  weak<UICanvas> Get();
+        virtual void Init() override;
+        virtual void Start() override;
+        virtual void Update(float _deltaTime) override;
+        virtual void Draw(float _deltaTime) override;
+        virtual Rectangle GetBounds()override;
+
         bool RegisterComponent(weak<LayoutComponent> comp);
         bool RemoveComponent(const std::string& id);
         void UpdateLayout();       
@@ -21,11 +27,10 @@ namespace cart {
         Vector2 GetDefaultCanvasSize();
         Delegate<> onScreenSizeChange;
 
+        UICanvas(World* _owningworld, const std::string& _id);
         ~UICanvas();
 	private:
-        UICanvas();
-        // Private static pointer to the single instance
-        static shared<UICanvas> canvas_;
+
         Dictionary<std::string, weak<LayoutComponent>> elemlist;
         Rectangle m_safeRect;
 	};

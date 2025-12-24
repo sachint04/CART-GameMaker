@@ -3,9 +3,23 @@
 #include <raylib.h>
 #include <nlohmann/json.hpp>
 #include "Core.h"
+#include "utils/JSutils.h"
 #include "DataFile.h"
 #include "network/network.h"
 #include "Object.h"
+#include "Types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#ifdef __EMSCRIPTEN__
+extern void ToggleMobileKeyboard(bool flag);
+#endif // !__EMSCRIPTEN__
+
+#ifdef __cplusplus
+}
+#endif
 
 extern int SCREEN_WIDTH;
 extern int SCREEN_HEIGHT;
@@ -38,9 +52,19 @@ namespace cart
 		void SetHTTPCallback(char* id, char* response, char* data);
 		void LoadAssetCallback(char* uid, char* url, unsigned char* data, int size);
 		void OnWindowResize(int w, int h);
+		void MobileKeyboardHide();
+		KeyboardStatus GetTouchKeyboardStatus();
+		void ToggleMobileWebKeyboard(const std::string& text,
+			KeyboardType type,
+			bool autocorrect,
+			bool multiline,
+			bool secure,
+			bool alert,
+			const std::string& placeholder,
+			int characterLimit);
 		void NotifyMobileInput(const char* input);
 		void RemoveMobileInputListener(std::string id);
-
+		json& SetEnviornmentSettings(char* _setting);
 		DataFile& GetGameConfig(){ return m_gameConfig; };
 		json& GetGameConfigJSON() { return m_config_json; };
 		Vector2 GetWindowSize() const;

@@ -230,7 +230,7 @@ namespace cart {
 		if (m_isPendingDestroy)return;
 		for (auto iter = m_componentlist.begin(); iter != m_componentlist.end();)
 		{
-			UICanvas::Get().lock()->RemoveComponent(iter->first);
+			 World::UI_CANVAS.get()->RemoveComponent(iter->first);
 			iter->second.lock()->Destroy();
 			iter = m_componentlist.erase(iter);
 		}

@@ -33,7 +33,6 @@ namespace cart {
 
 	void World::Init() {	
 		m_cleanCycleStartTime = Clock::Get().ElapsedTime();
-		m_inputController = new InputController{ };
 		m_HUD.get()->Init();
 		InitStage();
 		Start();// START WORLD

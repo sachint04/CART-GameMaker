@@ -26,7 +26,6 @@ namespace cart {
 
     void UICanvas::Init()
     {
-        UIElement::Init();
         m_owningworld->GetInputController()->RegisterUI(GetWeakRef());
     }
 
@@ -43,7 +42,6 @@ namespace cart {
 
     void UICanvas::Update(float _deltaTime)
     {
-
         bool bmoverui = m_owningworld->GetInputController()->IsMouseOver(GetWeakRef());
         if (bmoverui) {
            if (IsMouseButtonReleased(0)) {

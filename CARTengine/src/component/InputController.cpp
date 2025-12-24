@@ -60,9 +60,8 @@ namespace cart {
 	bool InputController::IsMouseOver(weak<Object> ui)
 	{
 		weak<UIElement> shr_ui = std::dynamic_pointer_cast<UIElement>(ui.lock());
-		for (int i = 0; i < m_uilist.size(); ++i)
-		{
-			
+		for (int i = m_uilist.size() - 1; i >= 0; --i)
+		{			
 			if (m_uilist.at(i).expired() || !m_uilist.at(i).lock()->IsVisible())continue;
 			
 			Vector2 p = GetMousePosition();

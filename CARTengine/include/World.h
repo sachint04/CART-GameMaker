@@ -56,6 +56,7 @@ namespace cart
 		static shared<UICanvas> UI_CANVAS;
 
 		void* m_sessionData = nullptr;
+		InputController* m_inputController;
 		
 	private:
 
@@ -64,7 +65,6 @@ namespace cart
 		double m_cleanCycleStartTime;
 
 		Application* m_owningApp;
-		InputController* m_inputController;
 
 		List<shared<Actor>> m_Actors;
 		List<shared<Actor>> m_PendingActors;

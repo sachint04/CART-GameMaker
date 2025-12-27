@@ -21,6 +21,7 @@ namespace cart {
 		void SetFontSize(float size) override;
 		void SetTextProperties(Text_Properties _props)override;
 		void SetFocused(bool _flag)override;
+		void SetVisible(bool _flag)override;
 		void Destroy()override;
 		
 
@@ -30,7 +31,7 @@ namespace cart {
 		void UpdateLayout();
 		void PrepareInput();
 		void ProcessInput();
-		void OnMobileInput(const char* input);
+		void OnMobileInput(char* input);
 	private:
 		int m_key;
 		int m_charLimit;
@@ -39,6 +40,7 @@ namespace cart {
 		bool m_mouseOnText;
 		int m_framesCounter = 0;
 		char name[MAX_INPUT_CHARS + 1] = "\0";
+		std::string m_mobileinput;
 	//	std::vector<std::string> lines;
 		//std::vector<std::pair<std::pair<int, int>, Vector2>> m_lrange;
 		std::vector<std::pair<std::string, Vector2>> m_lines;

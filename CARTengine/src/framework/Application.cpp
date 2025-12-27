@@ -187,7 +187,7 @@ namespace cart
 		return KeyboardStatus::Done;
 	}
 
-	void Application::ToggleMobileWebKeyboard(const std::string& text,
+	void Application::ToggleMobileWebKeyboard(std::string& text,
 		KeyboardType type,
 		bool autocorrect,
 		bool multiline,
@@ -195,24 +195,31 @@ namespace cart
 		bool alert,
 		const std::string& placeholder,
 		int characterLimit)
-	{
-		std::string dtext = { "" };
-		std::string placeholders = std::string{ "type here .." };
+	{		
 #ifdef __EMSCRIPTEN__
 		MobileKeyboard::TouchStart(text, type, autocorrect, multiline, secure, alert, placeholder, characterLimit);
 #endif // __EMSCRIPTEN__
 
 	}
 
-	void Application::NotifyMobileInput(const char* input)
+	void Application::NotifyMobileInput(char* input)
 	{
 		for (auto iter = m_mobileInputListeners.begin(); iter != m_mobileInputListeners.end(); ++iter)
 		{
 			if ((iter->second)(input))
 			{
+				Logger::Get()->Trace(std::format("Application::NotifyMobileInput() listener {}", iter->first));
 
 			};
 		}
+	}
+
+	void Application::MobileKeyboardInterupt()
+	{
+#ifdef __EMSCRIPTEN__
+		MobileKeyboard::InteruptTouch();
+#endif // __EMSCRIPTEN__
+
 	}
 
 	void Application::RemoveMobileInputListener(std::string id)

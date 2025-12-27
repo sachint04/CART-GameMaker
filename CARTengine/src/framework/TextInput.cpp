@@ -43,7 +43,8 @@ namespace cart
         m_keydownActionDuration{ 1.f },
         m_tempkeydownActionDuration{ 1.f },
         m_keydownActionMinDuration{ 0.015f },
-        m_bMobileInput{ false }
+        m_bMobileInput{ false },
+        m_mobileinput{""}
 	{
        /* Text::m_fontsize = 14.f;
         Text::m_fontspacing = 2.f;*/
@@ -75,6 +76,12 @@ namespace cart
     void TextInput::Destroy() {
         if (m_isPendingDestroy)return;
         m_owningworld->GetInputController()->RemoveUI(GetId());
+        Logger::Get()->Trace("TextInput::Destroy()! ");
+        if (m_isFocused)// hide mobile keyboard if open.
+        {
+            m_owningworld->GetApplication()->RemoveMobileInputListener(GetId());
+            m_owningworld->GetApplication()->MobileKeyboardInterupt();
+        }
         Text::Destroy();
     }
 
@@ -237,21 +244,6 @@ namespace cart
                 if (m_touch == true) {// focus is already on the input hence ignore
                     return;
                 }
-                // Toggle touchKeyboard 
-                //int useragent = CARTjson::GetEnvSettings()["useragent"];
-                //if (useragent > 0 && m_isFocused)// on multiple select hide/unhide touch keyboard
-                //{
-                //    // if useragent is > 0 (mobile browser) hide os keyboard
-                //    if (m_owningworld->GetApplication()->GetTouchKeyboardStatus() == KeyboardStatus::Visible) {
-                //        m_owningworld->GetApplication()->RemoveMobileInputListener(GetId());
-                //        m_owningworld->GetApplication()->MobileKeyboardHide();
-                //    }
-                //    else {
-                //        m_owningworld->GetApplication()->RegisterListernerToMobileInput(GetId(), GetWeakRef(), &TextInput::OnMobileInput);
-                //        m_owningworld->GetApplication()->ToggleMobileWebKeyboard(m_text, KeyboardType::Default, false, true, false, false, m_text.size() == 0 ? std::string{ "type here .." } : std::string{ "" }, m_charLimit);
-                //    }
-                //}
-                
                 m_owningworld->GetInputController()->SetFocus(GetId());
 
                 m_touchstartpos = tPos;
@@ -299,7 +291,7 @@ namespace cart
             }
         }
 
-        if (m_isFocused) { // if user has selected this control
+      
             if (IsKeyUp(KEY_BACKSPACE)) {
                 m_tempkeydownActionDuration = m_keydownMulitiplyerDuration;
                 m_isBackspace = false;
@@ -337,9 +329,8 @@ namespace cart
             }
             // Get char pressed (unicode character) on the queue
             int key = GetCharPressed();
-
             // Check if more characters have been pressed on the same frame
-            while (key > 0)
+            while (key > 0 )
             {
                 int  txtmargin = m_textmargin * scrnScale;
                 int tx = textBox.x + 8;
@@ -384,7 +375,7 @@ namespace cart
             }
             // Set the window's cursor to the I-Beam
             SetMouseCursor(MOUSE_CURSOR_IBEAM);
-        }
+      
         
         if (m_isBackspace) {
             double t = Clock::Get().ElapsedTime();
@@ -464,7 +455,8 @@ namespace cart
 
 
         if (m_mouseOnText || m_hasUpated)
-        {
+        {       
+     
             ProcessInput();
             m_hasUpated = false;
         }
@@ -508,6 +500,7 @@ namespace cart
     }
     void TextInput::SetText(const std::string& txt)
     {
+      //  Logger::Get()->Trace(std::format("TextInput::SetText() txt {} ", txt));
         m_text = txt;
         PrepareInput();
         m_curletterindex = m_letterCount;
@@ -532,18 +525,30 @@ namespace cart
     }
     void TextInput::SetFocused(bool _flag)
     {
+        Logger::Get()->Trace(std::format("TextInput::SetFocused()! default text {}", m_text));
        int useragent = CARTjson::GetEnvSettings()["useragent"];
        if (useragent > 0) {// if useragent is > 0 (mobile browser) show os keyboard
             if (_flag) {// currently is in focus
-                m_owningworld->GetApplication()->RegisterListernerToMobileInput(GetId(), GetWeakRef(), &TextInput::OnMobileInput);
+                std::string curtxt = name;
+               m_owningworld->GetApplication()->RegisterListernerToMobileInput(GetId(), GetWeakRef(), &TextInput::OnMobileInput);
                 m_owningworld->GetApplication()->ToggleMobileWebKeyboard(m_text, KeyboardType::Default, false, true, false, false, m_text.size() == 0 ? std::string{ "type here .." } : std::string{""}, m_charLimit);
             }else
             {
                 m_owningworld->GetApplication()->RemoveMobileInputListener(GetId());
-                m_owningworld->GetApplication()->MobileKeyboardHide();
+                m_owningworld->GetApplication()->MobileKeyboardInterupt();
             }
         }
         UIElement::SetFocused(_flag);
+    }
+    void TextInput::SetVisible(bool _flag)
+    {
+        Text::SetVisible(_flag);
+        Logger::Get()->Trace("TextInput::SetVisible()! ");
+        if (!_flag && m_isFocused)// hide mobile keyboard if open.
+        {
+            m_owningworld->GetApplication()->RemoveMobileInputListener(GetId());
+            m_owningworld->GetApplication()->MobileKeyboardInterupt();
+        }
     }
     std::string TextInput::GetInputText()
     {
@@ -675,10 +680,41 @@ namespace cart
     {
         UpdateLayout();
     }
-    void TextInput::OnMobileInput(const char* input)
+    void TextInput::OnMobileInput(char* input)
     {
-       // std::string input = { m_text + input };
-        Logger::Get()->Trace(std::format("TextInput::OnMobileInput  | {}\0", std::string{input}));
+        std::string left, right, fs, tmpstr, backspace;
+        m_mobileinput =  input ;// new string
+     
+        //tmpstr =  name;// current string
+        //backspace =  "<backspace>" ;
+     
+        //left = tmpstr.substr(0, std::max(0,m_curletterindex));
+        //right = tmpstr.substr(std::max(0, m_curletterindex), m_letterCount);
+
+        //bool isBackspace = backspace.compare(m_mobileinput) == 0;
+
+        //if (isBackspace) {
+        //    m_curletterindex -= 1;
+        //    left = left.substr(0, m_curletterindex);
+        //    fs = left + right;
+        //}
+        //else {
+        //    m_curletterindex += tmpstr.size();
+        //    fs = { left + m_mobileinput + right };
+        //}
+        Logger::Get()->Trace(std::format("TextInput::OnMobileInput m_mobileinput{} | fs | {}  \0", m_mobileinput,  fs));
+        m_curletterindex = m_mobileinput.size();
+        SetText(m_mobileinput);
+ /*       for (size_t i = 0; i < MAX_INPUT_CHARS; i++)
+        {
+            name[i] = '\0';
+        }
+        for (size_t i = 0; i < len; i++)
+        {
+            name[i] = (char)fs.at(i);
+        }*/
+       // Logger::Get()->Trace(std::format("TextInput::OnMobileInput  name | {}  \0", std::string{ name }));
+        //int key = std::stoi(std::string{ input });
         //if ((key >= 32) && (key <= 125) && (m_letterCount < m_charLimit)) {
         //    m_letterCount = 0;
         //    std::string mutable_str{ input };

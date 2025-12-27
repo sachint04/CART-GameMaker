@@ -44,7 +44,8 @@ namespace cart {
     {
         bool bmoverui = m_owningworld->GetInputController()->IsMouseOver(GetWeakRef());
         if (bmoverui) {
-           if (IsMouseButtonReleased(0)) {
+           if (IsMouseButtonPressed(0)) {
+               Logger::Get()->Trace("UICanvas::Update() IsMouseButtonPressed!");
                m_owningworld->GetInputController()->SetFocus(GetId());
             };
        };

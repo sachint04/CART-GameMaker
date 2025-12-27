@@ -52,6 +52,10 @@ extern "C"
         );
     });
 
+    EM_JS(void, JS_InteruptTouch, (), {
+        _JS_MobileKeyboard_InteruptTouch();
+    });
+
     EM_JS(void, JS_HideKeyboard, (int delay), {
         _JS_MobileKeyboard_Hide(delay);
     });
@@ -105,7 +109,7 @@ namespace MobileKeyboard
     }
 
 
-    void TouchStart(const std::string& text,
+    void TouchStart(std::string& text,
               KeyboardType type,
               bool autocorrect,
               bool multiline,
@@ -126,6 +130,10 @@ namespace MobileKeyboard
         );
     }
 
+    void InteruptTouch()
+    {
+        JS_InteruptTouch();
+    }
     void Hide(bool delay)
     {
         JS_HideKeyboard(delay ? 1 : 0);

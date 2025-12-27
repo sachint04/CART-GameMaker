@@ -34,16 +34,17 @@ namespace cart {
 
 	void InputController::SetFocus(const std::string& id)
 	{
-		if (m_curFocusedId.compare(id) == 0) return;
-		auto findcurrent = std::find_if(m_uilist.begin(), m_uilist.end(), [&](const weak<UIElement>& p) {
-			return !p.expired() && p.lock()->GetId().compare(m_curFocusedId) == 0;
-		});
-
-		if (findcurrent != m_uilist.end()) {// remove focus from current
-			findcurrent->lock().get()->SetFocused(false);
+		if (m_curFocusedId.compare(id) != 0) {
+		// reset focus on previous item
+			auto findcurrent = std::find_if(m_uilist.begin(), m_uilist.end(), [&](const weak<UIElement>& p) {
+				return !p.expired() && p.lock()->GetId().compare(m_curFocusedId) == 0;
+			});
+			if (findcurrent != m_uilist.end()) {// remove focus from current
+				findcurrent->lock().get()->SetFocused(false);
+			}
 		}
 
-		m_curFocusedId = ""; // reset current focus item
+		// set focus on current item
 		auto find = std::find_if(m_uilist.begin(), m_uilist.end(), [&](const weak<UIElement>& p) {
 			return !p.expired() && p.lock()->GetId().compare(id) == 0;
 		});

@@ -54,7 +54,7 @@ namespace cart
 		void OnWindowResize(int w, int h);
 		void MobileKeyboardHide();
 		KeyboardStatus GetTouchKeyboardStatus();
-		void ToggleMobileWebKeyboard(const std::string& text,
+		void ToggleMobileWebKeyboard(std::string& text,
 			KeyboardType type,
 			bool autocorrect,
 			bool multiline,
@@ -62,7 +62,8 @@ namespace cart
 			bool alert,
 			const std::string& placeholder,
 			int characterLimit);
-		void NotifyMobileInput(const char* input);
+		void NotifyMobileInput(char* input);
+		void MobileKeyboardInterupt();
 		void RemoveMobileInputListener(std::string id);
 		json& SetEnviornmentSettings(char* _setting);
 		DataFile& GetGameConfig(){ return m_gameConfig; };
@@ -76,7 +77,7 @@ namespace cart
 		weak<WorldType> LoadWorld();
 		
 		template<typename ClassName>
-		void RegisterListernerToMobileInput(std::string id, weak<Object> obj, void(ClassName::* callback)(const char*));
+		void RegisterListernerToMobileInput(std::string id, weak<Object> obj, void(ClassName::* callback)(char*));
 
 	protected:
 		virtual void Update(float deltaTime);
@@ -97,7 +98,7 @@ namespace cart
 		Camera m_camera;
 
 	private:
-		Dictionary<std::string, std::function<bool(const char*)>> m_mobileInputListeners;
+		Dictionary<std::string, std::function<bool(char*)>> m_mobileInputListeners;
 
 		//shared<World> m_PendingWorld;
 	};
@@ -113,7 +114,7 @@ namespace cart
 	}
 
 	template<typename ClassName>
-	void Application::RegisterListernerToMobileInput(std::string id, weak<Object> obj, void(ClassName::* callback)(const char*))
+	void Application::RegisterListernerToMobileInput(std::string id, weak<Object> obj, void(ClassName::* callback)(char*))
 	{
 		auto found = m_mobileInputListeners.find(id);
 
@@ -123,7 +124,7 @@ namespace cart
 			return;
 		}
 		// listener not found in lists of callbacks hence add 
-		std::function<bool(const char*)> callbackFunc = [obj, callback](const char* input)->bool
+		std::function<bool(char*)> callbackFunc = [obj, callback](char* input)->bool
 		{
 			if (!obj.expired())
 			{

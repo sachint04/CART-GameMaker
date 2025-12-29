@@ -23,7 +23,10 @@ namespace cart {
         void SafeRect(Rectangle rect);
         const Rectangle SafeRect()const { return m_safeRect; };
         const Vector2 Size();
+        float StrechX();
+        float StrechY();
         float Scale();
+
         Vector2 GetDefaultCanvasSize();
         Delegate<> onScreenSizeChange;
 

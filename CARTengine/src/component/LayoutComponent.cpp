@@ -35,7 +35,8 @@ namespace cart
 		if (!m_isEnabled)return false; // do nothing;
 		//Logger::Get()->Trace(std::format("LayoutComponent::UpdateLayout() ======== {} ========== ", GetId()));
 		
-		int left, right, top, bottom, availW, availH, pixelW, pixelH, anchorLeft, anchorRight, anchorTop, anchorBottom, w, h, cx, cy, parentx, parenty, parentw, parenth, anchorx, anchory;
+		float left, right, top, bottom, anchorLeft, anchorRight, anchorTop, anchorBottom, w, h, cx, cy, parentx, parenty, parentw, parenth, anchorx, anchory, availW, availH, pixelW, pixelH;
+
 		Vector2 canvas_size, ownerpivot, midAnchor;
 		Rectangle parentRect, anchor;
 		auto parent = m_owner.get()->parent();
@@ -96,18 +97,18 @@ namespace cart
 		right = parentRect.x + int(parentRect.width);
 		top = parentRect.y ;
 		bottom = parentRect.y + int(parentRect.height);
-		availW = std::max(0, right - left);
-		availH = std::max(0, bottom - top);
+		availW = std::max(0.f, (float)right - left);
+		availH = std::max(0.f, (float)bottom - top);
 
 		// element pixel size based on design size and scale
 		if ((m_owner.get()->HasTexture() && m_owner.get()->GetTextureType() == TEXTURE_PART) || m_owner.get()->IsScaleLocked()) {
-			pixelW = std::max(1, int(m_Rect.width ));
-			pixelH = std::max(1, int(m_Rect.height));
+			pixelW = std::max(1.f, m_Rect.width );
+			pixelH = std::max(1.f, m_Rect.height);
 		}
 		else {
 
-			pixelW = std::max(1, int(m_Rect.width * scaleX));
-			pixelH = std::max(1, int(m_Rect.height * scaleY));
+			pixelW = std::max(1.f, m_Rect.width * std::min(scaleX, 1.f));
+			pixelH = std::max(1.f, m_Rect.height * std::min(scaleY, 1.f));
 		}
 
 		// place element at left top of anchor rect with clamping
@@ -124,17 +125,32 @@ namespace cart
 
 		w = std::min(pixelW, availW);
 		h = std::min(pixelH, availH);
+		
+		if (scaleX < scaleY) {
+			int dh = m_owner.get()->GetDefaultHeight();
+			int ph = parent.expired() ? World::UI_CANVAS.get()->GetDefaultCanvasSize().y : parent.lock().get()->GetDefaultHeight();
+			float parentratioH = (float)dh / (float)ph;
+			scaleY = parentratioH * World::UI_CANVAS.get()->StrechY();
+			h = std::max((float)h, parentRect.height * scaleY);
+		}
+		else if(scaleX > scaleY){
+			int dw = m_owner.get()->GetDefaultWidth();
+			int pw = parent.expired() ? World::UI_CANVAS.get()->GetDefaultCanvasSize().x : parent.lock().get()->GetDefaultWidth();
+			float parentratioW = (float)dw / (float)pw;
+			scaleX = parentratioW * World::UI_CANVAS.get()->StrechX();
+			w = std::max((float)w, parentRect.width * scaleX);
+		}
 
 		m_owner.get()->SetSize({(float)w, (float)h});
-		
+		Vector2 rawLoc = m_owner.get()->GetRawLocation();
 		// Location
 		if ((m_owner.get()->HasTexture() && m_owner.get()->GetTextureType() == TEXTURE_PART) || m_owner.get()->IsScaleLocked()) {
 			cx = midAnchor.x + m_Rect.x;
 			cy = midAnchor.y + m_Rect.y;
 		}
 		else {
-			cx =  midAnchor.x + (m_Rect.x * scaleX);
-			cy =  midAnchor.y + (m_Rect.y * scaleY);
+			cx =  midAnchor.x + (float)(rawLoc.x * scaleX);
+			cy =  midAnchor.y + (float)(rawLoc.y * scaleY);
 		}
 		m_owner.get()->SetLocation({(float)cx, (float)cy});
 		

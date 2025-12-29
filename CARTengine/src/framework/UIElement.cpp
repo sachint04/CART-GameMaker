@@ -87,6 +87,7 @@ namespace cart {
 	void UIElement::SetUIProperties(UI_Properties _prop)
 	{
 		SetLocation(_prop.location);
+		m_rawlocation = _prop.location;
 		m_shapeType = _prop.shapetype;
 		m_defaultSize = _prop.size;
 		m_scale = _prop.scale;

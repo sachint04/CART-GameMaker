@@ -443,11 +443,11 @@ namespace cart
         // DrawRectangleRec(textBox, LIGHTGRAY);
         if (m_owningworld->GetInputController()->GetFocusedId().compare(GetId()) == 0)
         {            
-              DrawRectangleLinesEx({ textBox.x, textBox.y, textBox.width, textBox.height }, 2.f, DARKGRAY);
+           DrawRectangleLinesEx({ textBox.x, textBox.y, textBox.width, textBox.height }, 2.f, DARKGRAY);
         }
-        else {
-            DrawRectangleLines((int)textBox.x, (int)textBox.y, (int)textBox.width, (int)textBox.height, DARKGRAY);
-        }
+        //else {
+        //    DrawRectangleLines((int)textBox.x, (int)textBox.y, (int)textBox.width, (int)textBox.height, DARKGRAY);
+        //}
              
         TextLine(m_lines);             
 

@@ -288,14 +288,15 @@ namespace cart {
 
 	void UIButton::UpdateTextLocation() {
 		if (m_text.size() == 0)return;
+			Rectangle rect = GetBounds();
 		if (m_textsize.x < m_width) {
-			float margin_x = ((m_width *  m_scale) - (m_textsize.x * m_scale))* 0.5f;
-			float margin_y = ((m_height * m_scale) - (m_textsize.y * m_scale)) * 0.5f;
+			float margin_x = ((rect.width) - (m_textsize.x))* 0.5f;
+			float margin_y = ((rect.height) - (m_textsize.y)) * 0.5f;
 
-			m_fontLocation = { m_location.x + margin_x, m_location.y + margin_y  };
+			m_fontLocation = { rect.x + margin_x, rect.y + margin_y  };
 		}
 		else {
-			m_fontLocation = { m_location.x, m_location.y };
+			m_fontLocation = { rect.x, rect.y };
 		}
 	}
 

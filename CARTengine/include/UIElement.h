@@ -44,6 +44,9 @@ namespace cart {
 		virtual Rectangle GetAnchor();
 		virtual void SetFocused(bool _flag);
 		virtual void AddComponent(COMPONENT_TYPE type);
+		virtual float GetDefaultWidth() { return m_defaultSize.x; };
+		virtual float GetDefaultHeight() { return m_defaultSize.y; };
+		virtual Vector2 GetRawLocation() { return m_rawlocation; };
 		weak<LayoutComponent> GetLayoutComponent();
 
 

@@ -10,10 +10,16 @@ namespace cart {
       
 
 #pragma region  ENUMNS
-    enum COMPONENT_TYPE {
-        NO_COMPONENT,
-        LAYOUT_COMPONENT
-   };
+    enum Layout_Component_Type {NO_LAYOUT, LAYOUT, V_LAYOUT, H_LAYOUT };
+
+
+    enum STYLE_POSITION {
+        STYLE_POSITION_RELATIVE,
+        STYLE_POSITION_ABSOLUTE,
+        STYLE_POSITION_FIXED,
+    };
+
+
     enum VEC_TYPE {
         Vec2D,
         Vec3D,
@@ -116,7 +122,11 @@ namespace cart {
 #pragma endregion
 
 #pragma region STRUCTS
+    struct UI_Style {
+        STYLE_POSITION style_Position = STYLE_POSITION_ABSOLUTE;
+       
 
+    };
     typedef struct Async_Call_Header
     {
         std::string id;
@@ -160,7 +170,7 @@ namespace cart {
     public:
         TEXTURE_DATA_STATUS texturestatus = TEXTURE_DATA_STATUS::UNLOCKED;
         TEXTURE_TYPE texturetype = TEXTURE_TYPE::TEXTURE_FULL;
-        COMPONENT_TYPE component = NO_COMPONENT;
+        Layout_Component_Type component;
         SHAPE_TYPE shapetype = SHAPE_TYPE::RECTANGLE;
         bool blockscale;
         std::string texture;
@@ -178,7 +188,6 @@ namespace cart {
         Rectangle texturesource;
         Rectangle anchor = {0,0,1.f,1.f};
         Color bordercol;
-        
     };
 
 	struct Text_Properties : UI_Properties{

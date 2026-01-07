@@ -58,7 +58,7 @@ set(ENGINE_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/include/ProgressView.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/ProgressView.cpp
 		
-	${CMAKE_CURRENT_SOURCE_DIR}/include/component/IComponent.h
+		
 	${CMAKE_CURRENT_SOURCE_DIR}/include/component/UIList.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/component/UIList.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/component/IController.h
@@ -66,8 +66,25 @@ set(ENGINE_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/src/component/InputController.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/component/ColorPalette.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/component/ColorPalette.cpp
+	
+
+	${CMAKE_CURRENT_SOURCE_DIR}/include/component/IComponent.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/component/IComponent.cpp
+	
+	${CMAKE_CURRENT_SOURCE_DIR}/include/component/ComponentFactory.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/component/ComponentFactory.cpp
+	
+	${CMAKE_CURRENT_SOURCE_DIR}/include/component/LayoutComponentFactory.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/component/LayoutComponentFactory.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/component/LayoutComponent.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/component/LayoutComponent.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/component/LayoutComponent.cpp	
+	${CMAKE_CURRENT_SOURCE_DIR}/include/component/VLayoutComponent.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/component/VLayoutComponent.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/include/component/HLayoutComponent.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/component/HLayoutComponent.cpp
+
+	
+	
 
 	${CMAKE_CURRENT_SOURCE_DIR}/include/tweenray/tweenBuilderBase.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/tweenray/tweenBuilderBase.cpp

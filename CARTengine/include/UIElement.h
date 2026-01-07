@@ -3,7 +3,8 @@
 #include "Actor.h"
 #include "Core.h"
 #include "Types.h"
-#include "component/LayoutComponent.h"
+#include "component/IComponent.h"
+#include "component/LayoutComponentFactory.h"
 
 
 
@@ -29,25 +30,30 @@ namespace cart {
 		virtual void SetScale(float _scale) override;
 		virtual void SetActive(bool _flag) override;
 		virtual void SetLocation(Vector2 _location)override;		
+		virtual void SetDefaultLocation(Vector2 _location);
 		virtual void SetPivot(Vector2 _pivot);
 		virtual void Offset(Vector2 _location)override;
 		virtual void SetAnchor(Rectangle rect);
-		virtual void DrawBGColor();
 		virtual void SetVisible(bool _flag) override;
+		virtual std::string type()override;
+
+		virtual void DrawBGColor();
 		virtual void Notify(const std::string& strevent);
 		virtual void AssetsLoadCompleted()override;
-		virtual void UpdateLayout(int canvas_w, int canvas_h);
 		virtual bool HasTexture();
 		virtual TEXTURE_TYPE GetTextureType();
 		virtual Rectangle GetBounds();
 		virtual Vector2 GetPivot();
 		virtual Rectangle GetAnchor();
 		virtual void SetFocused(bool _flag);
-		virtual void AddComponent(COMPONENT_TYPE type);
+		virtual void AddUIComponent(Layout_Component_Type type);
 		virtual float GetDefaultWidth() { return m_defaultSize.x; };
 		virtual float GetDefaultHeight() { return m_defaultSize.y; };
 		virtual Vector2 GetRawLocation() { return m_rawlocation; };
-		weak<LayoutComponent> GetLayoutComponent();
+		virtual void SetStyle(UI_Style _style);
+		std::vector<weak<UIElement>>Children();
+		bool UpdateLayout();
+		bool IsLayoutUpdated();
 
 
 		virtual ~UIElement();
@@ -58,7 +64,7 @@ namespace cart {
 		void RemoveChild(const std::string& id);
 		bool IsPendingUpdate() { return m_pendingUpdate; };
 		void SetPendingUpdate(bool _flag);
-	
+		
 		void Destroy()override;
 		void SetExcludeFromParentAutoControl(bool _flag);
 		bool IsExcludedFromParentAutoControl() { return m_isExcludedFromParentAutoControl; };
@@ -68,26 +74,30 @@ namespace cart {
 		virtual void OnLayoutChange();
 		weak<UIElement> parent();
 		void parent(weak<UIElement> ui);
+		//void AddLayoutComponent(const std::string& id, weak<IComponent> component);
+		weak<IComponent> GetComponentById(const std::string& id);
+		bool HasLayoutComponent(Layout_Component_Type type);
 	protected:
-		SHAPE_TYPE m_shapeType;
-		int m_borderwidth;
-		int m_roundnessSegments;
 		bool m_pendingUpdate;
 		bool m_isExcludedFromParentAutoControl;
 		bool m_isFocused;
+		int m_borderwidth;
+		int m_roundnessSegments;
 		float m_roundness;
+
+		SHAPE_TYPE m_shapeType;
 		Vector2 m_rawlocation;	
 		Vector2 m_pivot;
 		Vector2 m_defaultSize;
 		Rectangle m_anchor;
-		shared<LayoutComponent> m_layout;
+		shared<IComponent> m_layout;
 		weak<UIElement> m_parent;
 		Color m_borderColor;
 		std::vector <shared<UIButton>> m_slides = {};
 		std::vector<shared<UIElement>> m_children = {};
 		TEXTURE_TYPE  m_texturetype = TEXTURE_FULL;
-
-
+		UI_Style m_style;
+		LayoutComponentFactory m_ui_comp_factory;
 	};
 
 }

@@ -8,7 +8,7 @@
 #include "UIElement.h"
 namespace cart {
 
-    class LayoutComponent;
+    class IComponent;
 	class UICanvas : public UIElement {
 	public:           
         virtual void Init() override;
@@ -17,7 +17,7 @@ namespace cart {
         virtual void Draw(float _deltaTime) override;
         virtual Rectangle GetBounds()override;
 
-        bool RegisterComponent(weak<LayoutComponent> comp);
+        bool RegisterComponent(weak<IComponent> comp);
         bool RemoveComponent(const std::string& id);
         void UpdateLayout();       
         void SafeRect(Rectangle rect);
@@ -34,7 +34,7 @@ namespace cart {
         ~UICanvas();
 	private:
 
-        Dictionary<std::string, weak<LayoutComponent>> elemlist;
+        Dictionary<std::string, weak<IComponent>> elemlist;
         Rectangle m_safeRect;
 	};
 

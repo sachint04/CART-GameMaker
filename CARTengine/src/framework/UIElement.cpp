@@ -6,7 +6,7 @@
 #include "World.h"
 #include "Logger.h"
 #include "UICanvas.h"
-
+#include "component/LayoutComponentFactory.h"
 
 extern int CANVAS_X;
 extern int CANVAS_Y;
@@ -31,7 +31,9 @@ namespace cart {
 		m_borderColor{ GRAY },
 		m_texturetype{ TEXTURE_FULL },
 		m_roundnessSegments{36},
-		m_isFocused{false}
+		m_isFocused{false},
+		m_style{},
+		m_ui_comp_factory{}
 	{
 		m_anchor = { 0.f, 0.f, 1.f, 1.f }; 
 		m_pivot = { 0.f, 0.f };
@@ -43,24 +45,14 @@ namespace cart {
 	// VIRTUAL METHOD 
 	void UIElement::Init()
 	{
-		 World::UI_CANVAS.get()->onScreenSizeChange.BindAction(GetWeakRef(), &UIElement::OnScreenSizeChange);
-		for (auto iter = m_children.begin(); iter != m_children.end(); ++iter)
-		{
-			iter->get()->Init();
-		}
 		Actor::Init();
 	}
 	void UIElement::Start()
 	{		
 		if (m_children.size() == 0) {
+			m_areChildrenReady = true;
 			Actor::Start();// There are no childres hence set Ready
 		}
-		
-		//if (m_parent.expired()) {
-		//	 World::UI_CANVAS.get()->UpdateLayout();// Update Layout 
-		//}
-		//onReady.Broadcast(GetId());
-
 	}
 #pragma endregion
 
@@ -100,7 +92,7 @@ namespace cart {
 		m_roundnessSegments = _prop.roundnessSegments;
 		m_isLockedScale = _prop.blockscale;
 		SetSize(_prop.size);
-		if (_prop.component != NO_COMPONENT)AddComponent(_prop.component);
+		if (_prop.component != NO_LAYOUT)AddUIComponent(_prop.component);
 	}
 #pragma endregion
 
@@ -154,41 +146,67 @@ namespace cart {
 		int py = (m_pivot.y * m_height);
 		//	return{ m_location.x - px, m_location.y - m_pivot.y, m_width * m_scale,m_height * m_scale };
 		if (m_shapeType == SHAPE_TYPE::CIRCLE) {
-			return { m_location.x - px- m_width * 0.5f, m_location.y - m_pivot.y - m_height * 0.5f, m_width * 2.f, m_height * 2.f };// shape size will change for cirle;
+			return { m_location.x - px - m_width * 0.5f, m_location.y - m_pivot.y - m_height * 0.5f, m_width * 2.f, m_height * 2.f };// shape size will change for cirle;
 		}
 		
-		return{ m_location.x - px, m_location.y - py, m_width * m_scale,m_height * m_scale };
+		return{  m_location.x - px ,  m_location.y  - py , m_width * m_scale,m_height * m_scale };
 	}
 
-	void UIElement::AddComponent(COMPONENT_TYPE type)
+	void UIElement::AddUIComponent(Layout_Component_Type type)
 	{
-		
+		shared<UIElement> owner = std::dynamic_pointer_cast<UIElement>(GetWeakRef().lock());
+		weak<IComponent> comp;
 		switch (type)
 		{
-			case LAYOUT_COMPONENT :
-				if (!m_layout) {					
-					shared<UIElement> owner = std::dynamic_pointer_cast<UIElement>(GetWeakRef().lock());
-					LayoutComponent comp{ std::string{GetId() + "_layout"}, owner, {0.f, 1.f, 0.f, 1.f}, {m_location.x, m_location.y, m_width, m_height} };
-					m_layout = std::make_shared<LayoutComponent>(comp);
-					 World::UI_CANVAS.get()->RegisterComponent(m_layout);
-					m_layout.get()->onLayoutChange.BindAction(GetWeakRef(), &UIElement::OnLayoutChange);
-					Actor::AddComponent(std::string{ GetId() + "_layout" }, m_layout);
-				}
-				else {
-					Logger::Get()->Error(std::format("UIElement::AddComponent() LAYOUT_COMPONENT is already exists in {}", GetId()));
-				}
-			break;
-			case NO_COMPONENT :
-
+			case LAYOUT :	
+				comp = m_ui_comp_factory.make(LAYOUT, std::string{ GetId() + "_layout" });								
 				break;
+			case V_LAYOUT:
+				comp = m_ui_comp_factory.make(V_LAYOUT, std::string{ GetId() + "_v_layout" });
+				break;
+			case H_LAYOUT:				
+				comp = m_ui_comp_factory.make(H_LAYOUT, std::string{ GetId() + "_h_layout" });
+				break;			
+		}
+		if (!comp.expired()) {
+			comp.lock()->Init(owner, { 0.f, 1.f, 0.f, 1.f }, { m_location.x, m_location.y, m_width, m_height });
 		}
 	}
 
-	weak<LayoutComponent> UIElement::GetLayoutComponent()
+	void UIElement::SetStyle(UI_Style _style)
 	{
-		return m_layout;
+		m_style = _style;
+	}
+
+	std::vector<weak<UIElement>> UIElement::Children()
+	{
+		std::vector<weak<UIElement>> weak_vec;
+		std::transform(
+			m_children.begin(),
+			m_children.end(),
+			std::back_inserter(weak_vec),
+			[](const shared<UIElement>& sp) 
+			{
+				return weak<UIElement>(sp);
+			}
+		);
+		return weak_vec;
+	}
+
+	bool UIElement::UpdateLayout()
+	{
+		return m_ui_comp_factory.UpdateUI();
+	}
+
+	bool UIElement::IsLayoutUpdated()
+	{
+		if (m_ui_comp_factory.HasComponents()) {
+			return m_ui_comp_factory.IsAllCompUpdated();
+		}
+		return true;
 	}
 	
+
 	void UIElement::Notify(const std::string& strevent)
 	{
 	}
@@ -210,6 +228,11 @@ namespace cart {
 		Actor::SetLocation(_location);
 	}
 
+	void UIElement::SetDefaultLocation(Vector2 _location)
+	{
+		m_rawlocation =  _location;
+	}
+
 	void UIElement::SetPivot(Vector2 _pivot)
 	{
 		m_pivot = _pivot;
@@ -228,6 +251,14 @@ namespace cart {
 	void UIElement::DrawBGColor()
 	{
 		float scScale =  World::UI_CANVAS.get()->Scale();
+		Rectangle parentRect;
+		/*if (m_parent.expired())
+		{			
+			parentRect = { 0, 0, World::UI_CANVAS.get()->Size().x, World::UI_CANVAS.get()->Size().y };
+		}
+		else {
+			parentRect = m_parent.lock()->GetBounds();
+		}*/
 		int px = (m_pivot.x * m_width);
 		int py = (m_pivot.y * m_height);
 		if (m_shapeType == SHAPE_TYPE::CIRCLE)
@@ -298,6 +329,14 @@ namespace cart {
 		m_parent = parent;
 	}
 
+	weak<IComponent> UIElement::GetComponentById(const std::string& id)
+	{
+		if (m_ui_comp_factory.HasComponent(id)) {
+			return m_ui_comp_factory.GetComponent(id);
+		}
+		return  shared<IComponent>{nullptr};
+	}
+
 	
 	void UIElement::SetPendingUpdate(bool _flag)
 	{
@@ -312,6 +351,15 @@ namespace cart {
 		m_flipV = flipv;
 	}*/
 
+	bool UIElement::HasLayoutComponent(Layout_Component_Type type)
+	{		
+		return m_ui_comp_factory.HasComponent(type);
+	}
+
+	std::string UIElement::type()
+	{
+		return std::string{"UIElement"};
+	}
 
 #pragma endregion
 	
@@ -361,9 +409,7 @@ namespace cart {
 		}
 	}
 
-	void UIElement::UpdateLayout(int canvas_w, int canvas_h)
-	{
-	}
+
 #pragma endregion
 
 #pragma region EventHandler
@@ -378,21 +424,19 @@ namespace cart {
 	}
 
 	void UIElement::OnChildReady(const std::string& id)
-	{
-		Logger::Get()->Trace(std::format("UIElement child {} is ready.\n", id));
+	{		
 		for (auto iter = m_children.begin(); iter != m_children.end();)
 		{
 			if (!iter->get()->IsReady())
 			{
+				//Logger::Get()->Trace(std::format("In [{}] , child [{}] is ready. but child [{}] is not ready yet!\n", GetId(), id, iter->get()->GetId()));
 				return;// child ements not ready. do nothing
 			}
 			++iter;
 		}
+		m_areChildrenReady = true;
+
 		Actor::Start();
-		
-		if(m_layout)
-		 World::UI_CANVAS.get()->UpdateLayout();// Update Layout 
-		
 	}
 
 	void UIElement::OnScreenSizeChange()
@@ -405,6 +449,7 @@ namespace cart {
 		// Add  Concrete Implemtation
 
 		//m_layout.get()->onLayoutChange.BindAction(GetWeakRef(), &UIElement::OnLayoutChange);
+		
 	}
 
 
@@ -418,9 +463,9 @@ namespace cart {
 		{
 			iter->get()->Destroy();
 			iter = m_children.erase(iter);
-		}
+		}		
+		m_ui_comp_factory.Destroy();
 		SetVisible(false);
-		
 		Actor::Destroy();
 	}
 

@@ -26,11 +26,14 @@ namespace cart {
 		m_preloadlist{},
 		m_isReady{false},
 		m_strloadMsg{"Loading... "},
-		m_isLockedScale{false}
+		m_isLockedScale{false},
+		m_areAssetsLoaded{false},
+		m_areChildrenReady{false}
 	{
 	}
 	void Actor::Start()
-	{
+	{		
+		if(m_areChildrenReady && m_areAssetsLoaded && !m_isReady)
 		SetReady(true);
 	}
 	void Actor::Init()
@@ -55,33 +58,10 @@ namespace cart {
 #pragma region Healpers
 
 	void Actor::SetReady(bool flag)
-	{
+	{		
+	//	Logger::Get()->Trace(std::format("[{}] is  ready !\n", GetId()));
 		m_isReady = flag;
 		onReady.Broadcast(GetId());
-	}
-	void Actor::AddComponent(const std::string& id, weak<IComponent> component)
-	{
-		m_componentlist.insert({id, component });
-	}
-
-	weak<IComponent> Actor::GetComponentById(const std::string& id)
-	{
-		auto find = m_componentlist.find(id);
-		if (find != m_componentlist.end()) {
-			return find->second;
-		}
-		return  shared<IComponent>{nullptr};
-	}
-
-	bool Actor::HasComponent(COMPONENT_TYPE type)
-	{
-		for (auto iter = m_componentlist.begin(); iter != m_componentlist.end(); iter++)
-		{
-			if (iter->second.lock()->GetType() == type) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	Vector2 Actor::GetWindowSize() const
@@ -221,21 +201,22 @@ namespace cart {
 
 	void Actor::AssetsLoadCompleted()
 	{
-		Logger::Get()->Trace(std::format("{} Asset Load complete!", GetId()));
+		//Logger::Get()->Trace(std::format("{} Asset Load complete!", GetId()));
+		m_areAssetsLoaded = true;
 		Start();
 	}
 
 	void Actor::Destroy()
 	{
 		if (m_isPendingDestroy)return;
-		for (auto iter = m_componentlist.begin(); iter != m_componentlist.end();)
-		{
-			 World::UI_CANVAS.get()->RemoveComponent(iter->first);
-			iter->second.lock()->Destroy();
-			iter = m_componentlist.erase(iter);
-		}
+		
 		m_preloadlist.clear();
 		Object::Destroy();
+	}
+
+	std::string Actor::type()
+	{
+		return std::string{ "Actor" };
 	}
 
 	void Actor::SetVisible(bool _flag)

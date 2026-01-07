@@ -9,18 +9,26 @@ namespace cart {
 	class LayoutComponent : public IComponent
 	{
 	public:
-		LayoutComponent(const std::string& id, shared<UIElement> ui, Rectangle Anchor, Rectangle rect);
+		LayoutComponent(std::string& id);
+		~LayoutComponent();
 		// Inherited via IComponent
-		void Destroy() override;
-		void Update() override;
-		bool UpdateLayout(Vector2 size, float scaleX, float scaleY,  const Rectangle& safeRect);
+		virtual void Init(shared<UIElement> ui, Rectangle Anchor, Rectangle rect) override;
+		virtual void Destroy() override;
+		virtual void Update() override;
+		virtual void SetForUpdate() override;
+		virtual bool IsOwnerReady() override;
+		virtual bool UpdateLayout(Vector2 size, float scaleX, float scaleY,  const Rectangle& safeRect)override;
+		bool IsUpdated() override;
+		bool IsEnabled()override { return m_isEnabled; };
+		weak<IComponent> GetWeakRef()override;
+		Layout_Component_Type type()override { return Layout_Component_Type::LAYOUT; };
+		std::string GetId()const override ;
+
 		bool HasParent();
-		void SetForUpdate();
-		bool IsUpdated();
-		bool IsOwnerReady();
 
 		Delegate<> onLayoutChange;
-	private:
+	protected:
+		std::string m_Id;
 		shared<UIElement> m_owner;
 		float m_anchorMinX;
 		float m_anchorMaxX;
@@ -28,6 +36,8 @@ namespace cart {
 		float m_anchorMaxY;
 		bool m_isUpdated;
 		Rectangle m_Rect;
+		bool m_isEnabled;
+		Layout_Component_Type m_type;
 	};
 
 }

@@ -12,6 +12,7 @@ namespace cart
 	class GameStage;
 	class InputController;
 	class UICanvas;
+	class UIElement;
 	class World : public Object
 	{
 
@@ -42,7 +43,8 @@ namespace cart
 		void NextGameStage();
 		void PreviousGameStage();
 		void JumpToGameStage(const std::string& stageid);
-		
+		weak<UIElement> GetUIElementBefore(const std::string& id);
+
 		void SetSessionData(void* data);
 		void* GetSessionData() { return m_sessionData; };
 

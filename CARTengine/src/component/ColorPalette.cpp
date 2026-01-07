@@ -5,8 +5,8 @@
 namespace cart {
 #pragma region  Constructor / Init
 
-	ColorPalette::ColorPalette(World* _owningworld, const std::string& _id, float palatteiconsize)
-		:UIElement{ _owningworld, _id},
+	ColorPalette::ColorPalette(World* _owningworld, const std::string& _id, bool isExcludedFromParentAutoControl, float palatteiconsize)
+		:UIElement{ _owningworld, _id, isExcludedFromParentAutoControl },
 		m_palatteiconsize{ palatteiconsize },
 		colorState{},
 		colorsRecs{},

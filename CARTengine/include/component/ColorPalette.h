@@ -8,7 +8,7 @@ namespace cart
 	{
 
 	public:
-		ColorPalette(World* _owningworld, const std::string& _id, float palatteiconsize);
+		ColorPalette(World* _owningworld, const std::string& _id, bool isExcludedFromParentAutoControl, float palatteiconsize);
 		void Init()override;
 		void Start()override;
 		void Update(float _deltaTime)override;

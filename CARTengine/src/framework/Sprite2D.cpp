@@ -175,6 +175,7 @@ namespace cart {
 				UpdateMask();
 			}
 		}
+		
 	}
 	/*void Sprite2D::UpdateLocation()
 	{
@@ -241,7 +242,9 @@ namespace cart {
 		
 	}
 	void Sprite2D::ResizeImage() {
-		m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
+		if (m_strTexture.size() > 0) {
+			m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
+		}
 		if (!m_texture2d)return;
 		int width, height; float tmpscalex, tmpscaley, px, py;
 

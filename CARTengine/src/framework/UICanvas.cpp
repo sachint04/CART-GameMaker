@@ -5,7 +5,7 @@
 #include "Logger.h"
 #include "Application.h"
 #include "World.h"
-#include "component/LayoutComponent.h"
+#include "component/IComponent.h"
 #include "component/InputController.h"
 
 
@@ -26,6 +26,7 @@ namespace cart {
 
     void UICanvas::Init()
     {
+        m_defaultSize = { (float)DEFAULT_CANVAS_WIDTH , (float)DEFAULT_CANVAS_HEIGHT };
         m_owningworld->GetInputController()->RegisterUI(GetWeakRef());
     }
 
@@ -62,7 +63,7 @@ namespace cart {
 #pragma region Helpers
 
 
-    bool UICanvas::RegisterComponent(weak<LayoutComponent> comp)// register to update layout when device size/res changes
+    bool UICanvas::RegisterComponent(weak<IComponent> comp)// register to update layout when device size/res changes
     {
       //  std::string d = ui.lock()->GetID();
       //  std::transform(d.begin(), d.end(), d.begin(),

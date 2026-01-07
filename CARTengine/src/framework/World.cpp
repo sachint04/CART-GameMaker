@@ -12,6 +12,7 @@
 #include "component/InputController.h"
 #include "Logger.h"
 #include "UICanvas.h"
+#include "UIElement.h"
 namespace cart {
 
 	bool World::m_APP_SHOULD_WAIT = true;// IMP * APP WILL NOT START/("Run()") UNLESS TRUE 
@@ -94,6 +95,27 @@ namespace cart {
 			}			
 		}
 		m_currentStage->get()->Init();
+	}
+
+	weak<UIElement> World::GetUIElementBefore(const std::string& id)
+	{
+		int found = -1;
+		weak<UIElement> uielem;
+		for (size_t i = 0; i < m_Actors.size(); i++)
+		{
+			
+			if (m_Actors.at(i).get()->GetId().compare(id) == 0) {
+				found  = --i;
+				break;
+			}
+			else {
+				if (m_Actors.at(i).get()->type().compare("UIElement") == 0) {
+					uielem = std::static_pointer_cast<UIElement>(m_Actors.at(i).get()->GetWeakRef().lock());
+				}
+			}
+		}
+		
+		return uielem;
 	}
 	
 	void World::AddStage(const shared<GameStage>& newStage)

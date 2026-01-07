@@ -1,29 +1,29 @@
 #pragma once
 #include <string>
 #include "Types.h"
+#include "Delegate.h"
 namespace cart {
-
-	class IComponent{
+	class UIElement;
+	class IComponent:public std::enable_shared_from_this<IComponent>
+	{
 	public:
+		IComponent();
+		virtual ~IComponent() = default;
+
+		virtual void Init(shared<UIElement> ui, Rectangle Anchor, Rectangle rect)  = 0;
 		virtual void Destroy() = 0;
 		virtual void Update() = 0;
+		virtual void SetForUpdate() = 0;
+		virtual bool IsOwnerReady() = 0;
+		virtual bool IsUpdated() = 0;
+		virtual bool UpdateLayout(Vector2 size, float scaleX, float scaleY, const Rectangle& safeRect) = 0;
+		virtual bool IsEnabled() = 0;
+		virtual weak<IComponent> GetWeakRef() = 0;
+		virtual Layout_Component_Type type() = 0;
+		virtual std::string GetId()const = 0;
 
-		IComponent(const std::string& id, COMPONENT_TYPE type) :m_Id{ id }, m_type{type}, m_isEnabled { true } {};
-		COMPONENT_TYPE GetType() {
-			return m_type;
-		};
-
-		const std::string& GetId()const {
-			return m_Id;
-		};
-		bool IsEnabled() { return m_isEnabled; };
-
-	protected :
-		bool m_isEnabled;
-		std::string m_Id;
-		COMPONENT_TYPE m_type = COMPONENT_TYPE::NO_COMPONENT;
-
-
+	private:
+		
 	};
 
 }

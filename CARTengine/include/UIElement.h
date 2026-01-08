@@ -46,7 +46,7 @@ namespace cart {
 		virtual Vector2 GetPivot();
 		virtual Rectangle GetAnchor();
 		virtual void SetFocused(bool _flag);
-		virtual void AddUIComponent(Layout_Component_Type type);
+		virtual void AddUIComponent(Layout_Component_Type type, UI_Layout_Properties layout_props);
 		virtual float GetDefaultWidth() { return m_defaultSize.x; };
 		virtual float GetDefaultHeight() { return m_defaultSize.y; };
 		virtual Vector2 GetRawLocation() { return m_rawlocation; };

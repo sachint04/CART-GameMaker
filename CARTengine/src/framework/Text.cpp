@@ -16,7 +16,9 @@ namespace cart {
 		m_background{ 0,0,0,0 },
 		m_textColor{ BLACK },
 		m_fontspacing{ 1.f },
-		m_textLocation{}
+		m_textLocation{},
+		m_minfontsize{},
+		m_minfontspacing{}
 	{
 	}
 
@@ -41,38 +43,46 @@ namespace cart {
 	{
 		if (m_visible == false)return;
 		UIElement::Draw(_deltaTime);		
-		
-		if(!m_sharedfont)
-		m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, std::ceil(m_fontsize *  World::UI_CANVAS.get()->Scale()));
+		float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
+		float fspace = std::max(m_minfontspacing, m_fontspacing * World::UI_CANVAS.get()->Scale());
 
-		m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), std::ceil(m_fontsize *  World::UI_CANVAS.get()->Scale()), m_fontspacing *  World::UI_CANVAS.get()->Scale());
+		//if(!m_sharedfont)
+		m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, fsize);
+
+		//m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), fsize, fspace);
 		DrawRectangle(m_location.x, m_location.y, m_width, m_height, m_background);	
 
-		DrawTextEx(*m_sharedfont, m_text.c_str(), m_textLocation, m_fontsize * m_scale *  World::UI_CANVAS.get()->Scale(), 1, m_textColor);
+		DrawTextEx(*m_sharedfont, m_text.c_str(), m_textLocation, fsize, fspace, m_textColor);
 	}
 
 	void Text::UpdateTextLocation()
 	{				
-		if (!m_sharedfont)
-			m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, std::ceil(m_fontsize *  World::UI_CANVAS.get()->Scale()));
+		float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
+		float fspace = std::max(m_minfontspacing, m_fontspacing * World::UI_CANVAS.get()->Scale());
 
-		m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), std::ceil(m_fontsize *  World::UI_CANVAS.get()->Scale()), m_fontspacing *  World::UI_CANVAS.get()->Scale());
+	//	if (!m_sharedfont)
+			m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, fsize);
+
+		m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), fsize, fspace);
 		int px = (m_pivot.x * m_width);
 		int py = (m_pivot.y * m_height);
+		Rectangle rect = GetBounds();
 		switch (m_align)
 		{
 		case LEFT:
-			m_textLocation = { m_location.x - px,
-								m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 - py } ;
+			m_textLocation = { rect.x - px,
+								rect.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 - py } ;
 			break;
 		case CENTER:
-			m_textLocation = { m_location.x + (m_width * m_scale / 2) - (m_textsize.x * m_scale) / 2  -px,
-								m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 - py };
+			m_textLocation = { rect.x + ((rect.width - m_textsize.x) * 0.5f) * m_scale,
+							rect.y + ((rect.height - m_textsize.y) * 0.5f) * m_scale };
+			//m_textLocation = { m_location.x + (m_width * m_scale / 2) - (m_textsize.x * m_scale) / 2  -px,
+			//					m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 - py };
 			break;
 
 		case RIGHT:
-			m_textLocation = { m_location.x + (m_width * m_scale) - (m_textsize.x * m_scale) - px,
-								m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 - py };
+			m_textLocation = { rect.x + (m_width * m_scale) - (m_textsize.x * m_scale) - px,
+								rect.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 - py };
 			break;
 		}
 
@@ -85,10 +95,12 @@ namespace cart {
 	{
 		m_font = _prop.font;
 		m_text = _prop.text;
-		m_fontsize = _prop.fontsize;
+		m_fontsize = std::max(_prop.fontsize, _prop.minfontsize);
+		m_minfontsize = _prop.minfontsize;
 		m_align = _prop.align;	
 		m_background = _prop.textbackground;
 		m_fontspacing = _prop.fontspacing;
+		m_minfontspacing = _prop.minfontspacing;
 		m_textColor = _prop.textcolor;
 		SetUIProperties((UI_Properties)_prop);
 	}
@@ -105,9 +117,9 @@ namespace cart {
 	{
 		if (m_fontsize == size)return;
 		m_sharedfont.reset();
+		m_fontsize = std::max(size, m_minfontsize);
 		m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, size);
 		AssetManager::Get().UnloadFontAsset(m_font, m_fontsize);
-		m_fontsize = size;
 	}
 	void Text::SetTextColor(Color col)
 	{

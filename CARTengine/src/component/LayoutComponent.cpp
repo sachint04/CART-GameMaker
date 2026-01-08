@@ -37,7 +37,7 @@ namespace cart
 	{
 	}
 
-	void LayoutComponent::Init(shared<UIElement> ui, Rectangle Anchor, Rectangle rect)
+	void LayoutComponent::Init(shared<UIElement> ui, Rectangle Anchor, Rectangle rect, UI_Layout_Properties props)
 	{
 		m_owner = ui;
 		m_anchorMinX = Anchor.x;
@@ -46,6 +46,10 @@ namespace cart
 		m_anchorMaxY =  Anchor.height; 
 		m_isUpdated = false;
 		m_Rect = rect;
+		m_align = props.align;
+		m_valign = props.valign;
+		m_margin = props.margin;
+		m_padding = props.padding;
 	}
 
 #pragma endregion
@@ -67,7 +71,8 @@ namespace cart
 			float a1, float a2, float& pr1, float pr2,  // anchor [x/y], anchor [width/height], parent location[x/y],  parent size [width/height] 
 			float p1, float p2,  // Raw position [left/top], size [width/heigth],
 			float ods, float pds, // default size [width/height], parent default size [width/height]
-			float mis, float str, bool cs // minimum scale, max streach [x/y], can streach
+			float mis, float str, bool csr, // minimum scale, max streach [x/y], can streach
+			bool csc // can Scale
 			) {
 			float min = a1 * pr2; // min [left / top]
 			float max = a2 * pr2; // max [right / bottom ]
@@ -78,9 +83,9 @@ namespace cart
 				s = pr1 + max - p2; // parent start + anchor max - right/botton [width/height]
 			}
 			else {	// anchor is a point
-				float fscale = cs? (ods / pds) * str : mis;// MAXIMUM OF -> minimum scale and  max streach 
-				s = cs?pr2 * fscale : mis * ods; // updated size 
-				p = pr1 + min + p1 * (cs? (ods/s) : mis); // parent start + anchor min + (current pos [x/y] * scale)
+				float fscale = csr? (ods / pds) * str : mis;// MAXIMUM OF -> minimum scale and  max streach 
+				s = (csr) ?pr2 * fscale : mis * ods ; // updated size 
+				p = pr1 + min + p1 * (csr? (ods/s) : mis); // parent start + anchor min + (current pos [x/y] * scale)
 			}
 		};
 
@@ -155,9 +160,9 @@ namespace cart
 
 		bool isScaleLocked = (m_owner.get()->HasTexture() && m_owner.get()->GetTextureType() == TEXTURE_PART) || m_owner.get()->IsScaleLocked();
 		
-		resize(w, cx, anchor.x, anchor.width, parentRect.x, parentRect.width, rawPosition.x, m_Rect.width, defaultW, parentDefaultW, std::min(scaleX, scaleY), World::UI_CANVAS.get()->StrechX(), scaleX > scaleY);
+		resize(w, cx, anchor.x, anchor.width, parentRect.x, parentRect.width, rawPosition.x, m_Rect.width, defaultW, parentDefaultW, std::min(scaleX, scaleY), World::UI_CANVAS.get()->StrechX(), scaleX > scaleY, isScaleLocked);
 
-		resize(h, cy, anchor.y, anchor.height, parentRect.y, parentRect.height, rawPosition.y, m_Rect.height, defaultH, parentDefaultH, std::min(scaleX, scaleY), World::UI_CANVAS.get()->StrechY(), scaleX < scaleY);
+		resize(h, cy, anchor.y, anchor.height, parentRect.y, parentRect.height, rawPosition.y, m_Rect.height, defaultH, parentDefaultH, std::min(scaleX, scaleY), World::UI_CANVAS.get()->StrechY(), scaleX < scaleY, isScaleLocked);
 	
 		m_owner.get()->SetSize({ w, h });
 		m_owner.get()->SetLocation({ cx, cy });

@@ -39,7 +39,8 @@ namespace cart {
 		m_texturesourceover{},
 		m_texturesourcedown{},
 		m_texturesourcedisable{},
-		m_ButtonDisableColor{GRAY}
+		m_ButtonDisableColor{GRAY},
+		m_minfontsize{}
 	{
 	}
 
@@ -72,8 +73,11 @@ namespace cart {
 	{
 		if (!m_visible || m_pendingUpdate)return;
 		if (m_fontstr.size() > 0) {
-			m_font = AssetManager::Get().LoadFontAsset(m_fontstr, std::ceil(m_fontsize *  World::UI_CANVAS.get()->Scale()));
-			m_textsize = MeasureTextEx(*m_font, m_text.c_str(),  std::ceil(m_fontsize *  World::UI_CANVAS.get()->Scale()), std::ceil(m_fontspace *  World::UI_CANVAS.get()->Scale()));
+			float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
+			float fspace = std::max(m_minfontspace, m_fontspace * World::UI_CANVAS.get()->Scale());
+
+			m_font = AssetManager::Get().LoadFontAsset(m_fontstr, fsize);
+			m_textsize = MeasureTextEx(*m_font, m_text.c_str(), fsize, fspace);
 			UpdateTextLocation();
 		}
 		
@@ -181,8 +185,10 @@ namespace cart {
 			
 			
 			if (m_text.size() > 0) {
-					m_font = AssetManager::Get().LoadFontAsset(m_fontstr, std::ceil(m_fontsize *   World::UI_CANVAS.get()->Scale()));			
-					DrawTextEx(*m_font, m_text.c_str(), m_fontLocation, std::ceilf(m_fontsize * m_scale *  World::UI_CANVAS.get()->Scale()), std::ceil(m_fontspace * m_scale *  World::UI_CANVAS.get()->Scale()), m_textcolor);
+				float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
+				float fspace = std::max(m_minfontspace, m_fontspace * World::UI_CANVAS.get()->Scale());
+				m_font = AssetManager::Get().LoadFontAsset(m_fontstr, fsize);
+				DrawTextEx(*m_font, m_text.c_str(), m_fontLocation, fsize, fspace, m_textcolor);
 			}
 
 	}
@@ -243,11 +249,13 @@ namespace cart {
 		m_fontstr = _prop.font;
 		m_text = _prop.text;
 		m_fontsize = _prop.fontsize;
+		m_minfontsize = _prop.minfontsize;
 		m_align = _prop.textAlign;
 		m_textcolor = _prop.textcolor;
 		m_defaulttextcolor = _prop.textcolor;
 		m_texthovercolor = _prop.texthoverolor;
 		m_fontspace = _prop.fontspace;
+		m_minfontspace = _prop.minfontspace;
 		//UpdateLocation();
      //   m_ButtonDefaultColor = _prop._color;
 

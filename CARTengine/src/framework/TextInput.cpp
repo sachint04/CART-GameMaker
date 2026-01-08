@@ -114,12 +114,15 @@ namespace cart
 
             l.clear();
             l.push_back({ std::string{},  { (float)textBox.x + m_textmargin * scrnScale, (float)textBox.y + 8 } });
-            Vector2 fntmeasure = MeasureTextEx(*m_sharedfont, "W", (float)m_fontsize * scrnScale, m_fontspacing * scrnScale);
+
+            float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
+            float fspace = std::max(m_minfontspacing, m_fontspacing * World::UI_CANVAS.get()->Scale());
+            Vector2 fntmeasure = MeasureTextEx(*m_sharedfont, "W", fsize, fspace);
             for (int i = 0; i < c; i++)
             {
 
                 l[l.size() - 1].first.append(std::string{ s[i] });
-                if (MeasureTextEx(*m_sharedfont, l[l.size() - 1].first.c_str(), (float)m_fontsize * scrnScale, m_fontspacing * scrnScale).x >= textBox.width - (fntmeasure.x + m_textmargin * scrnScale))
+                if (MeasureTextEx(*m_sharedfont, l[l.size() - 1].first.c_str(), fsize,fspace).x >= textBox.width - (fntmeasure.x + m_textmargin * scrnScale))
                 {
                     l.push_back({ std::string{},  { (float)textBox.x + m_textmargin * scrnScale, ((float)textBox.y + 8) + (fntmeasure.y * l.size() - 1) } });
                  
@@ -141,12 +144,14 @@ namespace cart
             l.clear();
             l.push_back({ std::string{},  { (float)textBox.x + m_textmargin * scrnScale, (float)textBox.y + 8 } });
 
-            Vector2 fntmeasure = MeasureTextEx(*m_sharedfont, "W", (float)m_fontsize * scrnScale, m_fontspacing * scrnScale);
+            float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
+            float fspace = std::max(m_minfontspacing, m_fontspacing * World::UI_CANVAS.get()->Scale());
+            Vector2 fntmeasure = MeasureTextEx(*m_sharedfont, "W", fsize, fspace);
             for (int i = 0; i < c; i++)
             {
  
                 l[l.size() - 1].first.append(std::string{ s[i] });
-                if (MeasureTextEx(*m_sharedfont, l[l.size() - 1].first.c_str(), (float)m_fontsize * scrnScale, m_fontspacing * scrnScale).x >= textBox.width - (fntmeasure.x + m_textmargin * scrnScale))
+                if (MeasureTextEx(*m_sharedfont, l[l.size() - 1].first.c_str(), fsize, fspace).x >= textBox.width - (fntmeasure.x + m_textmargin * scrnScale))
                 {
                     l.push_back({ std::string{},  { (float)textBox.x + m_textmargin * scrnScale, ((float)textBox.y + 8) + (fntmeasure.y * m_lines.size() - 1) } });
                 }
@@ -179,12 +184,14 @@ namespace cart
             l.clear();
             l.push_back({ std::string{},  { (float)textBox.x + m_textmargin * scrnScale, (float)textBox.y + 8 } });
 
-            Vector2 fntmeasure = MeasureTextEx(*m_sharedfont, "W", (float)m_fontsize * scrnScale, m_fontspacing * scrnScale);
+            float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
+            float fspace = std::max(m_minfontspacing, m_fontspacing * World::UI_CANVAS.get()->Scale());
+            Vector2 fntmeasure = MeasureTextEx(*m_sharedfont, "W", fsize, fspace);
             for (int i = 0; i < c; i++)
             {
 
                 l[l.size() - 1].first.append(std::string{ s[i] });
-                if (MeasureTextEx(*m_sharedfont, l[l.size() - 1].first.c_str(), (float)m_fontsize * scrnScale, m_fontspacing * scrnScale).x >= textBox.width - (fntmeasure.x + m_textmargin * scrnScale))
+                if (MeasureTextEx(*m_sharedfont, l[l.size() - 1].first.c_str(), fsize, fspace).x >= textBox.width - (fntmeasure.x + m_textmargin * scrnScale))
                 {
                     l.push_back({ std::string{},  { (float)textBox.x + m_textmargin * scrnScale, ((float)textBox.y + 8) + (fntmeasure.y * l.size() - 1) } });
                 
@@ -324,6 +331,7 @@ namespace cart
             if (IsKeyPressed(KEY_DELETE))
             {
                 whiledeletekey(m_letterCount, name, m_lines, m_curletterindex);
+               
                 //  m_keyWaitTimer = Clock::Get().ElapsedTime();
                 //  m_isDeleteKey = true;
             }
@@ -332,13 +340,16 @@ namespace cart
             // Check if more characters have been pressed on the same frame
             while (key > 0 )
             {
+                float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
+                float fspace = std::max(m_minfontspacing, m_fontspacing * World::UI_CANVAS.get()->Scale());
+
                 int  txtmargin = m_textmargin * scrnScale;
                 int tx = textBox.x + 8;
                 int ty = textBox.y + 8;
                 // NOTE: Only allow keys in range [32..125]
                 if ((key >= 32) && (key <= 125) && (m_letterCount < m_charLimit))
                 {
-                    Vector2 fntmeasure = MeasureTextEx(*m_sharedfont, "W", (float)m_fontsize * scrnScale, m_fontspacing * scrnScale);
+                    Vector2 fntmeasure = MeasureTextEx(*m_sharedfont, "W", fsize, fspace);
                     Rectangle textBox = GetBounds();
 
                     if (m_curletterindex < m_letterCount)
@@ -350,20 +361,10 @@ namespace cart
                         name[m_letterCount] = (char)key;
                         name[m_letterCount + 1] = '\0'; // Add null terminator at the end of the string.                 
                         m_curletterindex = m_letterCount + 1;
-                        if (m_lines.size() == 0) {
-                            m_lines.push_back({ std::string{},  { (float)tx, (float)ty } });
-                        }
-
-                        m_lines[m_lines.size() - 1].first.append(std::string{ name[m_letterCount] });
-
-                        if (MeasureTextEx(*m_sharedfont, m_lines[m_lines.size() - 1].first.c_str(), m_fontsize * scrnScale, m_fontspacing * scrnScale).x >= textBox.width - (fntmeasure.x + m_textmargin * scrnScale))
-                        {
-                            m_lines.push_back({ std::string{},  { (float)tx, (float)ty + (fntmeasure.y * m_lines.size()) } });
-
-                        }
                         m_text =  name ;
+                        PrepareInput();
                     }
-
+                   
                     m_isBackspace = false;
                     m_isLeftKey = false;
                     m_isRightKey = false;
@@ -469,6 +470,9 @@ namespace cart
        auto iter = str.begin();
         Rectangle textBox = GetBounds();
         float scrnScale =  World::UI_CANVAS.get()->Scale();
+        float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
+        float fspace = std::max(m_minfontspacing, m_fontspacing * World::UI_CANVAS.get()->Scale());
+
         int count = 0, l = 0;
         int txtmargin = m_textmargin * scrnScale;
      
@@ -476,20 +480,20 @@ namespace cart
         {
             if (iter->first.size() > 0)
             {
-                m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, m_fontsize * scrnScale);
-                DrawTextEx(*m_sharedfont, iter->first.c_str(),iter->second, m_fontsize * scrnScale, m_fontspacing * scrnScale, m_textColor);
+                m_sharedfont = AssetManager::Get().LoadFontAsset(m_font,fsize);
+                DrawTextEx(*m_sharedfont, iter->first.c_str(),iter->second, fsize, fspace * scrnScale, m_textColor);
               
             }
             count += iter->first.size();
             if (m_curletterindex <= count && m_curletterindex >= count - iter->first.size())// currently cursor is somewhere on this line
             {
                 //get Single char size
-               Vector2 fntsize = MeasureTextEx(*m_sharedfont, "W", (float)m_fontsize * scrnScale, m_fontspacing * scrnScale);
+               Vector2 fntsize = MeasureTextEx(*m_sharedfont, "W", fsize, fspace);
                int sizechr = iter->first.size();
                int stripcharnum = iter->first.size() - (count - m_curletterindex);
                 std::string copy = iter->first.substr(0, iter->first.size() - (count - m_curletterindex) + 1) ;// get exact chars to cursor from string
                 
-                m_cursorLoc = MeasureTextEx(*m_sharedfont, copy.c_str(), (float)m_fontsize * scrnScale, m_fontspacing * scrnScale);// measure width of part of text
+                m_cursorLoc = MeasureTextEx(*m_sharedfont, copy.c_str(), fsize,fspace);// measure width of part of text
                 m_cursorLoc.x = textBox.x + m_cursorLoc.x + txtmargin;
                 m_cursorLoc.y = textBox.y + l * fntsize.y + m_cursorLoc.y * 0.5f;
             }
@@ -514,7 +518,7 @@ namespace cart
     void TextInput::SetFontSize(float size)
     {
         Text::SetFontSize(size);
-        PrepareInput();
+     //   PrepareInput();
         m_hasUpated = true;
      
     }
@@ -569,9 +573,15 @@ namespace cart
         SetText(m_text);
         
     }
+    /// <summary>
+    /// Prepare array of string line  and  its position relative to text box
+    /// </summary>
     void TextInput::PrepareInput()
     {
         float scrnScale =  World::UI_CANVAS.get()->Scale();
+        float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
+        float fspace = std::max(m_minfontspacing, m_fontspacing * World::UI_CANVAS.get()->Scale());
+
         Rectangle textBox = GetBounds();
 
         int tx = textBox.x + (m_textmargin * scrnScale);
@@ -580,8 +590,8 @@ namespace cart
         m_lines.clear();
         m_lines.push_back({ std::string{},  { (float)tx, (float)ty } });
 
-        if (!m_sharedfont)
-            m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, m_fontsize * scrnScale);
+        
+            m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, fsize);
 
         if (!infofnt)
         {
@@ -591,7 +601,7 @@ namespace cart
             infofnt = AssetManager::Get().LoadFontAsset(std::string{ staticassetpath + fntpath }, 14 * scrnScale);
         }
 
-        Vector2 fntmeasure = MeasureTextEx(*m_sharedfont, "W", (float)m_fontsize * scrnScale, m_fontspacing * scrnScale);
+        Vector2 fntmeasure = MeasureTextEx(*m_sharedfont, "W", fsize * scrnScale,fspace);
 
         for (size_t i = 0; i < MAX_INPUT_CHARS; i++)
         {
@@ -605,7 +615,7 @@ namespace cart
         {
             name[i] = m_text.at(i);
             m_lines[m_lines.size() - 1].first.append(std::string{ name[i] });
-            if (MeasureTextEx(*m_sharedfont, m_lines[m_lines.size() - 1].first.c_str(), m_fontsize * scrnScale, m_fontspacing * scrnScale).x >= textBox.width - (fntmeasure.x + m_textmargin * scrnScale))
+            if (MeasureTextEx(*m_sharedfont, m_lines[m_lines.size() - 1].first.c_str(), fsize, fspace).x >= textBox.width - (fntmeasure.x + m_textmargin * scrnScale))
             {
                 m_lines.push_back({ std::string{},  {(float)tx , (float)ty + (fntmeasure.y * m_lines.size()) } });
 
@@ -619,11 +629,14 @@ namespace cart
     }
     void TextInput::ProcessInput()
     {
+        float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
+        float fspace = std::max(m_minfontspacing, m_fontspacing * World::UI_CANVAS.get()->Scale());
+
         int chrcount = 0, lc = -1, chrs = 0, s = 0, txtmargin, fntspace;
         Vector2 fntsize, fntmeasure, cursorloc;
         Rectangle textBox = GetBounds();
         float scrnScale =  World::UI_CANVAS.get()->Scale();
-        fntsize = MeasureTextEx(*m_sharedfont, "W", (float)m_fontsize * scrnScale, m_fontspacing * scrnScale);
+        fntsize = MeasureTextEx(*m_sharedfont, "W", fsize, fspace);
         fntmeasure = { 0,0 };
         txtmargin = m_textmargin * scrnScale;
         fntspace = m_fontspacing * scrnScale;
@@ -653,7 +666,7 @@ namespace cart
                         chrs = rem;
                         std::string st = iter->first.substr(0, chrs);
 
-                        fntmeasure = MeasureTextEx(*m_sharedfont, st.c_str(), (float)m_fontsize * scrnScale, m_fontspacing * scrnScale);
+                        fntmeasure = MeasureTextEx(*m_sharedfont, st.c_str(), fsize, fspace);
                         break;
                     }
                     s += iter->first.size();
@@ -662,13 +675,13 @@ namespace cart
             }
         }
         else {
-            fntmeasure = MeasureTextEx(*m_sharedfont, m_lines[m_lines.size() - 1].first.c_str(), (float)m_fontsize * scrnScale, m_fontspacing * scrnScale);
+            fntmeasure = MeasureTextEx(*m_sharedfont, m_lines[m_lines.size() - 1].first.c_str(), fsize, fspace);
            
             DrawTextEx(*infofnt, "Reached chararcter limit. Press BACKSPACE to delete chars...", { (float)textBox.x , (float)textBox.y + textBox.height - fntmeasure.y }, 14, 1.f, DARKGRAY);
         };
         
-        fntmeasure = MeasureTextEx(*m_sharedfont, m_lines[m_lines.size() - 1].first.c_str(), (float)m_fontsize * scrnScale, m_fontspacing * scrnScale);
-        if (((m_framesCounter / 10) % 2) == 0) DrawText("|", m_cursorLoc.x, m_cursorLoc.y, m_fontsize * scrnScale + 2, GRAY);
+        fntmeasure = MeasureTextEx(*m_sharedfont, m_lines[m_lines.size() - 1].first.c_str(), fsize, fspace);
+        if (((m_framesCounter / 10) % 2) == 0) DrawText("|", m_cursorLoc.x, m_cursorLoc.y, fsize + 2, GRAY);
     }
 
 #pragma endregion

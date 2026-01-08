@@ -24,10 +24,12 @@ namespace cart {
 		std::string m_text;
 		std::string m_font;
 		float m_fontsize;
+		float m_minfontsize;
 		ALIGN m_align;
 		Vector2 m_textsize;
 		Vector2 m_textLocation;
 		float m_fontspacing;
+		float m_minfontspacing;
 		int m_margin;
 		Color m_background;
 		Color m_textColor;

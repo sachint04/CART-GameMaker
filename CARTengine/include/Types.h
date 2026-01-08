@@ -35,8 +35,15 @@ namespace cart {
     enum ALIGN {
         LEFT,
         CENTER,
-        RIGHT
+        RIGHT,
+        JUSTIFIED
     };
+    enum V_ALIGN {
+        TOP,
+        MIDDLE,
+        BOTTOM        
+    };
+
 
     enum PARTICLE_SCALING_MODE {
         LOCAL,
@@ -166,6 +173,15 @@ namespace cart {
         std::string loadmessage;
     };
 
+    struct UI_Layout_Properties
+    {
+    public:
+        ALIGN align = LEFT;
+        V_ALIGN valign = TOP;
+        float margin = 0.f;
+        float padding = 0.f;
+    };
+
     struct UI_Properties {
     public:
         TEXTURE_DATA_STATUS texturestatus = TEXTURE_DATA_STATUS::UNLOCKED;
@@ -188,6 +204,7 @@ namespace cart {
         Rectangle texturesource;
         Rectangle anchor = {0,0,1.f,1.f};
         Color bordercol;
+        UI_Layout_Properties layout_props;
     };
 
 	struct Text_Properties : UI_Properties{
@@ -198,7 +215,9 @@ namespace cart {
         Color textbackground;
         Color textcolor;
 		float fontsize;
+        float minfontsize = 0;
         float fontspacing = 2.f;
+        float minfontspacing = 1;
 	};
 
     struct Btn_Properties :UI_Properties {
@@ -223,7 +242,9 @@ namespace cart {
         Color textcolor = BLACK;
         Color texthoverolor = BLACK;
         float fontsize;
+        float minfontsize;
         float fontspace = 2.f;
+        float minfontspace = 1.f;
 
     };
 

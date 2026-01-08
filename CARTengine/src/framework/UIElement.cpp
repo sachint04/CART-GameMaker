@@ -92,7 +92,7 @@ namespace cart {
 		m_roundnessSegments = _prop.roundnessSegments;
 		m_isLockedScale = _prop.blockscale;
 		SetSize(_prop.size);
-		if (_prop.component != NO_LAYOUT)AddUIComponent(_prop.component);
+		if (_prop.component != NO_LAYOUT)AddUIComponent(_prop.component, _prop.layout_props);
 	}
 #pragma endregion
 
@@ -152,7 +152,7 @@ namespace cart {
 		return{  m_location.x - px ,  m_location.y  - py , m_width * m_scale,m_height * m_scale };
 	}
 
-	void UIElement::AddUIComponent(Layout_Component_Type type)
+	void UIElement::AddUIComponent(Layout_Component_Type type, UI_Layout_Properties layout_props)
 	{
 		shared<UIElement> owner = std::dynamic_pointer_cast<UIElement>(GetWeakRef().lock());
 		weak<IComponent> comp;
@@ -169,7 +169,7 @@ namespace cart {
 				break;			
 		}
 		if (!comp.expired()) {
-			comp.lock()->Init(owner, { 0.f, 1.f, 0.f, 1.f }, { m_location.x, m_location.y, m_width, m_height });
+			comp.lock()->Init(owner, { 0.f, 1.f, 0.f, 1.f }, { m_location.x, m_location.y, m_width, m_height }, layout_props);
 		}
 	}
 
@@ -251,7 +251,8 @@ namespace cart {
 	void UIElement::DrawBGColor()
 	{
 		float scScale =  World::UI_CANVAS.get()->Scale();
-		Rectangle parentRect;
+		
+		Rectangle parentRect, rect = GetBounds();
 		/*if (m_parent.expired())
 		{			
 			parentRect = { 0, 0, World::UI_CANVAS.get()->Size().x, World::UI_CANVAS.get()->Size().y };
@@ -259,18 +260,16 @@ namespace cart {
 		else {
 			parentRect = m_parent.lock()->GetBounds();
 		}*/
-		int px = (m_pivot.x * m_width);
-		int py = (m_pivot.y * m_height);
 		if (m_shapeType == SHAPE_TYPE::CIRCLE)
 		{
-			DrawCircle(m_location.x + m_width / 2.f  - (float)px, m_location.y + m_width / 2.f  - (float)py, m_width, m_color);
+			DrawCircle(rect.x + rect.width / 2.f, rect.y + rect.width / 2.f, m_width, m_color);
 			//FOR TESTING
 			//DrawRectangleLines(m_location.x - px - m_width * 0.5f, m_location.y - m_pivot.y - m_height * 0.5f, m_width * 2.f, m_height * 2.f, GREEN);
 
 		}
 		else if (m_shapeType == SHAPE_TYPE::ROUNDED_RECTANGLE)
 		{
-			DrawRectangleRounded({  m_location.x - px,  m_location.y - py,  m_width , m_height }, m_roundness * scScale, 36 * scScale, m_color);
+			DrawRectangleRounded({ rect.x,  rect.y ,  rect.width , rect.height}, m_roundness * scScale, 36 * scScale, m_color);
 
 			if (m_borderwidth > 0)
 			{
@@ -281,7 +280,7 @@ namespace cart {
 		}
 		else 
 		{
-			DrawRectangle(m_location.x - px, m_location.y - py, m_width, m_height, m_color);
+			DrawRectangle(rect.x, rect.y, rect.width, rect.height, m_color);
 			if (m_borderwidth > 0)
 			{
 				int bw = std::max((int)(m_borderwidth* scScale), 1);

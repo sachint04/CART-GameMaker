@@ -12,7 +12,7 @@ namespace cart {
 		LayoutComponent(std::string& id);
 		~LayoutComponent();
 		// Inherited via IComponent
-		virtual void Init(shared<UIElement> ui, Rectangle Anchor, Rectangle rect) override;
+		virtual void Init(shared<UIElement> ui, Rectangle Anchor, Rectangle rect, UI_Layout_Properties props) override;
 		virtual void Destroy() override;
 		virtual void Update() override;
 		virtual void SetForUpdate() override;
@@ -28,16 +28,21 @@ namespace cart {
 
 		Delegate<> onLayoutChange;
 	protected:
+
+		Layout_Component_Type m_type;
+		ALIGN m_align;
+		V_ALIGN m_valign;
+		bool m_isUpdated;
+		bool m_isEnabled;
 		std::string m_Id;
-		shared<UIElement> m_owner;
 		float m_anchorMinX;
 		float m_anchorMaxX;
 		float m_anchorMinY;
 		float m_anchorMaxY;
-		bool m_isUpdated;
+		float m_padding;
+		float m_margin;
 		Rectangle m_Rect;
-		bool m_isEnabled;
-		Layout_Component_Type m_type;
+		shared<UIElement> m_owner;
 	};
 
 }

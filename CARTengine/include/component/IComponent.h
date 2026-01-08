@@ -10,7 +10,7 @@ namespace cart {
 		IComponent();
 		virtual ~IComponent() = default;
 
-		virtual void Init(shared<UIElement> ui, Rectangle Anchor, Rectangle rect)  = 0;
+		virtual void Init(shared<UIElement> ui, Rectangle Anchor, Rectangle rect, UI_Layout_Properties props)  = 0;
 		virtual void Destroy() = 0;
 		virtual void Update() = 0;
 		virtual void SetForUpdate() = 0;

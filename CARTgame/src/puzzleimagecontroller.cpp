@@ -29,6 +29,7 @@ namespace cart{
 
     PuzzleImageController::~PuzzleImageController()
     {
+
     }
 
    
@@ -36,13 +37,23 @@ namespace cart{
 #pragma region  INITIALIZATION
 void PuzzleImageController::Init()
 {
-   
+    std::string resourcepath = m_owningworld->GetApplication()->GetAssetsPath();
+    m_preloadlist.push_back(resourcepath + "patterns2.png");
+    UIElement::Init();
+//#endif //  __EMSCRIPTEN__
+}
+
+void PuzzleImageController::Start()
+{
+    std::string resourcepath = m_owningworld->GetApplication()->GetAssetsPath();
+    std::string staticassetpath = m_owningworld->GetApplication()->GetStaticAssetsPath();
+
     uint16_t scrW = GetScreenWidth();
     uint16_t scrH = GetScreenHeight();
 
     float rectsize = 400.f;
     Rectangle bgrect = { (scrW - rectsize) / 2.f, (scrH - rectsize) / 2.f, rectsize,rectsize };
-   // Rectangle bgrect = { scrW / 2.f - 250.f, scrH / 2 - 200.f,  rectsize, rectsize };
+    // Rectangle bgrect = { scrW / 2.f - 250.f, scrH / 2 - 200.f,  rectsize, rectsize };
 
 
     float xpos = scrW / 2;// -twidth;
@@ -50,12 +61,12 @@ void PuzzleImageController::Init()
 
     UI_Properties ui = {};
     ui.size = { rectsize, rectsize };
-    ui.location = { xpos, ypos};
-    ui.pivot = { rectsize/2.f, rectsize /2.f};
+    ui.location = { xpos, ypos };
+    ui.pivot = { rectsize / 2.f, rectsize / 2.f };
     ui.texture = m_strImage;
     ui.color = LIGHTGRAY;
-    
-    
+
+
 #pragma region Background Pattern
 
     //-----------------Pattern Data------------------------
@@ -74,13 +85,13 @@ void PuzzleImageController::Init()
     bgpatt_ui.color = WHITE;
     bgpatt_ui.texturestatus = TEXTURE_DATA_STATUS::LOCKED;
     bgpatt_ui.texturetype = TEXTURE_TYPE::TEXTURE_PART;
-    bgpatt_ui.texture = std::string{ "patterns2.png" };
+    bgpatt_ui.texture = std::string{ resourcepath + "patterns2.png" };
 
     //shared<Texture2D> texPattern = AssetManager::Get().LoadTextureAsset(ui.texture, ui.texturestatus);
     //SetTextureFilter(*texPattern, TEXTURE_FILTER_TRILINEAR);
 
-   m_bgPatt = m_owningworld->SpawnActor<PatternSprite>(std::string{ "bgpattern" }, 3, recPattern);
-  
+    m_bgPatt = m_owningworld->SpawnActor<PatternSprite>(std::string{ "bgpattern" }, 3, recPattern);
+
     m_bgPatt.lock()->SetUIProperties(bgpatt_ui);
     m_bgPatt.lock()->SetLocation({ 0,0 });
     m_bgPatt.lock()->Init();
@@ -93,10 +104,10 @@ void PuzzleImageController::Init()
 
     UI_Properties tmpui = {};
     tmpui.scale = 1.f;
-    tmpui.size = {256.f, 256.f };
-    tmpui.location = {525.f, 25.f };
+    tmpui.size = { 256.f, 256.f };
+    tmpui.location = { 525.f, 25.f };
     tmpui.texturestatus = TEXTURE_DATA_STATUS::LOCKED;
-    tmpui.texture = std::string{ "patterns2.png" };
+    tmpui.texture = std::string{ resourcepath + "patterns2.png" };
     tmpui.textureColor = BLACK;
 
     m_pattern = m_owningworld->SpawnActor<Sprite2D>(std::string{ "pattern" });
@@ -106,22 +117,15 @@ void PuzzleImageController::Init()
     m_pattern.lock()->SetVisible(true);
     AddChild(m_pattern);
 
-    m_target = m_owningworld->SpawnActor<Sprite2D>(std::string{"imgeditor"});
+    m_target = m_owningworld->SpawnActor<Sprite2D>(std::string{ "imgeditor" });
     m_target.lock()->SetUIProperties(ui);
     m_target.lock()->MaintainAspectRatio(true);
     m_target.lock()->Init();
     m_target.lock()->SetVisible(true);
     AddChild(m_target);
 
-   std::string cntrlid  = "pcntrl";
+    std::string cntrlid = "pcntrl";
 
-   m_control = m_owningworld->SpawnActor<TransformCntrl>(cntrlid, Vector2{ (float)m_minWidth, (float)m_minHeight }, Vector2{ (float)m_maxWidth, (float)m_maxHeight } , m_target.lock()->GetBounds());
-  //  m_control.lock()->SetLocation(ui.location);
-    m_control.lock()->Init();
-    m_control.lock()->SetVisible(true);
-    m_control.lock()->onScaled.BindAction(GetWeakRef(), &PuzzleImageController::ImageScaleHandler);
-    m_control.lock()->onMoved.BindAction(GetWeakRef(), &PuzzleImageController::ImageMoveHandler);
-    AddChild(m_control);
 
     Btn_Text_Properties txtbtnui = {};
 
@@ -133,47 +137,46 @@ void PuzzleImageController::Init()
     txtbtnui.text = std::string{ "Reset" };
     txtbtnui.fontsize = 16;
     txtbtnui.fontspace = 1.8;
-    txtbtnui.font = FONT_NAME;
+    txtbtnui.font = staticassetpath + FONT_NAME;
     txtbtnui.location = { bgrect.x + bgrect.width - 110.f, bgrect.y - 50.f };
     txtbtnui.textAlign = ALIGN::CENTER;
     txtbtnui.pivot = { 0, 0 };
 
-    
-    m_resetBtn = m_owningworld->SpawnActor<UIButton>(std::string{"btncontinue"});
+
+    m_resetBtn = m_owningworld->SpawnActor<UIButton>(std::string{ "btncontinue" });
     m_resetBtn.lock()->SetButtonProperties(txtbtnui);
     m_resetBtn.lock()->Init();
     m_resetBtn.lock()->SetVisible(true);
     m_resetBtn.lock()->onButtonUp.BindAction(GetWeakRef(), &PuzzleImageController::ResetHandler);
     AddChild(m_resetBtn);
-    
-    txtbtnui.location = {bgrect.x + 10.f, bgrect.y - 50.f };
+
+    txtbtnui.location = { bgrect.x + 10.f, bgrect.y - 50.f };
     txtbtnui.text = "Go Back";
-    m_goBackBtn = m_owningworld->SpawnActor<UIButton>(std::string{"btngoback"});
+    m_goBackBtn = m_owningworld->SpawnActor<UIButton>(std::string{ "btngoback" });
     m_goBackBtn.lock()->SetButtonProperties(txtbtnui);
     m_goBackBtn.lock()->Init();
     //m_goBackBtn.lock()->SetVisible(true);
     m_goBackBtn.lock()->onButtonUp.BindAction(GetWeakRef(), &PuzzleImageController::GoBackHandler);
     AddChild(m_goBackBtn);
 
-    
+
     // TEST EM_Fetch class
 
 // Will Work in __EMSCRIPTEN__ Mode
   // bool success =  AssetManager::Get().LoadTextureAsync(std::string{ "/cannon1.png" }, GetWeakRef(), &PuzzleImageController::OnFetchAsyncLoadTexture, TEXTURE_DATA_STATUS::LOCKED);
-   
 
-   txtbtnui = {};
 
-   ui = {};
+    txtbtnui = {};
 
-//#endif //  __EMSCRIPTEN__
+    ui = {};
+
 }
 
 
 
 void PuzzleImageController::ResetHandler(weak<Object> btn, Vector2 pos)
 {
-    m_control.lock()->Reset();
+
 }
 void PuzzleImageController::GoBackHandler(weak<Object> btn, Vector2 pos)
 {
@@ -199,7 +202,7 @@ void PuzzleImageController::OnFetchDataLoad(std::string id, std::string status, 
         unsigned char* modifiable = reinterpret_cast<unsigned char*>(const_cast<char*>(data));            
         Image cannon = LoadImageFromMemory(".png", (unsigned char*)modifiable, size);
         ImageResize(&cannon, 400, 400);
-        Logger::Get()->Push(std::format("Image width {} | height {} size {}", cannon.width, cannon.height, size));
+        Logger::Get()->Trace(std::format("Image width {} | height {} size {}", cannon.width, cannon.height, size));
         cannontex = LoadTextureFromImage(cannon);
         UnloadImage(cannon);
     }
@@ -208,15 +211,15 @@ void PuzzleImageController::OnFetchDataLoad(std::string id, std::string status, 
 void PuzzleImageController::OnFetchAsyncLoadTexture(std::string url, ASYNC_CALLBACK_STATUS status, shared<Texture2D> texture, float progress)
 {
     if (status == FAILED) {
-        Logger::Get()->Push(std::format("ERROR!! , Failed to Load Texture from {}", url));
+        Logger::Get()->Trace(std::format("ERROR!! , Failed to Load Texture from {}", url));
         return;
     }
     else if (status == PROGRESS)
     {
-        Logger::Get()->Push(std::format("OnFetchAsyncLoadTexture()  progress {}",  progress));    
+        Logger::Get()->Trace(std::format("OnFetchAsyncLoadTexture()  progress {}",  progress));    
             return;
     }
-    Logger::Get()->Push(std::format("OnFetchAsyncLoadTexture()  sccusses {}", url));
+    Logger::Get()->Trace(std::format("OnFetchAsyncLoadTexture()  sccusses {}", url));
 
     UI_Properties  ui = {};
     ui.color = WHITE;

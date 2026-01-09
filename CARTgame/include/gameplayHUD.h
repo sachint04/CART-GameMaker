@@ -2,8 +2,8 @@
 #include "HUD.h"
 namespace cart {
 
+	class World;
 	class GameplayHUD : public HUD {
-
 	public:
 		GameplayHUD(World* _owningworld, const std::string& _id);
 		virtual void Update(float _deltaTime) override;
@@ -11,6 +11,7 @@ namespace cart {
 		Delegate<> onRestartBtnClicked;
 		Delegate<> onQuitBtnClicked;
 		virtual void Init() override;
+		virtual void Start() override;
 
 	protected:
 		void RestartButtonClicked(weak<Object> obj, Vector2 pos) override;

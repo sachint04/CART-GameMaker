@@ -40,6 +40,7 @@ namespace cart
     public:
         PuzzleImageController(World* _owningworld, const std::string& id, const std::string& strimage, int defaultWidth, int defaultHeight, int minWidth, int minHeight, int maxWidth, int maxHeight, int gridWidth, int gridHeight);
        void Init()override;
+       void Start()override;
        void Destroy() override;
        void Draw(float _deltaTime)override;
        Delegate<> onGoBack;

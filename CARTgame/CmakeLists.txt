@@ -5,13 +5,19 @@ add_executable(${CART_GAME_TARGET_NAME}
 	${CMAKE_CURRENT_SOURCE_DIR}/src/GameFramework/game.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/gameplayHUD.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/GameFramework/gameplayHUD.cpp
-
+	
+	${CMAKE_CURRENT_SOURCE_DIR}/include/Levelone.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/Levelone.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/include/GameStageOne.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/GameStageOne.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/puzzleimagecontroller.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/puzzleimagecontroller.cpp
 	
 	${CMAKE_CURRENT_SOURCE_DIR}/include/PatternSprite.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/PatternSprite.cpp
 
+	${CMAKE_CURRENT_SOURCE_DIR}/include/View.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/View.cpp
 	
 
 )

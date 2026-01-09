@@ -1,4 +1,5 @@
 #include "gameplayHUD.h"
+#include "Application.h"
 #include "World.h"
 #include "UIButton.h"
 namespace cart {
@@ -19,15 +20,22 @@ namespace cart {
 
 	void GameplayHUD::Init()
 	{
+		
 
-	#pragma region Exit Button
-		UI_Properties btnui = {};
+		HUD::Init();
+	}
+
+	void GameplayHUD::Start()
+	{
+		std::string staticassetpath = m_owningworld->GetApplication()->GetStaticAssetsPath();
 		Vector2 screenSize = m_owningworld->GetAppWindowSize();
+#pragma region Exit Button
+		UI_Properties btnui = {};
 		btnui.location = { screenSize.x - 50.f, screenSize.y - 50.f };
 		btnui.size = { 50.f, 50.f };
 		btnui.color = { 82, 59, 116, 255 };
 		Btn_Text_Properties btnprop = {};
-		btnprop.font = FONT_NAME;
+		btnprop.font = staticassetpath + FONT_NAME;
 		btnprop.fontsize = 12.f;
 		btnprop.btncol = GRAY;
 		btnprop.color = GRAY;
@@ -48,8 +56,6 @@ namespace cart {
 		AddChild(extbtn);
 		btnprop = {};// clear struct
 #pragma endregion
-
-		HUD::Init();
 	}
 
 

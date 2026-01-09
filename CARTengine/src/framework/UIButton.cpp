@@ -40,7 +40,8 @@ namespace cart {
 		m_texturesourcedown{},
 		m_texturesourcedisable{},
 		m_ButtonDisableColor{GRAY},
-		m_minfontsize{}
+		m_minfontsize{},
+		m_minfontspace{}
 	{
 	}
 
@@ -74,8 +75,7 @@ namespace cart {
 		if (!m_visible || m_pendingUpdate)return;
 		if (m_fontstr.size() > 0) {
 			float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
-			float fspace = std::max(m_minfontspace, m_fontspace * World::UI_CANVAS.get()->Scale());
-
+			float fspace = std::max(m_minfontspace, m_fontspace * World::UI_CANVAS.get()->Scale());			
 			m_font = AssetManager::Get().LoadFontAsset(m_fontstr, fsize);
 			m_textsize = MeasureTextEx(*m_font, m_text.c_str(), fsize, fspace);
 			UpdateTextLocation();

@@ -92,7 +92,11 @@ namespace cart {
 
 #pragma region  Helpers
 	void Text::SetTextProperties(Text_Properties _prop)
-	{
+	{	
+		if (!ValidateTextProperties(_prop)) {
+			// T B D
+		}
+		SetUIProperties((UI_Properties)_prop);
 		m_font = _prop.font;
 		m_text = _prop.text;
 		m_fontsize = std::max(_prop.fontsize, _prop.minfontsize);
@@ -102,7 +106,7 @@ namespace cart {
 		m_fontspacing = _prop.fontspacing;
 		m_minfontspacing = _prop.minfontspacing;
 		m_textColor = _prop.textcolor;
-		SetUIProperties((UI_Properties)_prop);
+		
 	}
 	void Text::SetFontName(const std::string& strfnt)
 	{
@@ -127,6 +131,10 @@ namespace cart {
 	}
 	void Text::UpdateText(const std::string& str) {
 		m_text = str;
+	}
+	bool Text::ValidateTextProperties(Text_Properties _prop)
+	{
+		return _prop.fontsize && _prop.minfontsize && _prop.fontspacing && _prop.minfontspacing;
 	}
 #pragma endregion
 

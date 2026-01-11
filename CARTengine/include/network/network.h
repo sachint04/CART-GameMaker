@@ -268,7 +268,7 @@ namespace cart {
    //     }
    //     catch (...) { // Catches any other type of exception
    //         std::cerr << "Caught unknown exception" << std::endl;
-   //         Logger::Get()->Trace("Caught unknown exception: ");
+   //         Logger::Get()->Push("Caught unknown exception: ");
    //     }
    //     return true;
    // }

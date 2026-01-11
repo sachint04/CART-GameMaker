@@ -28,7 +28,9 @@ namespace cart {
 		m_strloadMsg{"Loading... "},
 		m_isLockedScale{false},
 		m_areAssetsLoaded{false},
-		m_areChildrenReady{false}
+		m_areChildrenReady{false},
+		m_rawWidth{},
+		m_rawHeight{}
 	{
 	}
 	void Actor::Start()
@@ -158,6 +160,11 @@ namespace cart {
 	Vector3 Actor::GetSize3()
 	{
 		return { m_width, m_height, m_zSize };
+	}
+
+	Vector2 Actor::GetRawSize()
+	{
+		return { m_rawWidth, m_rawHeight };
 	}
 	
 	void Actor::Update(float _deltaTime)

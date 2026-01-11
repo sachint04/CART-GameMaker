@@ -47,10 +47,13 @@ namespace cart {
 		virtual Rectangle GetAnchor();
 		virtual void SetFocused(bool _flag);
 		virtual void AddUIComponent(Layout_Component_Type type, UI_Layout_Properties layout_props);
-		virtual float GetDefaultWidth() { return m_defaultSize.x; };
-		virtual float GetDefaultHeight() { return m_defaultSize.y; };
+		virtual float GetDefaultWidth();
+		virtual float GetDefaultHeight();
 		virtual Vector2 GetRawLocation() { return m_rawlocation; };
 		virtual void SetStyle(UI_Style _style);
+
+		void SetLayoutLocation(Vector2 _loc);
+		void SetLayoutSize(Vector2 _size);
 		std::vector<weak<UIElement>>Children();
 		bool UpdateLayout();
 		bool IsLayoutUpdated();
@@ -87,8 +90,10 @@ namespace cart {
 
 		SHAPE_TYPE m_shapeType;
 		Vector2 m_rawlocation;	
+		Vector2 m_layoutlocation;	
 		Vector2 m_pivot;
 		Vector2 m_defaultSize;
+		Vector2 m_layoutSize;
 		Rectangle m_anchor;
 		shared<IComponent> m_layout;
 		weak<UIElement> m_parent;

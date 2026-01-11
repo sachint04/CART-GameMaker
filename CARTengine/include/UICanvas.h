@@ -27,6 +27,7 @@ namespace cart {
         float StrechY();
         float Scale();
 
+
         Vector2 GetDefaultCanvasSize();
         Delegate<> onScreenSizeChange;
 

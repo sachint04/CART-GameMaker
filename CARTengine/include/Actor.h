@@ -51,7 +51,7 @@ namespace cart {
 		float GetScale();
 		Vector2 GetSize();
 		Vector3 GetSize3();
-
+		Vector2 GetRawSize();
 		Vector2 GetWindowSize() const;
 		World* m_owningworld;
 	protected:
@@ -66,6 +66,8 @@ namespace cart {
 		float m_zSize;
 		float m_scale;
 		float m_rotation;
+		float m_rawWidth;
+		float m_rawHeight;
 		Vector2 m_location;
 		Vector3 m_location3;
 		Vector4 m_rotation3;

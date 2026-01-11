@@ -8,12 +8,12 @@
 #include "UICanvas.h"
 #include "component/LayoutComponentFactory.h"
 
-extern int CANVAS_X;
-extern int CANVAS_Y;
-extern float CANVAS_SCALE_X;
-extern float CANVAS_SCALE_Y;
-extern int CANVAS_WIDTH;
-extern int CANVAS_HEIGHT;
+extern int DEFAULT_CANVAS_WIDTH;
+extern int DEFAULT_CANVAS_HEIGHT;
+extern int SCREEN_WIDTH;
+extern int SCREEN_HEIGHT;
+extern float CANVAS_STRECH_X;
+extern float CANVAS_STRECH_Y;
 
 namespace cart {
 #pragma region  Constructors
@@ -33,7 +33,8 @@ namespace cart {
 		m_roundnessSegments{36},
 		m_isFocused{false},
 		m_style{},
-		m_ui_comp_factory{}
+		m_ui_comp_factory{},
+		m_layoutSize{}
 	{
 		m_anchor = { 0.f, 0.f, 1.f, 1.f }; 
 		m_pivot = { 0.f, 0.f };
@@ -81,7 +82,7 @@ namespace cart {
 		SetLocation(_prop.location);
 		m_rawlocation = _prop.location;
 		m_shapeType = _prop.shapetype;
-		m_defaultSize = _prop.size;
+		m_defaultSize = _prop.defaultSize;
 		m_scale = _prop.scale;
 		m_color = _prop.color;
 		m_pivot = _prop.pivot;
@@ -92,6 +93,8 @@ namespace cart {
 		m_roundnessSegments = _prop.roundnessSegments;
 		m_isLockedScale = _prop.blockscale;
 		SetSize(_prop.size);
+		m_rawWidth = _prop.size.x;
+		m_rawHeight = _prop.size.y;
 		if (_prop.component != NO_LAYOUT)AddUIComponent(_prop.component, _prop.layout_props);
 	}
 #pragma endregion
@@ -142,14 +145,44 @@ namespace cart {
 	}
 	
 	Rectangle UIElement::GetBounds() {
-		int px = (m_pivot.x * m_width);
-		int py = (m_pivot.y * m_height);
-		//	return{ m_location.x - px, m_location.y - m_pivot.y, m_width * m_scale,m_height * m_scale };
+
+		float x = m_location.x, y = m_location.y , w = m_width * m_scale, h = m_height * m_scale, px, py;
+			Rectangle  pr;
+		if (m_parent.expired()) {
+			pr = { 0 ,0,(float)SCREEN_WIDTH, (float)SCREEN_HEIGHT };
+		}
+		else {
+			pr = m_parent.lock().get()->GetBounds();
+		}
+		if (m_anchor.x != m_anchor.width) {
+			float min = (m_anchor.x * pr.width);
+			float max = (m_anchor.width * pr.width);
+			w = max - (min + m_location.x + m_width);
+			x = pr.x +  min + m_location.x;
+		}
+		else {
+			x = pr.x + (m_anchor.x * pr.width) - (m_pivot.x * w) + m_location.x;
+		}
+
+		if (m_anchor.y != m_anchor.height) {
+			float min = (m_anchor.y * pr.height);
+			float max = (m_anchor.height * pr.height);
+			h = max - (min + m_location.y + m_height);
+			y = pr.y + min + m_location.y;
+		}
+		else {
+			y = pr.y + m_anchor.y * pr.height -  m_pivot.y * h + m_location.y;
+		}
+	
+
 		if (m_shapeType == SHAPE_TYPE::CIRCLE) {
-			return { m_location.x - px - m_width * 0.5f, m_location.y - m_pivot.y - m_height * 0.5f, m_width * 2.f, m_height * 2.f };// shape size will change for cirle;
+			px = (m_pivot.x * w);
+			py = (m_pivot.y * h);
+			//	return{ m_location.x - px, m_location.y - m_pivot.y, m_width * m_scale,m_height * m_scale };
+			return { x - px - w * 0.5f, y - m_pivot.y - h * 0.5f, w * 2.f, h * 2.f };// shape size will change for cirle;
 		}
 		
-		return{  m_location.x - px ,  m_location.y  - py , m_width * m_scale,m_height * m_scale };
+		return{  x,  y , w , h };
 	}
 
 	void UIElement::AddUIComponent(Layout_Component_Type type, UI_Layout_Properties layout_props)
@@ -173,9 +206,29 @@ namespace cart {
 		}
 	}
 
+	float UIElement::GetDefaultWidth()
+	{
+		return m_defaultSize.x;
+	}
+
+	float UIElement::GetDefaultHeight()
+	{
+		return m_defaultSize.y;
+	}
+
 	void UIElement::SetStyle(UI_Style _style)
 	{
 		m_style = _style;
+	}
+
+	void UIElement::SetLayoutLocation(Vector2 _loc)
+	{
+		m_layoutlocation = _loc;
+	}
+
+	void UIElement::SetLayoutSize(Vector2 _size)
+	{
+		m_layoutSize = _size;
 	}
 
 	std::vector<weak<UIElement>> UIElement::Children()
@@ -205,7 +258,6 @@ namespace cart {
 		}
 		return true;
 	}
-	
 
 	void UIElement::Notify(const std::string& strevent)
 	{

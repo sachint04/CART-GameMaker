@@ -20,6 +20,8 @@ namespace cart {
 		virtual void SetTextColor(Color col);
 		virtual Color GetTextColor() { return m_textColor; };
 		virtual void UpdateText(const std::string& str);
+
+		bool ValidateTextProperties(Text_Properties _prop);
 	protected:
 		std::string m_text;
 		std::string m_font;

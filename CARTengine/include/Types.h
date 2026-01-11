@@ -199,6 +199,7 @@ namespace cart {
         Color color = WHITE;
         Color textureColor =  WHITE ;
         Vector2 size;
+        Vector2 defaultSize = {-1, -1};// Required incase of "Layout Component" with anchor x <> anchor width or anchor  y <> anchor height
         Vector2 location;
         Vector2 pivot;
         Rectangle texturesource;

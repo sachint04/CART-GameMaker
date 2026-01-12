@@ -29,8 +29,10 @@ namespace cart {
 		void SetText(const std::string &txt);
 		std::string GetInputText();
 		void UpdateLayout();
-		void PrepareInput();
-		void ProcessInput();
+		void PrepareInput(Rectangle bounds);
+		void DrawInputCursor(Rectangle bounds);
+		void ShowCharLimitWarning(Rectangle bounds);
+		void ShowRemainingCharCount(Rectangle bounds);
 		void OnMobileInput(char* input);
 	private:
 		int m_key;
@@ -64,8 +66,8 @@ namespace cart {
 		Vector2 m_touchendpos;
 		Vector2 m_cursorLoc;
 	/*	shared<Font> fnt;*/
-		shared<Font> infofnt;
-		void TextLine(const std::vector<std::pair<std::string, Vector2>>& str);
+		shared<Font> m_infofnt;
+		void TextLine();
 		//void CharsToVec();
 	};
 }

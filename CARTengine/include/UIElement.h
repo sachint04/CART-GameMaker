@@ -79,6 +79,7 @@ namespace cart {
 		void parent(weak<UIElement> ui);
 		//void AddLayoutComponent(const std::string& id, weak<IComponent> component);
 		weak<IComponent> GetComponentById(const std::string& id);
+		bool HasLayoutComponent();
 		bool HasLayoutComponent(Layout_Component_Type type);
 	protected:
 		bool m_pendingUpdate;
@@ -95,7 +96,7 @@ namespace cart {
 		Vector2 m_defaultSize;
 		Vector2 m_layoutSize;
 		Rectangle m_anchor;
-		shared<IComponent> m_layout;
+	//	shared<IComponent> m_layout;
 		weak<UIElement> m_parent;
 		Color m_borderColor;
 		std::vector <shared<UIButton>> m_slides = {};

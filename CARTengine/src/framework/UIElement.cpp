@@ -161,7 +161,10 @@ namespace cart {
 			x = pr.x +  min + m_location.x;
 		}
 		else {
-			x = pr.x + (m_anchor.x * pr.width) - (m_pivot.x * w) + m_location.x;
+			if (m_ui_comp_factory.HasComponents())
+				x = pr.x + (m_anchor.x * pr.width) - (m_pivot.x * w) + m_location.x;
+			else
+				x = m_location.x - m_pivot.x;
 		}
 
 		if (m_anchor.y != m_anchor.height) {
@@ -171,7 +174,10 @@ namespace cart {
 			y = pr.y + min + m_location.y;
 		}
 		else {
-			y = pr.y + m_anchor.y * pr.height -  m_pivot.y * h + m_location.y;
+			if (m_ui_comp_factory.HasComponents())
+				y = pr.y + m_anchor.y * pr.height - m_pivot.y * h + m_location.y;
+			else
+				y = m_location.y - m_pivot.y;
 		}
 	
 

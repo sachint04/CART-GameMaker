@@ -203,7 +203,7 @@ namespace cart {
         Vector2 location;
         Vector2 pivot;
         Rectangle texturesource;
-        Rectangle anchor = {0,0,1.f,1.f};
+        Rectangle anchor = {0,0,0,0};
         Color bordercol;
         UI_Layout_Properties layout_props;
     };

@@ -121,9 +121,10 @@ namespace cart {
 	{
 		if (m_fontsize == size)return;
 		m_sharedfont.reset();
-		m_fontsize = std::max(size, m_minfontsize);
-		m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, size);
+		float tmpsize = std::max(size, m_minfontsize);
+		m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, tmpsize);
 		AssetManager::Get().UnloadFontAsset(m_font, m_fontsize);
+		m_fontsize = std::max(size, m_minfontsize);
 	}
 	void Text::SetTextColor(Color col)
 	{

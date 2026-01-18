@@ -297,15 +297,16 @@ namespace cart {
 	void UIButton::UpdateTextLocation() {
 		if (m_text.size() == 0)return;
 			Rectangle rect = GetBounds();
-		if (m_textsize.x < m_width) {
-			float margin_x = ((rect.width) - (m_textsize.x))* 0.5f;
-			float margin_y = ((rect.height) - (m_textsize.y)) * 0.5f;
+			float margin_x, margin_y;
+		//if (m_textsize.x < rect.width) {
+			margin_x = (rect.width - m_textsize.x)* 0.5f;
+			margin_y = (rect.height - m_textsize.y) * 0.5f;
 
 			m_fontLocation = { rect.x + margin_x, rect.y + margin_y  };
-		}
-		else {
-			m_fontLocation = { rect.x, rect.y };
-		}
+		//}
+		//else {
+	//		m_fontLocation = { rect.x +  , rect.y };
+//		}
 	}
 
 	void UIButton::SetFontName(const std::string &strfnt)

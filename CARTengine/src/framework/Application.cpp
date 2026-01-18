@@ -5,6 +5,7 @@
 #include "Application.h"
 #include "Core.h"
 #include "World.h"
+#include "component/InputController.h"
 #include "AssetManager.h"
 #include "Clock.h"
 #include "Logger.h"
@@ -202,16 +203,27 @@ namespace cart
 
 	}
 
-	void Application::NotifyMobileInput(char* input)
+	void Application::NotifyMobileInput(char* input, int isBackspace)
 	{
+		//Logger::Get()->Trace(std::format("Application::NotifyMobileInput() input {} | backspace", input, isBackspace));
 		for (auto iter = m_mobileInputListeners.begin(); iter != m_mobileInputListeners.end(); ++iter)
 		{
-			if ((iter->second)(input))
+			if ((iter->second)(input, isBackspace))
 			{
-				Logger::Get()->Trace(std::format("Application::NotifyMobileInput() listener {}", iter->first));
 
 			};
 		}
+	}
+	/// <summary>
+	/// Clear mobile keyboard listeners and unset focus from all elements;
+	/// </summary>
+	void Application::NotifyMobileKeyboardInterupt()
+	{
+		for (auto iter = m_mobileInputListeners.begin(); iter != m_mobileInputListeners.end();)
+		{
+			iter = m_mobileInputListeners.erase(iter);
+		}
+		m_CurrentWorld.get()->GetInputController()->SetFocus("");
 	}
 
 	void Application::MobileKeyboardInterupt()
@@ -220,6 +232,11 @@ namespace cart
 		MobileKeyboard::InteruptTouch();
 #endif // __EMSCRIPTEN__
 
+	}
+
+	void Application::LogTrace(char* str)
+	{
+		Logger::Get()->Trace(std::string{ str });
 	}
 
 	void Application::RemoveMobileInputListener(std::string id)

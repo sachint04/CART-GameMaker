@@ -62,8 +62,10 @@ namespace cart
 			bool alert,
 			const std::string& placeholder,
 			int characterLimit);
-		void NotifyMobileInput(char* input);
+		void NotifyMobileInput(char* input, int isBackspace);
+		void NotifyMobileKeyboardInterupt();
 		void MobileKeyboardInterupt();
+		void LogTrace(char* str);
 		void RemoveMobileInputListener(std::string id);
 		json& SetEnviornmentSettings(char* _setting);
 		DataFile& GetGameConfig(){ return m_gameConfig; };
@@ -77,7 +79,7 @@ namespace cart
 		weak<WorldType> LoadWorld();
 		
 		template<typename ClassName>
-		void RegisterListernerToMobileInput(std::string id, weak<Object> obj, void(ClassName::* callback)(char*));
+		void RegisterListernerToMobileInput(std::string id, weak<Object> obj, void(ClassName::* callback)(char*, int));
 
 	protected:
 		virtual void Update(float deltaTime);
@@ -98,7 +100,7 @@ namespace cart
 		Camera m_camera;
 
 	private:
-		Dictionary<std::string, std::function<bool(char*)>> m_mobileInputListeners;
+		Dictionary<std::string, std::function<bool(char*, int)>> m_mobileInputListeners;
 
 		//shared<World> m_PendingWorld;
 	};
@@ -114,21 +116,22 @@ namespace cart
 	}
 
 	template<typename ClassName>
-	void Application::RegisterListernerToMobileInput(std::string id, weak<Object> obj, void(ClassName::* callback)(char*))
+	void Application::RegisterListernerToMobileInput(std::string id, weak<Object> obj, void(ClassName::* callback)(char*, int))
 	{
 		auto found = m_mobileInputListeners.find(id);
 
 		if (found != m_mobileInputListeners.end())
 		{
-			Logger::Get()->Warn(std::format("Application::RegisterListernerToMobileInput() Warning! Listener - {} - is already added. ", id));
-			return;
+			m_mobileInputListeners.erase(found);
+//			Logger::Get()->Warn(std::format("Application::RegisterListernerToMobileInput() Warning! Listener - {} - is already added. ", id));
+//			return;
 		}
 		// listener not found in lists of callbacks hence add 
-		std::function<bool(char*)> callbackFunc = [obj, callback](char* input)->bool
+		std::function<bool(char*, int)> callbackFunc = [obj, callback](char* input, int isBackspace)->bool
 		{
 			if (!obj.expired())
 			{
-				(static_cast<ClassName*>(obj.lock().get())->*callback)(input);
+				(static_cast<ClassName*>(obj.lock().get())->*callback)(input, isBackspace);
 				return true;
 			}
 			return false;

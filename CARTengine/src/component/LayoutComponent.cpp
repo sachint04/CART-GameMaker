@@ -5,7 +5,6 @@
 #include "UICanvas.h"
 #include "Logger.h"
 #include "Types.h"
-
 #include "component/LayoutComponent.h"
 
 extern int DEFAULT_CANVAS_WIDTH;
@@ -29,8 +28,12 @@ namespace cart
 		m_Rect{},
 		m_isEnabled{true},		
 		m_type{NO_LAYOUT},
-		m_Id{id}
+		m_Id{id},
+		m_margin{},
+		m_padding{},
+		m_valign{}
 	{
+		m_type = LAYOUT;
 	}
 
 	LayoutComponent::~LayoutComponent()
@@ -56,13 +59,11 @@ namespace cart
 	
 #pragma region Helpers
 	void LayoutComponent::Update()
-    {
-		float scaleX = (float)SCREEN_WIDTH / (float)DEFAULT_CANVAS_WIDTH;
-		float scaleY = (float)SCREEN_HEIGHT / (float)DEFAULT_CANVAS_HEIGHT;
-		UpdateLayout(World::UI_CANVAS.get()->Size(), scaleX, scaleY, World::UI_CANVAS.get()->SafeRect());
+    {	
+		UpdateLayout();
     }
 
-    bool LayoutComponent::UpdateLayout(Vector2 size, float scaleX, float scaleY, const Rectangle& safeRect)
+    bool LayoutComponent::UpdateLayout()
     {
 		if (!m_isEnabled)return false; // do nothing;
 
@@ -102,6 +103,8 @@ namespace cart
 		rawPosition = m_owner.get()->GetRawLocation();
 		defaultW = m_owner.get()->GetDefaultWidth();
 		defaultH = m_owner.get()->GetDefaultHeight();
+		float scaleX = World::UI_CANVAS.get()->ScaleX();
+		float scaleY = World::UI_CANVAS.get()->ScaleY();
 		if (!parent.expired()) {
 			// owner is ready
 			if (!parent.lock()->IsLayoutUpdated()) 
@@ -167,147 +170,8 @@ namespace cart
 	
 		m_owner.get()->SetSize({ w, h });
 		m_owner.get()->SetLocation({ cx, cy });
-		// element pixel size based on design size and scale
-		//isScaleLocked = false;// To be Deleted;
-		/*if (isScaleLocked) {
-			pixelW = std::max(1.f, m_owner.get()->GetDefaultWidth());
-			pixelH = std::max(1.f, m_owner.get()->GetDefaultHeight());
-		}
-		else {
-
-			pixelW = std::max(1.f, m_owner.get()->GetDefaultWidth() * std::min(scaleX, 1.f));
-			pixelH = std::max(1.f, m_owner.get()->GetDefaultHeight() * std::min(scaleY, 1.f));
-		}
-
-		anchorLeft = parentRect.width * anchor.x;
-		anchorRight = parentRect.width * anchor.width;
-		anchorx = parentRect.x + anchorLeft + (anchorRight - anchorLeft) / 2.f;
-
-		anchorTop = parentRect.height * anchor.y;
-		anchorBottom = parentRect.height * anchor.height;
-		anchory = parentRect.y + anchorTop + (anchorBottom - anchorTop) / 2.f;*/
-
-		//if (std::abs(anchor.width - anchor.x) > 0)
-		//{
-		//	float left  = parentRect.x + anchor.x * parentRect.width; // base width
-		//	float right = left + anchor.width * parentRect.width;
-		//	w = right - left ;			
-		//	cx = left + m_Rect.x;
-		//}
-		//else{
-		//
-		//	w = std::min(pixelW, availW);
-		//	if (!isScaleLocked) {
-		//		if (scaleX > scaleY) {
-		//			int dw = m_owner.get()->GetDefaultWidth();
-		//			int pw = parent.expired() ? World::UI_CANVAS.get()->GetDefaultCanvasSize().x : parent.lock().get()->GetDefaultWidth();
-		//			float parentratioW = (float)dw / (float)pw;
-		//			scaleX = parentratioW * World::UI_CANVAS.get()->StrechX();
-		//			w = std::max((float)w, parentRect.width * scaleX);
-		//			cx = parent.expired() ? World::UI_CANVAS.get()->GetDefaultCanvasSize().x * anchor.x : parentRect.x + anchor.x * parentRect.width;
-		//		}
-		//	}
-		//}
-
-		//if (std::abs(anchor.height- anchor.y) > 0)
-		//{
-		//	
-		//	float top = anchor.y * parentRect.height; // base width
-		//	float bottom = anchor.height * parentRect.height;
-		//	h = bottom - (top + m_Rect.y);
-		//	cy = parentRect.y + top + m_Rect.y;
-		//}
-		//else {
-		//h = std::min(pixelH, availH);
-		//	if (!isScaleLocked) {
-		//		if (scaleX < scaleY) {
-		//			int dh = m_owner.get()->GetDefaultHeight();
-		//			int ph = parent.expired() ? World::UI_CANVAS.get()->GetDefaultCanvasSize().y : parent.lock().get()->GetDefaultHeight();
-		//			float parentratioH = (float)dh / (float)ph;
-		//			scaleY = parentratioH * World::UI_CANVAS.get()->StrechY();
-		//			h = std::max((float)h, parentRect.height * scaleY);
-		//		}
-		//	}
-		//}
-		// place element at left top of anchor rect with clamping
-//#pragma region  commented for now
-//		anchorLeft = parentRect.width * anchor.x;
-//		anchorRight = parentRect.width * anchor.width ;
-//		anchorTop = parentRect.height * anchor.y;
-//		anchorBottom = parentRect.height * anchor.height ;
-//
-//		anchorx = parentRect.x + anchorLeft + (anchorRight - anchorLeft) / 2.f;
-//		anchory = parentRect.y + anchorTop + (anchorBottom - anchorTop) / 2.f;
-//		midAnchor = {	(float)anchorx, (float)anchory};
-//
-//		// Size
-//		
-//		w = std::min(pixelW, availW);
-//		h = std::min(pixelH, availH);
-//		if (!isScaleLocked) {
-//
-//			if (scaleX < scaleY) {
-//				int dh = m_owner.get()->GetDefaultHeight();
-//				int ph = parent.expired() ? World::UI_CANVAS.get()->GetDefaultCanvasSize().y : parent.lock().get()->GetDefaultHeight();
-//				float parentratioH = (float)dh / (float)ph;
-//				scaleY = parentratioH * World::UI_CANVAS.get()->StrechY();
-//				h = std::max((float)h, parentRect.height * scaleY);
-//			}
-//			else if(scaleX > scaleY){
-//				int dw = m_owner.get()->GetDefaultWidth();
-//				int pw = parent.expired() ? World::UI_CANVAS.get()->GetDefaultCanvasSize().x : parent.lock().get()->GetDefaultWidth();
-//				float parentratioW = (float)dw / (float)pw;
-//				scaleX = parentratioW * World::UI_CANVAS.get()->StrechX();
-//				w = std::max((float)w, parentRect.width * scaleX);
-//			}
-//		}
-//#pragma endregion	
-		//ownerpivot = m_owner.get()->GetPivot();
-		/*	m_owner.get()->SetSize({(float)w, (float)h});
-			Vector2 rawLoc = m_owner.get()->GetRawLocation();*/
-	/*	if (std::abs(anchor.width - anchor.x) == 0) {
-			midAnchor = { (float)anchorx, (float)anchory };
-			if (isScaleLocked) {
-
-				cx = midAnchor.x + rawLoc.x;
-				
-			}
-			else {
-				cx =  midAnchor.x + (float)(rawLoc.x * scaleX);
-			}
-			m_owner.get()->SetLocation({(float)cx, (float)cy});
 		
-
-		}*/
-
-		//if (std::abs(anchor.height - anchor.y) == 0) {
-		//	midAnchor = { (float)anchorx, (float)anchory };
-		//	// Location
-		//	if (isScaleLocked) {
-		//		cy = midAnchor.y + rawLoc.y;
-		//	}
-		//	else {
-		//		cy = midAnchor.y + (float)(rawLoc.y * scaleY);
-		//	}
-		//	m_owner.get()->SetLocation({ (float)cx, (float)cy });
-
-
-		//}
-		
-	
-
-		// Safety check: is element outside safeRect?
-		if (cx < safeRect.x || cy < safeRect.y ||
-			cx + w > safeRect.x + w ||
-			cy + h > safeRect.y + h) {
-			// For demo we print; in real system we'd emit warning event
-		//	std::cout << "[WARN] Element '" << m_Id << "' overlaps safe area.\n";
-		}
-		//Logger::Get()->Trace(std::format("\n{} Layout updated x {} | y {} \n width {} | height {}\n", m_Id, screenLoc.x, screenLoc.y, screenSize.x, screenSize.y));
-	//	Logger::Get()->Trace(std::format("LayoutComponent::UpdateLayout() {}  Updated Successfully. ", GetId()));
-	//	Logger::Get()->Trace(std::format("LayoutComponent::END ======== {} ========== \n", GetId()));
-
-		onLayoutChange.Broadcast();
+		m_owner.get()->OnLayoutChange();
 		m_isUpdated = true;
 		return m_isUpdated;
 		

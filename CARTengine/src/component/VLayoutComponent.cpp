@@ -7,8 +7,9 @@ namespace cart {
 	VLayoutComponent::VLayoutComponent(std::string& id)
 		: LayoutComponent{id}
 	{
+		m_type = V_LAYOUT;
 	}
-	bool VLayoutComponent::UpdateLayout(Vector2 size, float scaleX, float scaleY, const Rectangle& safeRect)
+	bool VLayoutComponent::UpdateLayout()
 	{
 		//bool updated = LayoutComponent::UpdateLayout(size, scaleX, scaleY, safeRect);
 		//return updated;
@@ -38,7 +39,7 @@ namespace cart {
 
 		//	maxWidth = (elemRect.width > maxWidth) ? elemRect.width : maxWidth;
 		//}
-		bool updated = LayoutComponent::UpdateLayout(size, scaleX, scaleY, safeRect);
+		bool updated = LayoutComponent::UpdateLayout();
 		return updated;
 	}
 	

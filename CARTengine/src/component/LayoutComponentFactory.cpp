@@ -37,6 +37,8 @@ namespace cart {
 				return component;
 				break;
 			}
+			case NO_LAYOUT :
+				break;
 		}
 		return weak<IComponent>();
 	}
@@ -115,6 +117,7 @@ namespace cart {
 	{
 		for (auto iter = m_components.begin(); iter != m_components.end();)
 		{
+			World::UI_CANVAS.get()->RemoveComponent(iter->first);
 			iter->second.get()->Destroy();
 			iter->second.reset();
 			iter = m_components.erase(iter);

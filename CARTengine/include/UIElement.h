@@ -57,30 +57,29 @@ namespace cart {
 		std::vector<weak<UIElement>>Children();
 		bool UpdateLayout();
 		bool IsLayoutUpdated();
+		weak<UIElement> parent();
 
 
 		virtual ~UIElement();
+		virtual void OnChildReady(const std::string& id);
+		virtual void OnScreenSizeChange();
+		virtual void OnLayoutChange();
 
 		void AddText(const std::string & id, Text_Properties _txt);
-		weak<UIButton> AddButton(const std::string& id, Btn_Text_Properties _btn);
 		void AddChild(weak<UIElement> _btn);
 		void RemoveChild(const std::string& id);
 		bool IsPendingUpdate() { return m_pendingUpdate; };
 		void SetPendingUpdate(bool _flag);
-		
-		void Destroy()override;
-		void SetExcludeFromParentAutoControl(bool _flag);
-		bool IsExcludedFromParentAutoControl() { return m_isExcludedFromParentAutoControl; };
-		
-		virtual void OnChildReady(const std::string& id);
-		virtual void OnScreenSizeChange();
-		virtual void OnLayoutChange();
-		weak<UIElement> parent();
 		void parent(weak<UIElement> ui);
-		//void AddLayoutComponent(const std::string& id, weak<IComponent> component);
-		weak<IComponent> GetComponentById(const std::string& id);
-		bool HasLayoutComponent();
+		void SetExcludeFromParentAutoControl(bool _flag);
+		void Destroy()override;
+		
+		bool IsExcludedFromParentAutoControl() { return m_isExcludedFromParentAutoControl; };		
+		bool HasComponents();
 		bool HasLayoutComponent(Layout_Component_Type type);
+
+		weak<UIButton> AddButton(const std::string& id, Btn_Text_Properties _btn);
+		weak<IComponent> GetComponentById(const std::string& id);
 	protected:
 		bool m_pendingUpdate;
 		bool m_isExcludedFromParentAutoControl;

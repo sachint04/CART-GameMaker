@@ -5,8 +5,8 @@
 namespace cart {
 
 #pragma region  Constructor & Initialization
-	Text::Text(World* _owningworld, const std::string& _id)
-		:UIElement{ _owningworld,_id },
+	Text::Text(World* _owningworld, const std::string& _id, bool isExcludedFromParentAutoControl)
+		:UIElement{ _owningworld,_id, isExcludedFromParentAutoControl },
 		m_text{ },
 		m_font{ },
 		m_fontsize{ },
@@ -83,6 +83,8 @@ namespace cart {
 		case RIGHT:
 			m_textLocation = { rect.x + (m_width * m_scale) - (m_textsize.x * m_scale) - px,
 								rect.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 - py };
+			break;
+		case JUSTIFIED :
 			break;
 		}
 

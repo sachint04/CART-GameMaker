@@ -191,7 +191,7 @@ namespace cart {
         bool blockscale;
         std::string texture;
         int linewidth = 0;
-        int roundnessSegments = 0;
+        int roundnessSegments = 36;
         int borderwidth;
         float scale{ 1.f };
         float rotation;

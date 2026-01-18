@@ -124,7 +124,6 @@ namespace cart {
 			else {
 				if (IsMouseButtonPressed(0)) {// Drading
 					ButtonDown(tPos);// Mouse /Touch  Pressed
-					m_owningworld->GetInputController()->SetFocus(GetId());
 					m_touch = true;
 				}
 				if (IsMouseButtonUp(0)) {// Mouse over the button //
@@ -151,10 +150,9 @@ namespace cart {
 	{
 		if (!m_visible)return;
 		Sprite2D::Draw(_deltaTime);
-		if (m_IsSelected == true) {
-		//	DrawRectangle(m_location.x - 10.f, m_location.y - 10.f, m_width + 20.f, m_height + 20.f, m_color);
+		/*if (m_IsSelected == true) {
 			DrawRectangle(m_location.x - 10.f, m_location.y - 10.f, m_width + 20.f, m_height + 20.f, m_color);
-		}
+		}*/
 	/*	if (m_strTexture.size() == 0) {
 			if (m_shapeType == SHAPE_TYPE::CIRCLE)
 			{
@@ -326,6 +324,7 @@ namespace cart {
 		if (m_IsSelectable == true) {
 			m_IsSelected = true;
 		}
+		m_owningworld->GetInputController()->SetFocus(GetId());
 		onButtonDown.Broadcast(GetWeakRef(), pos);
 	}
 

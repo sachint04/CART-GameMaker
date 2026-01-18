@@ -8,13 +8,14 @@ namespace cart {
 	HLayoutComponent::HLayoutComponent(std::string& id)
 		: LayoutComponent{ id}
 	{
+		m_type = H_LAYOUT;
 	}
-	bool HLayoutComponent::UpdateLayout(Vector2 size, float scaleX, float scaleY, const Rectangle& safeRect)
+	bool HLayoutComponent::UpdateLayout()
 	{
 		
 
 		float startX, startY, curContentWidth, contentWidth = 0, totalpadding, totalavailableWidth = 0;
-		bool updated = LayoutComponent::UpdateLayout(size, scaleX, scaleY, safeRect);
+		bool updated = LayoutComponent::UpdateLayout();
 		Rectangle rect = m_owner.get()->GetBounds();
 		std::vector<weak<UIElement>> ch = m_owner.get()->Children();
 		std::vector<std::vector<int>> rows;

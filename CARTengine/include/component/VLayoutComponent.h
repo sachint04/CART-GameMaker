@@ -7,7 +7,7 @@ namespace cart {
 	{
 	public:
 		VLayoutComponent(std::string& id);		
-		virtual bool UpdateLayout(Vector2 size, float scaleX, float scaleY, const Rectangle& safeRect);
+		virtual bool UpdateLayout();
 	protected:
 
 

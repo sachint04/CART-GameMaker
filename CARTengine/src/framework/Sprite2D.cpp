@@ -39,8 +39,9 @@ namespace cart {
 		if (m_strTexture.size() > 0 ) {
 			//m_textureLocation = m_location;
 			m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
-			int px = (m_pivot.x * m_width);
-			int py = (m_pivot.y * m_height);
+			Rectangle rect = GetBounds();
+			int px = (m_pivot.x * rect.width);
+			int py = (m_pivot.y * rect.height);
 			if (m_texturetype == TEXTURE_FULL) {
 				
 				/*if (m_bMasked && !m_bIsScaling) {
@@ -55,13 +56,13 @@ namespace cart {
 						int w = m_texture2d.get()->width;
 						int h = m_texture2d.get()->height;
 						m_textureLocation = {
-									(GetBounds().x + GetBounds().width / 2.f) - ((float)w / 2.f),
-									(GetBounds().y + GetBounds().height / 2.f) - ((float)h / 2.f)
+									(rect.x + rect.width / 2.f) - ((float)w / 2.f),
+									(rect.y + rect.height / 2.f) - ((float)h / 2.f)
 						};
 					}
 					else {
 						
-						m_textureLocation = { m_location.x - px, m_location.y - py };
+						m_textureLocation = { rect.x , rect.y  };
 					}
 				}
 				/*if (m_bAspectRatio)
@@ -75,7 +76,7 @@ namespace cart {
 				
 			}
 			else if (m_texturetype == TEXTURE_PART) {
-				m_textureLocation = { m_location.x - px, m_location.y - py };
+				m_textureLocation = { rect.x, rect.y };
 			}
 		}
 		m_bIsScaling = false;
@@ -88,9 +89,9 @@ namespace cart {
 
 		if (m_strTexture.size() > 0) {
 			
-			if (!m_texture2d) {
+			//if (!m_texture2d) {
 				m_texture2d = AssetManager::Get().LoadTextureAsset(m_strTexture, m_textureStatus);
-			}
+			//}
 
 			if (m_texturetype == TEXTURE_PART) {// Render PART OF TEXTURE			
 				DrawTextureRec(*m_texture2d, m_texturesource, m_textureLocation, m_textureColor);
@@ -247,12 +248,12 @@ namespace cart {
 		}
 		if (!m_texture2d)return;
 		int width, height; float tmpscalex, tmpscaley, px, py;
-
-		tmpscalex = (float)m_width / (float)m_texture2d.get()->width;
-		tmpscaley = (float)m_height / (float)m_texture2d.get()->height;
-		px = (m_pivot.x * m_width);
-		py = (m_pivot.y * m_height);
-		m_textureLocation = { m_location.x - px, m_location.y - py };
+		Rectangle rect = GetBounds();
+		tmpscalex = rect.width / (float)m_texture2d.get()->width;
+		tmpscaley = rect.height / (float)m_texture2d.get()->height;
+		px = (m_pivot.x * rect.width);
+		py = (m_pivot.y * rect.height);
+		m_textureLocation = { rect.x - px, rect.y - py };
 
 		if (tmpscalex == 1 && tmpscaley == 1)return;
 
@@ -277,12 +278,12 @@ namespace cart {
 		}
 		int bw, bh, w, h;
 		float stageratio, targetratio, diffratio;
-
+		Rectangle rect = GetBounds();
 		Image* img = AssetManager::Get().GetImage(m_strTexture);
-		stageratio = m_width / m_height;
+		stageratio = rect.width / rect.height;
 
-		bw = (stageratio > 1.f) ? m_width / stageratio : m_width ;
-		bh = (stageratio <  1.f) ? m_height * stageratio : m_height;
+		bw = (stageratio > 1.f) ? rect.width / stageratio : rect.width ;
+		bh = (stageratio <  1.f) ? rect.height * stageratio : rect.height;
 		Vector2 stagesquare = { (float)bw , (float)bh};
 
 		
@@ -308,8 +309,8 @@ namespace cart {
 				Logger::Get()->Warn(" Sprite2D::UpdateAspectRatio() FAILED!! Image Resized maintained Aspect Ratio");
 			}
 			m_textureLocation = {
-								(GetBounds().x + GetBounds().width / 2.f) - (m_textureSize.x / 2.f),
-								(GetBounds().y + GetBounds().height  / 2.f) - (m_textureSize.y / 2.f)
+								(rect.x + rect.width / 2.f) - (m_textureSize.x / 2.f),
+								(rect.y + rect.height  / 2.f) - (m_textureSize.y / 2.f)
 								};
 			UnloadImage(copy);
 		}

@@ -28,9 +28,9 @@ namespace  cart {
 
 		void Update(float _deltaTime) override;
 		
-		void SetDefaultRect(Rectangle rect);
+		//void SetDefaultRect(Rectangle rect);
 		void SetMinMaxRect(Rectangle rect);
-		Delegate<Vector2, Vector2, Vector2>onScaled;
+		Delegate<Rectangle>onScaled;
 		Delegate<float>onRotated;
 		Delegate<Vector2> onMoved;
 		Delegate<Vector2> onButtonUp;
@@ -68,7 +68,7 @@ namespace  cart {
 		bool m_isfixedAspectRatio;
 		Vector2 m_tmpPivot;
 		Vector2 m_tempTargetLoc;
-		Rectangle m_targetInitState;
+	//	Rectangle m_targetInitState;
 	//	Vector2 m_center;
 		
 	};

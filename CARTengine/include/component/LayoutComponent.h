@@ -17,16 +17,17 @@ namespace cart {
 		virtual void Update() override;
 		virtual void SetForUpdate() override;
 		virtual bool IsOwnerReady() override;
-		virtual bool UpdateLayout(Vector2 size, float scaleX, float scaleY,  const Rectangle& safeRect)override;
+		virtual bool UpdateLayout()override;	
+
 		bool IsUpdated() override;
 		bool IsEnabled()override { return m_isEnabled; };
+		
 		weak<IComponent> GetWeakRef()override;
 		Layout_Component_Type type()override { return Layout_Component_Type::LAYOUT; };
 		std::string GetId()const override ;
 
 		bool HasParent();
 
-		Delegate<> onLayoutChange;
 	protected:
 
 		Layout_Component_Type m_type;

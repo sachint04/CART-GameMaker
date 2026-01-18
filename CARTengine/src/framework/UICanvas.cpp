@@ -127,8 +127,7 @@ namespace cart {
                 if (iter->second.lock()->IsOwnerReady() && !iter->second.lock()->IsUpdated())
                 {
 
-                    iter->second.lock()->UpdateLayout({ (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT },
-                        scaleX, scaleY, m_safeRect);
+                    iter->second.lock()->UpdateLayout();
                   
                 }
                 ++iter;
@@ -159,6 +158,14 @@ namespace cart {
             (float)SCREEN_HEIGHT / (float)DEFAULT_CANVAS_HEIGHT);
     }
     
+    float UICanvas::ScaleX() {
+        return (float)SCREEN_WIDTH / (float)DEFAULT_CANVAS_WIDTH;
+    }
+    
+    float UICanvas::ScaleY() {
+        return  (float)SCREEN_HEIGHT / (float)DEFAULT_CANVAS_HEIGHT;
+    }
+
     float UICanvas::StrechX() {
         return CANVAS_STRECH_X;
     }

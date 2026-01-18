@@ -6,7 +6,7 @@ namespace cart {
 	class World;
 	class Text : public UIElement {
 	public:
-		Text( World* _owningworld, const std::string& _id);
+		Text( World* _owningworld, const std::string& _id, bool isExcludedFromParentAutoControl = false);
 		~Text();
 		void Init() override;
 		void Update(float _deltaTime) override;

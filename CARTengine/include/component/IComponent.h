@@ -16,7 +16,7 @@ namespace cart {
 		virtual void SetForUpdate() = 0;
 		virtual bool IsOwnerReady() = 0;
 		virtual bool IsUpdated() = 0;
-		virtual bool UpdateLayout(Vector2 size, float scaleX, float scaleY, const Rectangle& safeRect) = 0;
+		virtual bool UpdateLayout() = 0;
 		virtual bool IsEnabled() = 0;
 		virtual weak<IComponent> GetWeakRef() = 0;
 		virtual Layout_Component_Type type() = 0;

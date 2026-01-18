@@ -67,8 +67,6 @@ namespace cart
 #pragma endregion
 
 #pragma region Clean Up
-
-
 	TextInput::~TextInput()
 	{
         m_infofnt.reset();
@@ -204,10 +202,11 @@ namespace cart
         else m_mouseOnText = false;*/
 
         int tCount = GetTouchPointCount();
-       
+        // Get char pressed (unicode character) on the queue
+        int key = GetCharPressed();
         m_mouseOnText = m_owningworld->GetInputController()->IsMouseOver(GetWeakRef());
         // if Input is currently Selected
-        if (m_mouseOnText || m_hasUpated)
+        if (m_mouseOnText)
         {
 
 #if defined(PLATFORM_ANDROID)
@@ -293,102 +292,100 @@ namespace cart
                 m_touch = false;
             }
             else {
-                m_isBackspace = false;
                 SetMouseCursor(MOUSE_CURSOR_DEFAULT);
             }
         }
 
       
-            if (IsKeyUp(KEY_BACKSPACE)) {
-                m_tempkeydownActionDuration = m_keydownMulitiplyerDuration;
-                m_isBackspace = false;
-            }
-            if (IsKeyUp(KEY_LEFT))
-            {
-                m_isLeftKey = false;
-            }    
-            if (IsKeyPressed(KEY_BACKSPACE))
-            {
-                if (!m_isBackspace) {
-                    m_backspacekeyWaitTimer = Clock::Get().ElapsedTime();
-                    m_keyWaitTimer = Clock::Get().ElapsedTime();
-                    whilebackspace(m_letterCount, name, m_lines, m_curletterindex);
-                    m_text =  name ;
-                    PrepareInput(textBox);
-                    m_isBackspace = true;
-                }
-
-            }
-            if (IsKeyPressed(KEY_LEFT)) {
+        if (IsKeyReleased(KEY_BACKSPACE)) {
+            m_tempkeydownActionDuration = m_keydownMulitiplyerDuration;
+            m_isBackspace = false;
+        }
+        if (IsKeyReleased(KEY_LEFT))
+        {
+            m_isLeftKey = false;
+        }    
+        
+        if (IsKeyPressed(KEY_BACKSPACE))
+        {
+            if (!m_isBackspace) {
+                m_backspacekeyWaitTimer = Clock::Get().ElapsedTime();
                 m_keyWaitTimer = Clock::Get().ElapsedTime();
-                m_isLeftKey = true;
-
+                whilebackspace(m_letterCount, name, m_lines, m_curletterindex);
+                m_text =  name ;
+                PrepareInput(textBox);
+                m_isBackspace = true;
             }
-            if (IsKeyPressed(KEY_RIGHT)) {
-                m_keyWaitTimer = Clock::Get().ElapsedTime();
-                m_isRightKey = true;
-            }
-            if (IsKeyPressed(KEY_DELETE))
-            {
-                whiledeletekey(m_letterCount, name, m_lines, m_curletterindex);
+        }
+        if (IsKeyPressed(KEY_LEFT)) {
+            m_keyWaitTimer = Clock::Get().ElapsedTime();
+            m_isLeftKey = true;
+        }
+        if (IsKeyPressed(KEY_RIGHT)) {
+            m_keyWaitTimer = Clock::Get().ElapsedTime();
+            m_isRightKey = true;
+        }
+        if (IsKeyPressed(KEY_DELETE))
+        {
+            whiledeletekey(m_letterCount, name, m_lines, m_curletterindex);
                
-                //  m_keyWaitTimer = Clock::Get().ElapsedTime();
-                //  m_isDeleteKey = true;
-            }
-            // Get char pressed (unicode character) on the queue
-            int key = GetCharPressed();
-            // Check if more characters have been pressed on the same frame
-            while (key > 0 )
+            //  m_keyWaitTimer = Clock::Get().ElapsedTime();
+            //  m_isDeleteKey = true;
+        }
+  
+        // Check if more characters have been pressed on the same frame
+        while (key > 0 )
+        {
+            float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
+            float fspace = std::max(m_minfontspacing, m_fontspacing * World::UI_CANVAS.get()->Scale());
+
+            int  txtmargin = m_textmargin * scrnScale;
+            int tx = textBox.x + 8;
+            int ty = textBox.y + 8;
+            // NOTE: Only allow keys in range [32..125]
+            if ((key >= 32) && (key <= 125) && (m_letterCount < m_charLimit))
             {
-                float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
-                float fspace = std::max(m_minfontspacing, m_fontspacing * World::UI_CANVAS.get()->Scale());
+                Vector2 fntmeasure = MeasureTextEx(*m_sharedfont, "W", fsize, fspace);
+                Rectangle textBox = GetBounds();
 
-                int  txtmargin = m_textmargin * scrnScale;
-                int tx = textBox.x + 8;
-                int ty = textBox.y + 8;
-                // NOTE: Only allow keys in range [32..125]
-                if ((key >= 32) && (key <= 125) && (m_letterCount < m_charLimit))
+                if (m_curletterindex < m_letterCount)
                 {
-                    Vector2 fntmeasure = MeasureTextEx(*m_sharedfont, "W", fsize, fspace);
-                    Rectangle textBox = GetBounds();
-
-                    if (m_curletterindex < m_letterCount)
-                    {
-                        typeinbetween(m_letterCount, key, name, m_lines, m_curletterindex);
-                    }
-                    else {
-                        name[m_letterCount] = (char)key;
-                        name[m_letterCount + 1] = '\0'; // Add null terminator at the end of the string.                 
-                        m_curletterindex = m_letterCount + 1;
-                    }
-
-                    m_text =  name ;
-                    m_hasUpated  = true;
-                   
-                    m_isBackspace = false;
-                    m_isLeftKey = false;
-                    m_isRightKey = false;
-                    m_isDeleteKey = false;
-                    m_letterCount++;
+                    typeinbetween(m_letterCount, key, name, m_lines, m_curletterindex);
                 }
-                key = GetCharPressed();  // Check next character in the queue
+                else {
+                    name[m_letterCount] = (char)key;
+                    name[m_letterCount + 1] = '\0'; // Add null terminator at the end of the string.                 
+                    m_curletterindex = m_letterCount + 1;
+                }
 
+                m_text =  name ;
+                m_hasUpated  = true;
+                   
+                m_isBackspace = false;
+                m_isLeftKey = false;
+                m_isRightKey = false;
+                m_isDeleteKey = false;
+                m_letterCount++;
             }
-            // Set the window's cursor to the I-Beam
-            if(m_isFocused && m_mouseOnText)
-            SetMouseCursor(MOUSE_CURSOR_IBEAM);
+            key = GetCharPressed();  // Check next character in the queue
+
+        }
+        // Set the window's cursor to the I-Beam
+        if(m_isFocused && m_mouseOnText)
+        SetMouseCursor(MOUSE_CURSOR_IBEAM);
       
         
         if (m_isBackspace) {
+#ifdef _WIN32
             double t = Clock::Get().ElapsedTime();
             if (t - m_keyWaitTimer > m_keydownMulitiplyerDuration) {
                 m_tempkeydownActionDuration = std::max(m_keydownActionMinDuration, m_tempkeydownActionDuration * m_keydownWaitTimeMultiplyer);
-                // Logger::Get()->Trace(std::format("backspace time {} | {}", m_tempkeydownActionDuration, m_keydownMulitiplyerDuration));
                 m_keyWaitTimer = t;
             }
             //float keydownActionMulitiplyer = m_keydownMulitiplyerDuration;
             if (t - m_backspacekeyWaitTimer >= m_tempkeydownActionDuration)
             {
+             //   Logger::Get()->Trace(std::format("backspace action {}", m_letterCount));
                 if (m_letterCount >= 0) {
                     whilebackspace(m_letterCount, name, m_lines, m_curletterindex);
                     m_text = name;
@@ -396,6 +393,7 @@ namespace cart
                 }
                 m_backspacekeyWaitTimer = t;
             }
+#endif // _WIN32
         }
         if (m_isLeftKey)
         {
@@ -433,7 +431,8 @@ namespace cart
         }
 
         if (m_hasUpated) {
-            PrepareInput(textBox);            
+            PrepareInput(textBox);
+            m_hasUpated = false;
         }
         if (m_owningworld->GetInputController()->HasFocus() &&
             m_owningworld->GetInputController()->GetFocusedId().compare(GetId()) == 0) m_framesCounter++;
@@ -448,7 +447,7 @@ namespace cart
         float scrnScale =  World::UI_CANVAS.get()->Scale();
 
         // DrawRectangleRec(textBox, LIGHTGRAY);
-        if (m_owningworld->GetInputController()->GetFocusedId().compare(GetId()) == 0)
+        if (m_isFocused)
         {            
            DrawRectangleLinesEx({ textBox.x, textBox.y, textBox.width, textBox.height }, 2.f, DARKGRAY);
         }
@@ -469,7 +468,7 @@ namespace cart
         else
             ShowRemainingCharCount(textBox);
 
-        m_hasUpated = false;
+
 	}
 #pragma endregion
 
@@ -503,17 +502,17 @@ namespace cart
     }
     void TextInput::SetFocused(bool _flag)
     {
-        Logger::Get()->Trace(std::format("TextInput::SetFocused()! default text {}", m_text));
+      //  Logger::Get()->Trace(std::format("TextInput::SetFocused()! default text {}", m_text));
        int useragent = CARTjson::GetEnvSettings()["useragent"];
        if (useragent > 0) {// if useragent is > 0 (mobile browser) show os keyboard
             if (_flag) {// currently is in focus
                 std::string curtxt = name;
-               m_owningworld->GetApplication()->RegisterListernerToMobileInput(GetId(), GetWeakRef(), &TextInput::OnMobileInput);
-                m_owningworld->GetApplication()->ToggleMobileWebKeyboard(m_text, KeyboardType::Default, false, true, false, false, m_text.size() == 0 ? std::string{ "type here .." } : std::string{""}, m_charLimit);
+                m_owningworld->GetApplication()->RegisterListernerToMobileInput(GetId(), GetWeakRef(), &TextInput::OnMobileInput);
+                m_owningworld->GetApplication()->ToggleMobileWebKeyboard(m_text, KeyboardType::Default, false, true, false, false, std::string{""}, m_charLimit);
             }else
             {
                 m_owningworld->GetApplication()->RemoveMobileInputListener(GetId());
-                m_owningworld->GetApplication()->MobileKeyboardInterupt();
+                m_owningworld->GetApplication()->MobileKeyboardInterupt();              
             }
         }
         UIElement::SetFocused(_flag);
@@ -547,7 +546,6 @@ namespace cart
         SetText(m_text);
         
     }
-
     /// <summary>
     /// TextInput::TextLine - Draw text on screen
     /// </summary>
@@ -557,11 +555,11 @@ namespace cart
         auto iter = m_lines.begin();
         Rectangle textBox = GetBounds();
         float scrnScale = World::UI_CANVAS.get()->Scale();
-        float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
-        float fspace = std::max(m_minfontspacing, m_fontspacing * World::UI_CANVAS.get()->Scale());
+        float fsize = std::max(m_minfontsize * scrnScale, m_fontsize * scrnScale);
+        float fspace = m_fontspacing;// std::max(m_minfontspacing * scrnScale, m_fontspacing * scrnScale);
+        int txtmargin = m_textmargin * scrnScale;
 
         int count = 0, l = 0;
-        int txtmargin = m_textmargin * scrnScale;
 
         m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, fsize);
         
@@ -586,13 +584,13 @@ namespace cart
     void TextInput::PrepareInput(Rectangle bounds)
     {
         float scrnScale =  World::UI_CANVAS.get()->Scale();
-        float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
-        float fspace = std::max(m_minfontspacing, m_fontspacing * World::UI_CANVAS.get()->Scale());
+        float fsize = std::max(m_minfontsize * scrnScale, m_fontsize * scrnScale);
+        float fspace = m_fontspacing;// std::max(m_minfontspacing * scrnScale, m_fontspacing * scrnScale);
         float fmargin = m_textmargin * scrnScale;
 
         float startX = bounds.x + fmargin;
         float startY = bounds.y + fmargin;
-        float linesacing = fsize * 0.75f;
+        float linesacing = 1.5f;
         //clear all lines since text has changed
         m_lines.clear();
         // create data at 0 index for first line
@@ -601,7 +599,7 @@ namespace cart
         m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, fsize);
         
         // assuming 'W' is the larges of the letter get size 
-        Vector2 fntmeasure = MeasureTextEx(*m_sharedfont, "W", fsize * scrnScale,fspace);
+        Vector2 fntmeasure = MeasureTextEx(*m_sharedfont, "W", fsize ,fspace);
 
         // current letter count;
         m_letterCount = std::min((size_t)m_text.size(), (size_t)m_charLimit);
@@ -626,19 +624,15 @@ namespace cart
     void TextInput::DrawInputCursor(Rectangle bounds)
     {
         float scrnScale =  World::UI_CANVAS.get()->Scale();
-        float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * scrnScale));
-        float fspace = std::max(m_minfontspacing, m_fontspacing * scrnScale);
+        float fsize = std::max(m_minfontsize * scrnScale, m_fontsize * scrnScale);
+        float fspace = m_fontspacing;// std::max(m_minfontspacing * scrnScale, m_fontspacing * scrnScale);
         float margin = m_textmargin * scrnScale;
-        int chrcount = 0, lc = -1, chrs = 0, s = 0, txtmargin, fntspace;
 
         int ltrcnt = 0;
-        Vector2 fntsize, fntmeasure, cursorloc;
-        fntsize = MeasureTextEx(*m_sharedfont, "W", fsize, fspace);
-        fntmeasure = { 0,0 };
-        txtmargin = m_textmargin * scrnScale;
-        fntspace = m_fontspacing * scrnScale;
-        cursorloc = { bounds.x + txtmargin, bounds.y + txtmargin };
         
+        Vector2 fntsize, fntmeasure;
+        fntsize = MeasureTextEx(*m_sharedfont, "W", fsize, fspace);
+        m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, fsize);
         if (!m_infofnt)
         {
             std::string staticassetpath = m_owningworld->GetApplication()->GetStaticAssetsPath();
@@ -646,17 +640,17 @@ namespace cart
             std::string fntpath = configdata["cart"]["font"]["verdana"]["path"];
             m_infofnt = AssetManager::Get().LoadFontAsset(std::string{ staticassetpath + fntpath }, 14);
         }
-        float startX = bounds.x + margin;
-        float startY = bounds.y + margin;
+        float curX = bounds.x + margin;
+        float curY = bounds.y + margin;
         for (auto iter = m_lines.begin(); iter != m_lines.end(); ++iter)
         {            
             if (m_curletterindex >= ltrcnt && m_curletterindex <= ltrcnt + iter->first.size())
             {
-                startY = iter->second.y;
+                curY = iter->second.y;
                 std::string s = iter->first;
                 std::string sl = s.substr(0, m_curletterindex - ltrcnt);
                 fntmeasure = MeasureTextEx(*m_sharedfont, sl.c_str(), fsize, fspace);
-                startX +=  fntmeasure.x;
+                curX +=  fntmeasure.x;
                 break;
             }
 
@@ -664,7 +658,7 @@ namespace cart
         }
 
         
-        if (((m_framesCounter / 10) % 2) == 0) DrawText("|", startX, startY, fsize + 2, GRAY);
+        if (((m_framesCounter / 10) % 2) == 0) DrawText( "|",  curX, curY , fsize + 4, GRAY);
     }
 
     void TextInput::ShowCharLimitWarning(Rectangle bounds)
@@ -707,7 +701,8 @@ namespace cart
         DrawTextEx(*m_infofnt, alert.c_str(), { bounds.x +  margin, bounds.y +  bounds.height - (fntmeasure.y + margin) }, fsize, fspace, BLACK);
 
     }
-
+    
+    
 #pragma endregion
 
 
@@ -717,63 +712,116 @@ namespace cart
     {
         UpdateLayout();
     }
-    void TextInput::OnMobileInput(char* input)
+    void TextInput::OnMobileInput(char* input, int isBackspace)
     {
-        std::string left, right, fs, tmpstr, backspace;
-        m_mobileinput =  input ;// new string
-     
-        //tmpstr =  name;// current string
-        //backspace =  "<backspace>" ;
-     
-        //left = tmpstr.substr(0, std::max(0,m_curletterindex));
-        //right = tmpstr.substr(std::max(0, m_curletterindex), m_letterCount);
 
-        //bool isBackspace = backspace.compare(m_mobileinput) == 0;
+      //  Logger::Get()->Trace(std::format("TextInput::OnMobileInput() input {} | Backspace {} ", std::string{ input }, isBackspace));
+        // Check for Backspace evet
+        if (isBackspace == 1) {
+            //if (!m_isBackspace) {
+                Rectangle textBox = GetBounds();
+                float scrnScale = World::UI_CANVAS.get()->Scale();
+                auto whilebackspace = [&](int& c, char* s, std::vector<std::pair<std::string, Vector2>>& l, int& d)
+                {
+                    if (d - 1 < 0)return;
+                    size_t i = 0;
+                    for (i = d - 1; i < c; i++)
+                    {
+                        s[i] = s[i + 1];
+                    }
+                    c--;
+                    d--;
+                    s[c] = '\0';
+                    l.clear();
+                    l.push_back({ std::string{},  { (float)textBox.x + m_textmargin * scrnScale, (float)textBox.y + 8 } });
 
-        //if (isBackspace) {
-        //    m_curletterindex -= 1;
-        //    left = left.substr(0, m_curletterindex);
-        //    fs = left + right;
-        //}
-        //else {
-        //    m_curletterindex += tmpstr.size();
-        //    fs = { left + m_mobileinput + right };
-        //}
-        Logger::Get()->Trace(std::format("TextInput::OnMobileInput m_mobileinput{} | fs | {}  \0", m_mobileinput,  fs));
-        m_curletterindex = m_mobileinput.size();
-        SetText(m_mobileinput);
- /*       for (size_t i = 0; i < MAX_INPUT_CHARS; i++)
-        {
-            name[i] = '\0';
+                    float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
+                    float fspace = std::max(m_minfontspacing, m_fontspacing * World::UI_CANVAS.get()->Scale());
+                    Vector2 fntmeasure = MeasureTextEx(*m_sharedfont, "W", fsize, fspace);
+                    for (int i = 0; i < c; i++)
+                    {
+
+                        l[l.size() - 1].first.append(std::string{ s[i] });
+                        if (MeasureTextEx(*m_sharedfont, l[l.size() - 1].first.c_str(), fsize, fspace).x >= textBox.width - (fntmeasure.x + m_textmargin * scrnScale))
+                        {
+                            l.push_back({ std::string{},  { (float)textBox.x + m_textmargin * scrnScale, ((float)textBox.y + 8) + (fntmeasure.y * m_lines.size() - 1) } });
+                        }
+                    }
+                    // r[r.size() - 1].first.second = c;
+                };
+              //  m_backspacekeyWaitTimer = Clock::Get().ElapsedTime();
+              //  m_keyWaitTimer = Clock::Get().ElapsedTime();
+                whilebackspace(m_letterCount, name, m_lines, m_curletterindex);
+                m_text = name;
+                PrepareInput(textBox);
+              //  m_isBackspace = true;
+            //}
         }
-        for (size_t i = 0; i < len; i++)
-        {
-            name[i] = (char)fs.at(i);
-        }*/
-       // Logger::Get()->Trace(std::format("TextInput::OnMobileInput  name | {}  \0", std::string{ name }));
-        //int key = std::stoi(std::string{ input });
-        //if ((key >= 32) && (key <= 125) && (m_letterCount < m_charLimit)) {
-        //    m_letterCount = 0;
-        //    std::string mutable_str{ input };
-        //    for (size_t i = 0; i < MAX_INPUT_CHARS; i++)
-        //    {
-        //        name[i] = '\0';
-        //    }
-        //    while (mutable_str.size() > 0) {// transfre all chars to local char array
-        //        std::string achar = mutable_str.substr(0, 1);
-        //        name[m_letterCount] = (char)achar.c_str();
-        //        mutable_str = mutable_str.substr(1);
-        //        m_letterCount++;
-        //    }
-        //}
-       
+        else {
+           /* if (m_isBackspace) {
+                m_tempkeydownActionDuration = m_keydownMulitiplyerDuration;
+                m_isBackspace = false;
+            }*/
+            int key = std::stoi(input);
+            if ((key >= 32) && (key <= 125) && (m_letterCount < m_charLimit))
+            {
+                Rectangle textBox = GetBounds();
+                float scrnScale = World::UI_CANVAS.get()->Scale();
 
-        //if (IsKeyPressed(KEY_BACKSPACE)) {
-        //    if (m_letterCount > 0) {
-        //        m_letterCount--;
-        //        name[m_letterCount] = '\0';
-        //    }
-        //}
+                auto typeinbetween = [&](int& c, int key, char* s, std::vector<std::pair<std::string, Vector2>>& l, int& d)
+                {
+                    if (c + 1 >= MAX_INPUT_CHARS)return;
+
+                    size_t i = 0;
+                    for (i = c; i > d; i--)
+                    {
+                        s[i] = s[i - 1];
+                    }
+                    s[d] = (char)key;
+                    c++;
+                    d++;
+                    s[c] = '\0';
+
+                    l.clear();
+                    l.push_back({ std::string{},  { (float)textBox.x + m_textmargin * scrnScale, (float)textBox.y + 8 } });
+
+                    float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
+                    float fspace = std::max(m_minfontspacing, m_fontspacing * World::UI_CANVAS.get()->Scale());
+                    Vector2 fntmeasure = MeasureTextEx(*m_sharedfont, "W", fsize, fspace);
+                    for (int i = 0; i < c; i++)
+                    {
+
+                        l[l.size() - 1].first.append(std::string{ s[i] });
+                        if (MeasureTextEx(*m_sharedfont, l[l.size() - 1].first.c_str(), fsize, fspace).x >= textBox.width - (fntmeasure.x + m_textmargin * scrnScale))
+                        {
+                            l.push_back({ std::string{},  { (float)textBox.x + m_textmargin * scrnScale, ((float)textBox.y + 8) + (fntmeasure.y * l.size() - 1) } });
+
+                        }
+                    }
+                };
+                              
+                if (m_curletterindex < m_letterCount)
+                {
+                    typeinbetween(m_letterCount, key, name, m_lines, m_curletterindex);
+                }
+                else {
+                    std::string s(1, static_cast<char>(key));
+                    name[m_letterCount] = s[0];
+                    name[m_letterCount + 1] = '\0'; // Add null terminator at the end of the string.                 
+                    m_curletterindex = m_letterCount + 1;
+                }
+
+                m_text = name;
+                m_hasUpated = true;
+
+                m_isBackspace = false;
+                m_isLeftKey = false;
+                m_isRightKey = false;
+                m_isDeleteKey = false;
+                m_letterCount++;
+            }
+        }
+
     }
 #pragma endregion
 

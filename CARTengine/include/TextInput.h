@@ -33,7 +33,7 @@ namespace cart {
 		void DrawInputCursor(Rectangle bounds);
 		void ShowCharLimitWarning(Rectangle bounds);
 		void ShowRemainingCharCount(Rectangle bounds);
-		void OnMobileInput(char* input);
+		void OnMobileInput(char* input, int isBackspace);
 	private:
 		int m_key;
 		int m_charLimit;

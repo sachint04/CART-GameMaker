@@ -26,15 +26,16 @@ namespace cart {
 		m_isExcludedFromParentAutoControl{ isExcludedFromParentAutoControl },
 		m_shapeType{ SHAPE_TYPE::RECTANGLE },
 		m_parent{ shared<UIElement>{nullptr} },
-		m_roundness{0.5f},
 		m_borderwidth{0},
 		m_borderColor{ GRAY },
 		m_texturetype{ TEXTURE_FULL },
+		m_roundness{0.8f},
 		m_roundnessSegments{36},
 		m_isFocused{false},
 		m_style{},
 		m_ui_comp_factory{},
-		m_layoutSize{}
+		m_layoutSize{},
+		m_layoutlocation{}
 	{
 		m_anchor = { 0.f, 0.f, 1.f, 1.f }; 
 		m_pivot = { 0.f, 0.f };
@@ -51,7 +52,7 @@ namespace cart {
 	void UIElement::Start()
 	{		
 		if (m_children.size() == 0) {
-			m_areChildrenReady = true;
+			m_areChildrenReady = true;		
 			Actor::Start();// There are no childres hence set Ready
 		}
 	}
@@ -82,7 +83,6 @@ namespace cart {
 		SetLocation(_prop.location);
 		m_rawlocation = _prop.location;
 		m_shapeType = _prop.shapetype;
-		m_defaultSize = _prop.defaultSize;
 		m_scale = _prop.scale;
 		m_color = _prop.color;
 		m_pivot = _prop.pivot;
@@ -93,6 +93,7 @@ namespace cart {
 		m_roundnessSegments = _prop.roundnessSegments;
 		m_isLockedScale = _prop.blockscale;
 		SetSize(_prop.size);
+		m_defaultSize = _prop.defaultSize.x && _prop.defaultSize.y  != -1.f? _prop.defaultSize : _prop.size ;
 		m_rawWidth = _prop.size.x;
 		m_rawHeight = _prop.size.y;
 		if (_prop.component != NO_LAYOUT)AddUIComponent(_prop.component, _prop.layout_props);
@@ -145,7 +146,6 @@ namespace cart {
 	}
 	
 	Rectangle UIElement::GetBounds() {
-
 		float x = m_location.x, y = m_location.y , w = m_width * m_scale, h = m_height * m_scale, px, py;
 			Rectangle  pr;
 		if (m_parent.expired()) {
@@ -164,7 +164,7 @@ namespace cart {
 			if (m_ui_comp_factory.HasComponents())
 				x = pr.x + (m_anchor.x * pr.width) - (m_pivot.x * w) + m_location.x;
 			else
-				x = m_location.x - m_pivot.x;
+				x = m_location.x - m_pivot.x * w;
 		}
 
 		if (m_anchor.y != m_anchor.height) {
@@ -177,7 +177,7 @@ namespace cart {
 			if (m_ui_comp_factory.HasComponents())
 				y = pr.y + m_anchor.y * pr.height - m_pivot.y * h + m_location.y;
 			else
-				y = m_location.y - m_pivot.y;
+				y = m_location.y - m_pivot.y * h;
 		}
 	
 
@@ -205,9 +205,11 @@ namespace cart {
 				break;
 			case H_LAYOUT:				
 				comp = m_ui_comp_factory.make(H_LAYOUT, std::string{ GetId() + "_h_layout" });
-				break;			
+				break;	
+			case NO_LAYOUT :
+				break;
 		}
-		if (!comp.expired()) {
+		if (!comp.expired()) {				
 			comp.lock()->Init(owner, { 0.f, 1.f, 0.f, 1.f }, { m_location.x, m_location.y, m_width, m_height }, layout_props);
 		}
 	}
@@ -327,25 +329,27 @@ namespace cart {
 		}
 		else if (m_shapeType == SHAPE_TYPE::ROUNDED_RECTANGLE)
 		{
-			DrawRectangleRounded({ rect.x,  rect.y ,  rect.width , rect.height}, m_roundness * scScale, 36 * scScale, m_color);
 
 			if (m_borderwidth > 0)
 			{
-				int bw = std::max((int)(m_borderwidth * scScale), 1);
-				DrawRectangleRoundedLinesEx(GetBounds(), m_roundness * scScale, m_roundnessSegments * scScale, (float)bw, m_borderColor);
+				int bw = m_borderwidth;// std::max((int)(m_borderwidth * scScale), 1);
+				DrawRectangleRounded({ rect.x - bw, rect.y - bw, rect.width + bw * 2, rect.height + bw * 2 }, m_roundness, m_roundnessSegments, m_borderColor);
+				//DrawRectangleRoundedLinesEx(rect, m_roundness , m_roundnessSegments , m_borderwidth, m_borderColor);
 
 			}
+			DrawRectangleRounded(rect, m_roundness, m_roundnessSegments, m_color);
 		}
 		else 
 		{
-			DrawRectangle(rect.x, rect.y, rect.width, rect.height, m_color);
+			int bw = m_borderwidth;// std::max((int)(m_borderwidth * scScale), 1);
 			if (m_borderwidth > 0)
 			{
 				int bw = std::max((int)(m_borderwidth* scScale), 1);
-				DrawRectangleRoundedLinesEx(GetBounds(), 0, 0, (float)bw, m_borderColor);
+				DrawRectangle(rect.x - bw, rect.y - bw, rect.width + bw * 2, rect.height + bw * 2, m_borderColor);
+			//	DrawRectangleRoundedLinesEx({ rect.x - bw, rect.y - bw, rect.width + bw * 2, rect.height + bw * 2 }, 0, 0, (float)bw, m_borderColor);
 				//DrawRectangleLinesEx(GetBounds(), (float)bw, m_borderColor);
-
 			}
+			DrawRectangle(rect.x, rect.y, rect.width, rect.height, m_color);
 			//DrawRectangle(m_location.x, m_location.y, m_width, m_height, m_color);
 		}
 	}
@@ -407,7 +411,10 @@ namespace cart {
 	{
 		m_flipV = flipv;
 	}*/
-
+	bool UIElement::HasComponents()
+	{
+		return m_ui_comp_factory.HasComponents();
+	}
 	bool UIElement::HasLayoutComponent(Layout_Component_Type type)
 	{		
 		return m_ui_comp_factory.HasComponent(type);
@@ -492,7 +499,22 @@ namespace cart {
 			++iter;
 		}
 		m_areChildrenReady = true;
+		/*if (m_ui_comp_factory.HasComponents()) {
+			if (m_ui_comp_factory.HasComponent(LAYOUT)) {
+				m_ui_comp_factory.GetComponent(LAYOUT).lock().get()->UpdateLayout();
+			}
+			else if (m_ui_comp_factory.HasComponent(V_LAYOUT))
+			{
+				m_ui_comp_factory.GetComponent(V_LAYOUT).lock().get()->UpdateLayout();
+			}
+			else if (m_ui_comp_factory.HasComponent(H_LAYOUT))
+			{
+				m_ui_comp_factory.GetComponent(H_LAYOUT).lock().get()->UpdateLayout();
+			}
+			
+		}*/
 
+		if(m_areChildrenReady)
 		Actor::Start();
 	}
 
@@ -503,10 +525,9 @@ namespace cart {
 
 	void UIElement::OnLayoutChange()
 	{
+	//	Logger::Get()->Trace("UIElement::OnLayoutChange");
 		// Add  Concrete Implemtation
 
-		//m_layout.get()->onLayoutChange.BindAction(GetWeakRef(), &UIElement::OnLayoutChange);
-		
 	}
 
 

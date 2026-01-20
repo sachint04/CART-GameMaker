@@ -61,7 +61,8 @@ namespace cart {
 						};
 					}
 					else {
-						
+						m_texture2d.get()->width = rect.width;
+						m_texture2d.get()->height = rect.height;
 						m_textureLocation = { rect.x , rect.y  };
 					}
 				}

@@ -44,6 +44,7 @@ namespace cart
 		void PreviousGameStage();
 		void JumpToGameStage(const std::string& stageid);
 		weak<UIElement> GetUIElementBefore(const std::string& id);
+		weak<Object> Find(const std::string& id);
 
 		void SetSessionData(void* data);
 		void* GetSessionData() { return m_sessionData; };

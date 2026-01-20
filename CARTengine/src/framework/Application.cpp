@@ -204,14 +204,16 @@ namespace cart
 	}
 
 	void Application::NotifyMobileInput(char* input, int isBackspace)
-	{
-		//Logger::Get()->Trace(std::format("Application::NotifyMobileInput() input {} | backspace", input, isBackspace));
+	{		
+		Logger::Get()->Trace(std::format("Application::NotifyMobileInput() Success!! input {} | backspace {}", input, isBackspace));
 		for (auto iter = m_mobileInputListeners.begin(); iter != m_mobileInputListeners.end(); ++iter)
 		{
 			if ((iter->second)(input, isBackspace))
 			{
-
-			};
+			}
+			else {
+				//Logger::Get()->Trace(std::format("Application::NotifyMobileInput() Failed :( input {} | backspace {}", input, isBackspace));
+			}
 		}
 	}
 	/// <summary>

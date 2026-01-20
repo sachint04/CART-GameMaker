@@ -80,7 +80,7 @@ namespace cart
 			if (min != max)// anchor is a rectangle area
 			{
 				float fscale = csr ? (pr2 / pds) * str : mis;// MAXIMUM OF -> minimum scale and  max streach 
-				p = pr1 + min + (csr)? p1* fscale : p1 * mis; // parent start + anchor min + cur left/top [x/y] 
+				p = (pr1 + min) + (csr)? p1* fscale : p1 * mis; // parent start + anchor min + cur left/top [x/y] 
 				float re = (csr) ? ods * fscale : ods * mis;
 				s = p2 * fscale;// -(min + p + re); // parent start + anchor max - right/botton [width/height]
 			}

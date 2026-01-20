@@ -117,6 +117,17 @@ namespace cart {
 		
 		return uielem;
 	}
+
+	weak<Object> World::Find(const std::string& id)
+	{
+		for (auto iter = m_Actors.begin(); iter != m_Actors.end(); ++iter)
+		{
+			if (iter->get()->GetId().compare(id) == 0) {
+				return iter->get()->GetWeakRef();
+			}
+		}
+		return shared<Object>{ nullptr };
+	}
 	
 	void World::AddStage(const shared<GameStage>& newStage)
 	{

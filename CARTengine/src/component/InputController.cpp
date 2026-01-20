@@ -3,6 +3,7 @@
 #include "component/InputController.h"
 #include "Object.h"
 #include "UIElement.h"
+#include "Logger.h"
 namespace cart {
 
 	void InputController::Notify( const std::string& event)
@@ -34,6 +35,7 @@ namespace cart {
 
 	void InputController::SetFocus(const std::string& id)
 	{
+		Logger::Get()->Trace(std::format("InputController::SetFocus() id {}", id));
 		if (m_curFocusedId.compare(id) != 0) {
 		// reset focus on previous item
 			auto findcurrent = std::find_if(m_uilist.begin(), m_uilist.end(), [&](const weak<UIElement>& p) {

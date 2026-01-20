@@ -14,7 +14,6 @@
 namespace cart
 {
 #pragma region Construction & Initialization
-
     TextInput::TextInput(World* _owningworld, const std::string& _id)
         :Text{ _owningworld, _id },
         m_charLimit{ 300 },
@@ -53,17 +52,11 @@ namespace cart
     {
         Text::Init();
         m_owningworld->GetInputController()->RegisterUI(GetWeakRef());
-       
-       
     }
     void TextInput::Start()
     {
-       
-       
         Text::Start();
     }
-
-
 #pragma endregion
 
 #pragma region Clean Up
@@ -442,22 +435,18 @@ namespace cart
     void TextInput::Draw(float _deltaTime)
     {
         if (!m_visible)return;
-        UIElement::Draw(_deltaTime);
+       // UIElement::Draw(_deltaTime);
         Rectangle textBox = GetBounds();
-        float scrnScale =  World::UI_CANVAS.get()->Scale();
 
         // DrawRectangleRec(textBox, LIGHTGRAY);
         if (m_isFocused)
         {            
            DrawRectangleLinesEx({ textBox.x, textBox.y, textBox.width, textBox.height }, 2.f, DARKGRAY);
         }
-        //else {
-        //    DrawRectangleLines((int)textBox.x, (int)textBox.y, (int)textBox.width, (int)textBox.height, DARKGRAY);
-        //}
-             
-       // DrawTextEx(*infofnt, TextFormat("INPUT CHARS: %i/%i", m_letterCount, MAX_INPUT_CHARS), { (float)textBox.x , (float)textBox.y + textBox.height }, 14, 1.f, DARKGRAY);
-
-
+        else {
+            DrawRectangleLines( textBox.x, textBox.y, textBox.width, textBox.height, LIGHTGRAY);
+        }
+       
         if (m_isFocused)       
             DrawInputCursor(textBox);
         
@@ -487,7 +476,7 @@ namespace cart
     void TextInput::SetFontName(const std::string& strfnt)
     {
         Text::SetFontName(strfnt);
-        m_hasUpated = true;
+       // m_hasUpated = true;
     }
     void TextInput::SetFontSize(float size)
     {
@@ -508,7 +497,8 @@ namespace cart
             if (_flag) {// currently is in focus
                 std::string curtxt = name;
                 m_owningworld->GetApplication()->RegisterListernerToMobileInput(GetId(), GetWeakRef(), &TextInput::OnMobileInput);
-                m_owningworld->GetApplication()->ToggleMobileWebKeyboard(m_text, KeyboardType::Default, false, true, false, false, std::string{""}, m_charLimit);
+                std::string s = { "" };
+                m_owningworld->GetApplication()->ToggleMobileWebKeyboard(s, KeyboardType::Default, false, true, false, false, std::string{""}, m_charLimit);
             }else
             {
                 m_owningworld->GetApplication()->RemoveMobileInputListener(GetId());

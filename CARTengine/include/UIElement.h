@@ -73,10 +73,12 @@ namespace cart {
 		void parent(weak<UIElement> ui);
 		void SetExcludeFromParentAutoControl(bool _flag);
 		void Destroy()override;
-		
+		void MaintainAspectRatio(bool _flag);
+
 		bool IsExcludedFromParentAutoControl() { return m_isExcludedFromParentAutoControl; };		
 		bool HasComponents();
 		bool HasLayoutComponent(Layout_Component_Type type);
+		bool IsAspectRatio() { return m_bAspectRatio; };
 
 		weak<UIButton> AddButton(const std::string& id, Btn_Text_Properties _btn);
 		weak<IComponent> GetComponentById(const std::string& id);
@@ -84,6 +86,7 @@ namespace cart {
 		bool m_pendingUpdate;
 		bool m_isExcludedFromParentAutoControl;
 		bool m_isFocused;
+		bool m_bAspectRatio;
 		int m_borderwidth;
 		int m_roundnessSegments;
 		float m_roundness;

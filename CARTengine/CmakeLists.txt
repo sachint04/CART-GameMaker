@@ -113,6 +113,7 @@ set(ENGINE_SRC
 	
 	${CMAKE_CURRENT_SOURCE_DIR}/include/utils/MobileKeyboard.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/utils/MobileKeyboard.cpp
+	
 	)
 add_library(${CART_ENGINE_TARGET_NAME} 
 	STATIC
@@ -123,5 +124,6 @@ target_include_directories(${CART_ENGINE_TARGET_NAME} PUBLIC
 	${PROJECT_SOURCE_DIR}/build/_deps/raylib-src/src
 	${PROJECT_SOURCE_DIR}/build/_deps/raylib-src/src/external/glfw/include
 	${PROJECT_SOURCE_DIR}/build/_deps/nlohmann_json-src/include
+	${PROJECT_SOURCE_DIR}/build/_deps/raylib-build/raylib/include
 )
 

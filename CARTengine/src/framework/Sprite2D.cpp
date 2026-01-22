@@ -8,8 +8,7 @@ namespace cart {
 
 	Sprite2D::Sprite2D(World* _owningworld, const std::string& _id, bool isExcludedFromParentAutoControl)
 		:UIElement{_owningworld, _id, isExcludedFromParentAutoControl },
-		m_strTexture{},
-		m_bAspectRatio{ false },	
+		m_strTexture{},	
 		m_textureColor{ WHITE },
 		m_bMasked{ false },
 		m_screenMask{},

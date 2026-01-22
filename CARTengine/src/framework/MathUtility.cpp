@@ -107,7 +107,7 @@ namespace cart
 		std::random_device rd;
 		std::mt19937 gen(rd());
 
-		std::uniform_real_distribution<float> distribution{ min, max };
+		std::uniform_real_distribution<float> distribution{ std::min(min, max),  std::max(min, max) };
 
 		return distribution(gen);
 	}

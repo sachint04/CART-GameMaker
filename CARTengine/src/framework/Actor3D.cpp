@@ -20,7 +20,8 @@ namespace cart
 		m_strfont{},
 		m_fontSize{18},
 		m_fontSpace{2.f},
-		m_animations{nullptr}
+		m_animations{nullptr},
+		m_bPlayAnimReverse{false}
 	{
 	}
 	void Actor3D::Init()
@@ -55,17 +56,8 @@ namespace cart
 		});
 	
 
-//		if (m_collision.hit) {
-//			m_isHover = m_collision.hit;
-//			
-//		//	onHover.Broadcast(GetWeakRef(), GetMousePosition());
-//		//	PlayHoverAnim();
-////			std::cout << "mouse over card" << std::endl;
-//		}
-//		else {
-//			m_isHover = false;
-//		}
-		if (!m_owningworld->GetHUD().lock()->IsMouseOverUI(GetMousePosition())) {
+
+		if (!m_owningworld->GetHUD().lock()->IsMouseOverUI(GetMousePosition()) && m_active) {
 			if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
 			{
 				if (m_collision.hit)
@@ -90,15 +82,17 @@ namespace cart
 		if (m_bPlayAnim)
 		{
 			ModelAnimation anim = m_animations[m_currentAnimation];
-			m_currentFrame++;
-			if (m_currentFrame > anim.frameCount - 1)
+			if (m_currentFrame < 0  || m_currentFrame > anim.frameCount - 1)
 			{
-				m_currentFrame = anim.frameCount - 1;
+				//m_currentFrame = anim.frameCount - 1;
 				m_bPlayAnim = false;
 				onAnimFinish.Broadcast(GetWeakRef(), m_currentAnimation);
 
 			}
-			UpdateModelAnimation(m_model, anim, m_currentFrame);
+			else {
+				UpdateModelAnimation(m_model, anim, m_currentFrame);
+				m_currentFrame = !m_bPlayAnimReverse? m_currentFrame + 1 : m_currentFrame - 1;
+			}
 		}
 	}
 	void Actor3D::Draw(float _deltaTime)
@@ -168,7 +162,7 @@ namespace cart
 	{
 		m_bShowLabel = _flag;
 	}
-	void Actor3D::PlayAnimation(int index)
+	void Actor3D::PlayAnimation(int index, bool reverse)
 	{
 		if (index >= 0) {
 			m_bPlayAnim = true;
@@ -178,7 +172,9 @@ namespace cart
 			PlayDefaultAnim();
 			m_bPlayAnim = false;
 		}
-			m_currentFrame = 0;
+		m_bPlayAnimReverse = reverse;	
+		
+		m_currentFrame = !m_bPlayAnimReverse? 0 : m_animations[m_currentAnimation].frameCount - 1;
 	}
 	bool Actor3D::UpdateTexture(const std::string& path, int matIndex) {
 
@@ -191,6 +187,11 @@ namespace cart
 		int count = m_model.materialCount;
 		SetMaterialTexture(&m_model.materials[matIndex], MATERIAL_MAP_DIFFUSE, *tex);
 		return true;
+	}
+
+	bool Actor3D::IsAnimPlaying()
+	{
+		return m_bPlayAnim;
 	}
 
 #pragma endregion

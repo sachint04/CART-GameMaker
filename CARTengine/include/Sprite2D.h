@@ -16,9 +16,7 @@ namespace cart {
 		virtual void SetLocation(Vector2 _location) override;
 		//virtual void UpdateLocation() override;
 		virtual void Destroy() override;
-		virtual bool HasTexture() override;		
-		void MaintainAspectRatio(bool _flag) { m_bAspectRatio = _flag; };
-		bool IsAspectRatio() { return m_bAspectRatio; };
+		virtual bool HasTexture() override;				
 		Color GetTextureColor() { return m_textureColor; };
 		void SetTextureColor(Color col) { m_textureColor = col; };
 		void ReEvaluteTexture();
@@ -44,8 +42,7 @@ namespace cart {
 		Vector2 m_textureLocation;
 		Vector2 m_textureSize;
 		bool m_bMasked;
-		bool m_bIsScaling;
-		bool m_bAspectRatio;
+		bool m_bIsScaling;		
 		Color* imagepixel = nullptr;
 		Color* maskpixels = nullptr;
 	};

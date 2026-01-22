@@ -35,7 +35,8 @@ namespace cart {
 		m_style{},
 		m_ui_comp_factory{},
 		m_layoutSize{},
-		m_layoutlocation{}
+		m_layoutlocation{},
+		m_bAspectRatio{ false }
 	{
 		m_anchor = { 0.f, 0.f, 1.f, 1.f }; 
 		m_pivot = { 0.f, 0.f };
@@ -154,6 +155,7 @@ namespace cart {
 		else {
 			pr = m_parent.lock().get()->GetBounds();
 		}
+		// Set width from Anchor position
 		if (m_anchor.x != m_anchor.width) {
 			float min = (m_anchor.x * pr.width);
 			float max = (m_anchor.width * pr.width);
@@ -165,8 +167,9 @@ namespace cart {
 				x = pr.x + (m_anchor.x * pr.width) - (m_pivot.x * w) + m_location.x;
 			else
 				x = m_location.x - m_pivot.x * w;
-		}
 
+		}
+		// Set Height from Anchor position
 		if (m_anchor.y != m_anchor.height) {
 			float min = (m_anchor.y * pr.height);
 			float max = (m_anchor.height * pr.height);
@@ -178,6 +181,22 @@ namespace cart {
 				y = pr.y + m_anchor.y * pr.height - m_pivot.y * h + m_location.y;
 			else
 				y = m_location.y - m_pivot.y * h;
+		}
+
+		if (m_bAspectRatio && m_anchor.x == m_anchor.width && m_anchor.y == m_anchor.height) {
+			float r = m_rawHeight < m_rawWidth ?m_rawHeight / m_rawWidth : m_rawWidth / m_rawHeight;
+			w = h < w ? h / r : w;
+			h = w < h ? w / r : h;
+
+			if (m_ui_comp_factory.HasComponents())
+				y = pr.y + m_anchor.y * pr.height - m_pivot.y * h + m_location.y;
+			else
+				y = m_location.y - m_pivot.y * h;
+
+			if (m_ui_comp_factory.HasComponents())
+				x = pr.x + (m_anchor.x * pr.width) - (m_pivot.x * w) + m_location.x;
+			else
+				x = m_location.x - m_pivot.x * w;
 		}
 	
 
@@ -397,7 +416,6 @@ namespace cart {
 		}
 		return  shared<IComponent>{nullptr};
 	}
-
 	
 	void UIElement::SetPendingUpdate(bool _flag)
 	{
@@ -415,6 +433,7 @@ namespace cart {
 	{
 		return m_ui_comp_factory.HasComponents();
 	}
+	
 	bool UIElement::HasLayoutComponent(Layout_Component_Type type)
 	{		
 		return m_ui_comp_factory.HasComponent(type);
@@ -425,6 +444,10 @@ namespace cart {
 		return std::string{"UIElement"};
 	}
 
+	void UIElement::MaintainAspectRatio(bool _flag)
+	{
+		m_bAspectRatio = _flag;
+	}
 #pragma endregion
 	
 #pragma region  Create Child Elements
@@ -546,6 +569,8 @@ namespace cart {
 		SetVisible(false);
 		Actor::Destroy();
 	}
+
+
 
 	UIElement::~UIElement()
 	{

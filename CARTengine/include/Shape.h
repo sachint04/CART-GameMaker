@@ -15,6 +15,8 @@ namespace cart {
 	protected:
 		
 		SHAPE_TYPE m_shapeType;
+		FILL_TYPE m_fillType;
+		std::vector<Color> m_gradient_cols;
 		int m_LineWidth;
 	};
 }

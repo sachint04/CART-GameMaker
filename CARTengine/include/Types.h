@@ -64,6 +64,13 @@ namespace cart {
         CIRCLE_LINE,
         ROUNDED_RECTANGLE
     };
+    enum FILL_TYPE {
+        NO_FILL,
+        SOLID_FILL,
+        LINEAR_GRADIENT_FILL_V,
+        LINEAR_GRADIENT_FILL_H,
+        RADIAL_GRADIENT_FILL
+    };
 
     enum APP_STATE {
         TITLE,
@@ -188,6 +195,7 @@ namespace cart {
         TEXTURE_TYPE texturetype = TEXTURE_TYPE::TEXTURE_FULL;
         Layout_Component_Type component;
         SHAPE_TYPE shapetype = SHAPE_TYPE::RECTANGLE;
+        FILL_TYPE filltype = SOLID_FILL;
         bool blockscale;
         std::string texture;
         int linewidth = 0;
@@ -206,6 +214,7 @@ namespace cart {
         Rectangle anchor = {0,0,0,0};
         Color bordercol;
         UI_Layout_Properties layout_props;
+        std::vector<Color> gradientcols;
     };
 
 	struct Text_Properties : UI_Properties{

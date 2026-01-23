@@ -226,6 +226,7 @@ namespace cart {
         Color textcolor;
 		float fontsize;
         float minfontsize = 0;
+        float maxfontsize = 0;
         float fontspacing = 2.f;
         float minfontspacing = 1;
 	};

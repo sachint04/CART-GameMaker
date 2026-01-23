@@ -18,6 +18,7 @@ namespace cart {
 		m_fontspacing{ 1.f },
 		m_textLocation{},
 		m_minfontsize{},
+		m_maxfontsize{},
 		m_minfontspacing{}
 	{
 	}
@@ -103,6 +104,7 @@ namespace cart {
 		m_text = _prop.text;
 		m_fontsize = std::max(_prop.fontsize, _prop.minfontsize);
 		m_minfontsize = _prop.minfontsize;
+		m_maxfontsize = _prop.maxfontsize;
 		m_align = _prop.align;	
 		m_background = _prop.textbackground;
 		m_fontspacing = _prop.fontspacing;
@@ -124,9 +126,12 @@ namespace cart {
 		if (m_fontsize == size)return;
 		m_sharedfont.reset();
 		float tmpsize = std::max(size, m_minfontsize);
+		
+		if (m_maxfontsize > 0) tmpsize = std::min(m_maxfontsize, tmpsize);
+
 		m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, tmpsize);
 		AssetManager::Get().UnloadFontAsset(m_font, m_fontsize);
-		m_fontsize = std::max(size, m_minfontsize);
+		m_fontsize = tmpsize;// std::max(size, m_minfontsize);
 	}
 	void Text::SetTextColor(Color col)
 	{

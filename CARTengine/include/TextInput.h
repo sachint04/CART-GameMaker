@@ -23,14 +23,15 @@ namespace cart {
 		void SetFocused(bool _flag)override;
 		void SetVisible(bool _flag)override;
 		void Destroy()override;
-		
+		void SetAligned(ALIGN _align)override;
+		void SetVAligned(V_ALIGN _valign)override;
 
 
 		void SetText(const std::string &txt);
 		std::string GetInputText();
 		void UpdateLayout();
 		void PrepareInput(Rectangle bounds);
-		void DrawInputCursor(Rectangle bounds);
+		void CalculateCursor(Rectangle bounds);
 		void ShowCharLimitWarning(Rectangle bounds);
 		void ShowRemainingCharCount(Rectangle bounds);
 		void OnMobileInput(char* input, int isBackspace);
@@ -45,7 +46,8 @@ namespace cart {
 		std::string m_mobileinput;
 	//	std::vector<std::string> lines;
 		//std::vector<std::pair<std::pair<int, int>, Vector2>> m_lrange;
-		std::vector<std::pair<std::string, Vector2>> m_lines;
+		std::vector<std::string>m_lines;
+		std::vector<Vector2>m_pos;
 		bool m_isBackspace;
 		bool m_isRightKey;
 		bool m_isLeftKey;
@@ -67,7 +69,7 @@ namespace cart {
 		Vector2 m_cursorLoc;
 	/*	shared<Font> fnt;*/
 		shared<Font> m_infofnt;
-		void TextLine();
+		void TextLine(Rectangle rect);
 		//void CharsToVec();
 	};
 }

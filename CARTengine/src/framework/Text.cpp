@@ -11,7 +11,6 @@ namespace cart {
 		m_font{ },
 		m_fontsize{ },
 		m_margin(5),
-		m_textsize{},
 		m_align{ LEFT },
 		m_background{ 0,0,0,0 },
 		m_textColor{ BLACK },
@@ -19,7 +18,10 @@ namespace cart {
 		m_textLocation{},
 		m_minfontsize{},
 		m_maxfontsize{},
-		m_minfontspacing{}
+		m_minfontspacing{},
+		m_valign{MIDDLE},
+		m_multiline{false},
+		m_strlines{}
 	{
 	}
 
@@ -27,6 +29,12 @@ namespace cart {
 	{
 		UIElement::Init();
 		
+	}
+
+	void Text::Start()
+	{
+		UIElement::Start();
+
 	}
 
 #pragma endregion
@@ -37,8 +45,8 @@ namespace cart {
 	{
 		if (!m_visible || m_pendingUpdate)return;
 		m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, std::ceil(m_fontsize *  World::UI_CANVAS.get()->Scale()));
-		m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), std::ceil(m_fontsize *  World::UI_CANVAS.get()->Scale()), 2.f *  World::UI_CANVAS.get()->Scale());
 		UpdateTextLocation();
+		
 	}
 	void Text::Draw(float _deltaTime)
 	{
@@ -46,49 +54,22 @@ namespace cart {
 		UIElement::Draw(_deltaTime);		
 		float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
 		float fspace = std::max(m_minfontspacing, m_fontspacing * World::UI_CANVAS.get()->Scale());
-
+		Rectangle rect = GetBounds();
 		//if(!m_sharedfont)
 		m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, fsize);
 
 		//m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), fsize, fspace);
 		DrawRectangle(m_location.x, m_location.y, m_width, m_height, m_background);	
 
-		DrawTextEx(*m_sharedfont, m_text.c_str(), m_textLocation, fsize, fspace, m_textColor);
-	}
-
-	void Text::UpdateTextLocation()
-	{				
-		float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
-		float fspace = std::max(m_minfontspacing, m_fontspacing * World::UI_CANVAS.get()->Scale());
-
-	//	if (!m_sharedfont)
-			m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, fsize);
-
-		m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), fsize, fspace);
-		int px = (m_pivot.x * m_width);
-		int py = (m_pivot.y * m_height);
-		Rectangle rect = GetBounds();
-		switch (m_align)
-		{
-		case LEFT:
-			m_textLocation = { rect.x - px,
-								rect.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 - py } ;
-			break;
-		case CENTER:
-			m_textLocation = { rect.x + ((rect.width - m_textsize.x) * 0.5f) * m_scale,
-							rect.y + ((rect.height - m_textsize.y) * 0.5f) * m_scale };
-			//m_textLocation = { m_location.x + (m_width * m_scale / 2) - (m_textsize.x * m_scale) / 2  -px,
-			//					m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 - py };
-			break;
-
-		case RIGHT:
-			m_textLocation = { rect.x + (m_width * m_scale) - (m_textsize.x * m_scale) - px,
-								rect.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 - py };
-			break;
-		case JUSTIFIED :
-			break;
+		if (m_multiline) {
+			for (auto iter = m_strlines.begin(); iter != m_strlines.end(); ++iter)
+			{
+				DrawTextEx(*m_sharedfont, iter->first.c_str(), iter->second, fsize, fspace, m_textColor);
+			}
 		}
-
+		else {
+			DrawTextEx(*m_sharedfont, m_strlines.begin()->first.c_str(), m_strlines.begin()->second, fsize, fspace, m_textColor);
+		}
 	}
 #pragma endregion
 
@@ -106,11 +87,11 @@ namespace cart {
 		m_minfontsize = _prop.minfontsize;
 		m_maxfontsize = _prop.maxfontsize;
 		m_align = _prop.align;	
+		m_valign = _prop.valign;	
 		m_background = _prop.textbackground;
 		m_fontspacing = _prop.fontspacing;
 		m_minfontspacing = _prop.minfontspacing;
-		m_textColor = _prop.textcolor;
-		
+		m_textColor = _prop.textcolor;		
 	}
 	void Text::SetFontName(const std::string& strfnt)
 	{
@@ -137,12 +118,115 @@ namespace cart {
 	{
 		m_textColor = col;
 	}
-	void Text::UpdateText(const std::string& str) {
+	void Text::SetText(const std::string& str) {
 		m_text = str;
+	}
+	void Text::SetAligned(ALIGN _align)
+	{
+		m_align = _align;
+	}
+	void Text::SetVAligned(V_ALIGN _valign)
+	{
+		m_valign = _valign;
 	}
 	bool Text::ValidateTextProperties(Text_Properties _prop)
 	{
 		return _prop.fontsize && _prop.minfontsize && _prop.fontspacing && _prop.minfontspacing;
+	}
+	void Text::UpdateTextLocation()
+	{
+		float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
+		float fspace = std::max(m_minfontspacing, m_fontspacing * World::UI_CANVAS.get()->Scale());
+		Rectangle rect = GetBounds();
+		m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, fsize);
+
+#pragma region  Draw Text
+		m_strlines = {};
+		std::string strcopy = m_text;
+		std::string spacedelimiter = " ";
+		int theight = 0;
+		std::string line = "";
+		float linespacing = 2.0f;
+		Vector2 msize = { 0,0 };
+		float msgheight = 0;
+		while (strcopy.find_first_of(spacedelimiter) != std::string::npos) {// create stings of line in
+			auto find = strcopy.find_first_of(spacedelimiter);
+			std::string f = strcopy.substr(0, find + 1);
+			std::string c = line + f;
+			msize = MeasureTextEx(*m_sharedfont, c.c_str(), (float)fsize, fspace);
+			if (msize.x >= rect.width) {
+				msize = MeasureTextEx(*m_sharedfont, line.c_str(), (float)fsize, fspace);
+				m_strlines.insert({ line, msize });// add line to list
+				line = "";// clear line    
+				theight += msize.y + linespacing;
+			}
+			else {
+				line = c; // append last world to line
+				strcopy = strcopy.substr(find + 1);// remove last word from the string
+			};
+		}
+		if (strcopy.size() > 0)
+		{
+			line = line + strcopy;
+			msize = MeasureTextEx(*m_sharedfont, line.c_str(), (float)fsize, fspace);
+			m_strlines.insert({ line , msize });
+			theight += msize.y + linespacing;
+		}
+		auto find = m_strlines.begin();
+
+		if (find == m_strlines.end())
+			m_strlines.insert({ "" , {0,0} });
+
+		int al = m_align;
+		int va = m_valign;
+
+		float sy = rect.y;
+		if (va == 1) {
+			sy += ((rect.height - theight) * 0.5f);
+		}
+		else if (va == 2) {
+			sy += (rect.height - theight);
+		}
+		for (auto iter = m_strlines.begin(); iter != m_strlines.end(); ++iter)
+		{
+			float sx = rect.x;
+			// Align
+			if (al == 1) {
+				sx += (rect.width - iter->second.x) * 0.5f;
+			}
+			else if (al == 2) {
+				sx += (rect.width - iter->second.x);
+			}
+			iter->second = { sx, sy };
+			sy += iter->second.y + linespacing;
+		}
+#pragma endregion
+		//m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), fsize, fspace);
+		//int px = (m_pivot.x * m_width);
+		//int py = (m_pivot.y * m_height);
+
+		//switch (m_align)
+		//{
+		//case LEFT:
+		//	m_textLocation = { rect.x - px,
+		//						rect.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 - py } ;
+		//	break;
+		//case CENTER:
+		//	m_textLocation = { rect.x + ((rect.width - m_textsize.x) * 0.5f) * m_scale,
+		//					rect.y + ((rect.height - m_textsize.y) * 0.5f) * m_scale };
+		//	//m_textLocation = { m_location.x + (m_width * m_scale / 2) - (m_textsize.x * m_scale) / 2  -px,
+		//	//					m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 - py };
+		//	break;
+
+		//case RIGHT:
+		//	m_textLocation = { rect.x + (m_width * m_scale) - (m_textsize.x * m_scale) - px,
+		//						rect.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 - py };
+		//	break;
+		//case JUSTIFIED :
+		//	break;
+		//}
+
+
 	}
 #pragma endregion
 

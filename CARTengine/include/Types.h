@@ -219,16 +219,18 @@ namespace cart {
 
 	struct Text_Properties : UI_Properties{
     public:
+        bool multiline = false;
 		ALIGN align = ALIGN::LEFT;	
-		std::string font;
-		std::string text;
-        Color textbackground;
-        Color textcolor;
+		V_ALIGN valign = V_ALIGN::MIDDLE;	
 		float fontsize;
         float minfontsize = 0;
         float maxfontsize = 0;
         float fontspacing = 2.f;
         float minfontspacing = 1;
+		std::string font;
+		std::string text;
+        Color textbackground;
+        Color textcolor;
 	};
 
     struct Btn_Properties :UI_Properties {

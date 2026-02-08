@@ -37,6 +37,7 @@ namespace cart {
 			Vector2 vec = {};
 			Vector3 vec3 = {};
 			if (t_raw <= 1.0) {
+				m_actor.lock().get()->SetTweening(true);
 				switch (m_vectype)
 				{
 				case VEC_TYPE::Vec2D:
@@ -62,6 +63,7 @@ namespace cart {
 				//std::cout <<this << " -> Tween Move Complete \n";
 				m_ready = false;
 				m_go = false;
+				m_actor.lock().get()->SetTweening(false);
 				switch (m_vectype)
 				{
 				case cart::Vec2D:

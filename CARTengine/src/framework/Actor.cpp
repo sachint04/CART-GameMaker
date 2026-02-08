@@ -30,7 +30,8 @@ namespace cart {
 		m_areAssetsLoaded{false},
 		m_areChildrenReady{false},
 		m_rawWidth{},
-		m_rawHeight{}
+		m_rawHeight{},
+		m_tweening{false}
 	{
 	}
 	void Actor::Start()
@@ -224,6 +225,11 @@ namespace cart {
 	std::string Actor::type()
 	{
 		return std::string{ "Actor" };
+	}
+
+	void Actor::SetTweening(bool flag)
+	{
+		m_tweening = flag;
 	}
 
 	void Actor::SetVisible(bool _flag)

@@ -283,7 +283,7 @@ namespace cart {
             ImageFormat(&image, 7);
             if (IsImageValid(image))
             {
-              //  Logger::Get()->Trace(std::format(" AssetManager::OnPreloadAssetItemLoaded()  Image valid. Add Texture  \n [{}] \0", path));
+                Logger::Get()->Trace(std::format(" AssetManager::OnPreloadAssetItemLoaded()  Image valid. Add Texture  \n [{}] \0", path));
                 AddTexture(image, path, LOCKED);
             }
             else {

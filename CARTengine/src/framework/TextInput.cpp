@@ -43,7 +43,7 @@ namespace cart
         m_tempkeydownActionDuration{ 1.f },
         m_keydownActionMinDuration{ 0.015f },
         m_bMobileInput{ false },
-        m_mobileinput{""}
+        m_bPreparingInput{false}
 	{
        /* Text::m_fontsize = 14.f;
         Text::m_fontspacing = 2.f;*/
@@ -55,8 +55,9 @@ namespace cart
     }
     void TextInput::Start()
     {
-        Text::Start();
-        PrepareInput(GetBounds());
+        Logger::Get()->Trace("TextInput::Start()");
+        Text::Start();        
+      //  PrepareInput(GetBounds());
     }
 #pragma endregion
 
@@ -87,7 +88,8 @@ namespace cart
 	void TextInput::Update(float _deltaTime)
 	{
         if (!m_visible)return;
-        Text::Update(_deltaTime);
+//        Logger::Get()->Trace("TextInput::Update() started");
+
         Rectangle rect = GetBounds();
         float scrnScale =  World::UI_CANVAS.get()->Scale();
         
@@ -209,25 +211,29 @@ namespace cart
                 // set current selected
                 m_curletterindex = m_letterCount;
                 if (GetVectorLength(Direction(m_touchendpos, m_touchstartpos)) < 5) {
-                    Vector2 fm = MeasureTextEx(*m_sharedfont, "W", (float)m_fontsize * scrnScale, m_fontspacing * scrnScale);
+
                     int tmpLtrCount = 0;
                     int count = 0;                    
                     float linespacing = 2.0f;
                     float fsize = std::max(m_minfontsize * scrnScale, m_fontsize * scrnScale);
                     for (auto iter = m_lines.begin(); iter != m_lines.end(); ++iter) 
                     {
-                        if (m_touchendpos.y > m_pos[count].y && m_touchendpos.y <= m_pos.at(count).y + fm.y + linespacing)
-                        {
-                            int chr = 0;
-                            while (chr < iter->length() - 1)
+
+                        if (m_touchendpos.y > m_pos.at(count).y) {
+                            Vector2 fm = MeasureTextEx(*m_sharedfont, m_lines[count].c_str(), fsize, m_fontspacing);\
+                            if (m_touchendpos.y <= m_pos.at(count).y + fm.y + linespacing)
                             {
-                                std::string nr = iter->substr(0, chr);
-                                if (m_pos[count].x + MeasureTextEx(*m_sharedfont, nr.c_str(), fsize, m_fontspacing).x >= m_touchendpos.x)
+                                int chr = 0;
+                                while (chr < iter->length() - 1)
                                 {
-                                    m_curletterindex = tmpLtrCount + nr.size();     
-                                    break;
+                                    std::string nr = iter->substr(0, chr);
+                                    if (m_pos[count].x + MeasureTextEx(*m_sharedfont, nr.c_str(), fsize, m_fontspacing).x >= m_touchendpos.x)
+                                    {
+                                        m_curletterindex = tmpLtrCount + nr.size();     
+                                        break;
+                                    }
+                                    chr++;
                                 }
-                                chr++;
                             }
                         }
                         tmpLtrCount += iter->size();                        
@@ -255,9 +261,10 @@ namespace cart
             if (!m_isBackspace) {
                 m_backspacekeyWaitTimer = Clock::Get().ElapsedTime();
                 m_keyWaitTimer = Clock::Get().ElapsedTime();
-                whilebackspace(m_letterCount, name, m_curletterindex);
+                whilebackspace(m_letterCount, m_chr, m_curletterindex);
                 m_hasUpated = true;
                 m_isBackspace = true;
+                Logger::Get()->Trace(std::format("letterCount {} ", m_letterCount));
             }
         }
         if (IsKeyPressed(KEY_LEFT)) {
@@ -270,15 +277,16 @@ namespace cart
         }
         if (IsKeyPressed(KEY_DELETE))
         {
-            whiledeletekey(m_letterCount, name, m_curletterindex);
+            whiledeletekey(m_letterCount, m_chr, m_curletterindex);
                
             //  m_keyWaitTimer = Clock::Get().ElapsedTime();
             //  m_isDeleteKey = true;
         }
-  
+
         // Check if more characters have been pressed on the same frame
         while (key > 0 )
         {
+      //      Logger::Get()->Trace("TextInput::Update() key listener started");
             int  txtmargin = m_textmargin * scrnScale;
             int tx = rect.x + 8;
             int ty = rect.y + 8;
@@ -287,11 +295,11 @@ namespace cart
             {
                 if (m_curletterindex < m_letterCount)
                 {
-                    typeinbetween(m_letterCount, key, name, m_curletterindex);
+                    typeinbetween(m_letterCount, key, m_chr, m_curletterindex);
                 }
                 else {
-                    name[m_letterCount] = (char)key;
-                    name[m_letterCount + 1] = '\0'; // Add null terminator at the end of the string.                 
+                    m_chr[m_letterCount] = (char)key;
+                    m_chr[m_letterCount + 1] = '\0'; // Add null terminator at the end of the string.                 
                     m_curletterindex = m_letterCount + 1;
                 }
 
@@ -302,15 +310,15 @@ namespace cart
                 m_isRightKey = false;
                 m_isDeleteKey = false;
                 m_letterCount++;
+             //   Logger::Get()->Trace(std::format("TextInput::Update() letter count {} ", m_letterCount));
             }
             key = GetCharPressed();  // Check next character in the queue
-
+          //  Logger::Get()->Trace("TextInput::Update() key listener ended");
         }
         // Set the window's cursor to the I-Beam
         if(m_isFocused && m_mouseOnText)
         SetMouseCursor(MOUSE_CURSOR_IBEAM);
       
-        
         if (m_isBackspace) {
 #ifdef _WIN32
             double t = Clock::Get().ElapsedTime();
@@ -323,11 +331,11 @@ namespace cart
             {
              //   Logger::Get()->Trace(std::format("backspace action {}", m_letterCount));
                 if (m_letterCount >= 0) {
-                    whilebackspace(m_letterCount, name, m_curletterindex);
+                    whilebackspace(m_letterCount, m_chr, m_curletterindex);
                     m_hasUpated = true;
                 }
                 m_backspacekeyWaitTimer = t;
-            }
+            }           
 #endif // _WIN32
         }
         if (m_isLeftKey)
@@ -356,8 +364,8 @@ namespace cart
             double t = Clock::Get().ElapsedTime();
             if (t - m_keyWaitTimer >= 0.1f)
             {
-                whiledeletekey(m_letterCount, name, m_curletterindex);
-                m_text = name;
+                whiledeletekey(m_letterCount, m_chr, m_curletterindex);
+                m_text = m_chr;
                 m_keyWaitTimer = t;
                 m_hasUpated = true;
             }
@@ -365,19 +373,25 @@ namespace cart
                 m_isDeleteKey = false;
         }
         if (m_hasUpated) {
-            m_text = name;
-            PrepareInput(rect);
-            CalculateCursor(rect);
+            m_text = m_chr;
+           // if (!m_bPreparingInput)
+        //    {
+                PrepareInput(rect);
+                CalculateCursor(rect);
+       //     }
             m_hasUpated = false;
         }
         if (m_owningworld->GetInputController()->HasFocus() &&
             m_owningworld->GetInputController()->GetFocusedId().compare(GetId()) == 0) m_framesCounter++;
         else m_framesCounter = 0;
+
+      //  Logger::Get()->Trace("TextInput::Update() ended");
 	}
 
     void TextInput::Draw(float _deltaTime)
     {
         if (!m_visible)return;
+       // Logger::Get()->Trace("TextInput::Draw() started");
        // UIElement::Draw(_deltaTime);
         Rectangle rect = GetBounds();
         
@@ -399,7 +413,7 @@ namespace cart
         else
             ShowRemainingCharCount(rect);
 
-
+      //  Logger::Get()->Trace("TextInput::Draw() ended");
 	}
 #pragma endregion
 
@@ -411,11 +425,18 @@ namespace cart
         m_letterCount = std::min(m_charLimit,  (int)m_text.size());
         for (size_t i = 0; i < m_letterCount; i++)
         {
-            name[i] = i < (char)m_text.size()? m_text.at(i) : '\0';
+            m_chr[i] = i < (int)m_text.size()? m_text.at(i) : '\0';
         }
         m_curletterindex = m_letterCount;
         m_hasUpated = true;
+        Logger::Get()->Trace(std::format("TextInput::SetText() letter count {} ", m_letterCount));
     }
+
+    void TextInput::SetText(const char* chrt)
+    {
+        SetText(std::string{ chrt });         
+    }
+
     void TextInput::SetFontName(const std::string& strfnt)
     {
         Text::SetFontName(strfnt);
@@ -438,7 +459,7 @@ namespace cart
        int useragent = CARTjson::GetEnvSettings()["useragent"];
        if (useragent > 0) {// if useragent is > 0 (mobile browser) show os keyboard
             if (_flag) {// currently is in focus
-                std::string curtxt = name;
+                std::string curtxt = m_chr;
                 m_owningworld->GetApplication()->RegisterListernerToMobileInput(GetId(), GetWeakRef(), &TextInput::OnMobileInput);
                 std::string s = { "" };
                 m_owningworld->GetApplication()->ToggleMobileWebKeyboard(s, KeyboardType::Default, false, true, false, false, std::string{""}, m_charLimit);
@@ -506,15 +527,16 @@ namespace cart
     /// 
     void TextInput::PrepareInput(Rectangle rect)
     {
-
+        Logger::Get()->Trace("TextInput::PrepareInput()");
+        m_bPreparingInput = true;   
         float scrnScale =  World::UI_CANVAS.get()->Scale();
         float fsize = std::max(m_minfontsize * scrnScale, m_fontsize * scrnScale);
         float fspace = m_fontspacing;// std::max(m_minfontspacing * scrnScale, m_fontspacing * scrnScale);        
         // get font
         
         m_sharedfont = AssetManager::Get().LoadFontAsset(m_font, fsize);
-       
-#pragma region  Draw 
+        Logger::Get()->Trace("TextInput::PrepareInput() Draw  ");
+#pragma region  Prepare text 
         m_lines.clear();
         m_pos.clear();
         std::string strcopy = m_text;
@@ -542,7 +564,7 @@ namespace cart
                 m_lines.push_back(chr);
                 i = 0;
                 strcopy = strcopy.substr(chr.size());
-                Logger::Get()->Trace(std::format("Prepare input {}", i));
+           //     Logger::Get()->Trace(std::format("Prepare input {}", i));
              }
         }
 
@@ -581,13 +603,15 @@ namespace cart
             count++;
         }
 #pragma endregion
-    
+       m_bPreparingInput = false;
+       Logger::Get()->Trace("TextInput::PrepareInput() ended  ");
     }
     /// <summary>
     /// TextInput::ProcessInput -  Draw blinking underscore char
     /// </summary>
     void TextInput::CalculateCursor(Rectangle rect)
     {
+       // Logger::Get()->Trace("TextInput::CalculateCursor() started {} ");
         float scrnScale =  World::UI_CANVAS.get()->Scale();
         float fsize = std::max(m_minfontsize * scrnScale, m_fontsize * scrnScale);
         float fspace = m_fontspacing;// std::max(m_minfontspacing * scrnScale, m_fontspacing * scrnScale);
@@ -611,14 +635,15 @@ namespace cart
                         std::string sl = m_lines[i].substr(0, n + 1);
                         Vector2 fntmeasure = MeasureTextEx(*m_sharedfont, sl.c_str(), fsize, fspace);
                         m_cursorLoc.x = m_pos[i].x + fntmeasure.x;
-                        Logger::Get()->Trace(std::format(" Set current Index! {} count {}", m_curletterindex, m_letterCount));
+                    //    Logger::Get()->Trace(std::format(" Set current Index! {} count {}", m_curletterindex, m_letterCount));
                         break;
                    }                   
                    len++;
                }
               break;
            }
-       } 
+       }
+     //  Logger::Get()->Trace("TextInput::CalculateCursor() ended {} ");
     }
 
     void TextInput::ShowCharLimitWarning(Rectangle rect)
@@ -678,8 +703,9 @@ namespace cart
                     d--;
                     s[c] = '\0';
                 };
-                whilebackspace(m_letterCount, name, m_curletterindex);
-                m_text = name;
+                whilebackspace(m_letterCount, m_chr, m_curletterindex);
+             
+                m_text = m_chr;
                 m_hasUpated = true;
         }
         else {
@@ -706,16 +732,16 @@ namespace cart
                               
                 if (m_curletterindex < m_letterCount)
                 {
-                    typeinbetween(m_letterCount, key, name, m_curletterindex);
+                    typeinbetween(m_letterCount, key, m_chr, m_curletterindex);
                 }
                 else {
                     std::string s(1, static_cast<char>(key));
-                    name[m_letterCount] = s[0];
-                    name[m_letterCount + 1] = '\0'; // Add null terminator at the end of the string.                 
+                    m_chr[m_letterCount] = s[0];
+                    m_chr[m_letterCount + 1] = '\0'; // Add null terminator at the end of the string.                 
                     m_curletterindex = m_letterCount + 1;
                 }
 
-                m_text = name;
+                m_text = m_chr;
                 m_hasUpated = true;
 
                 m_isBackspace = false;

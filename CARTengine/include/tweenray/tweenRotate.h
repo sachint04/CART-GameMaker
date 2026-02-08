@@ -22,7 +22,8 @@ namespace cart {
 		
 		void Begin();
 	protected:
-		Vector3 m_axis;
+		Vector3 m_startAxis;
+		Vector3 m_targetAxis;
 		float m_startAngle;
 		float m_targetAngle;
 		double m_duration;

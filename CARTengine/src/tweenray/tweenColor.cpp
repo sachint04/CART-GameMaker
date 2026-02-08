@@ -32,6 +32,7 @@ namespace cart {
 			auto easingfunc = getEasingFunction(m_easing);
 			double t = easingfunc(t_raw);
 			if (t_raw <= 1.0) {
+				m_actor.lock().get()->SetTweening(true);
 				Color col = LERP(m_startCol, m_targetCol, (float)t, true);
 //				std::string __id = m_actor.lock()->GetID();
 				m_actor.lock()->SetColor(col);
@@ -39,6 +40,7 @@ namespace cart {
 			else {
 				//std::cout <<this << " -> Tween Move Complete \n";
 				m_actor.lock()->SetColor(m_targetCol);
+				m_actor.lock().get()->SetTweening(false);
 				m_ready = false;
 				m_go = false;
 				if(callback)

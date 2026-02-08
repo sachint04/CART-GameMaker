@@ -149,6 +149,7 @@ namespace cart {
 	void ImageButton::Draw(float  _deltaTime)
 	{
 		if (!m_visible)return;
+	
 		Sprite2D::Draw(_deltaTime);
 		/*if (m_IsSelected == true) {
 			DrawRectangle(m_location.x - 10.f, m_location.y - 10.f, m_width + 20.f, m_height + 20.f, m_color);
@@ -181,6 +182,9 @@ namespace cart {
 
 	void ImageButton::SetSelected(bool _flag)
 	{
+		if (m_IsSelected && !_flag) {
+			m_texturesource = m_texturesourcedefault;
+		}
 		m_IsSelected = _flag;
 	}
 
@@ -318,7 +322,11 @@ namespace cart {
 		
 
 		if (m_texturetype == TEXTURE_PART) {
+			if(!m_IsSelected)
 			m_texturesource = m_texturesourcedown;
+			else
+			m_texturesource = m_texturesourceover;
+				
 		}
 		
 		if (m_IsSelectable == true) {
@@ -363,6 +371,9 @@ namespace cart {
 
 
 			if (m_texturetype == TEXTURE_PART) {
+				if(m_IsSelected)
+					m_texturesource = m_texturesourceover;
+				else
 				m_texturesource = m_texturesourcedefault;
 			}
 			if (m_text.size() > 0)

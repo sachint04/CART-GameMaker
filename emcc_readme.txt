@@ -24,4 +24,4 @@ emcc -o web/index.html CARTengine/src/framework/Application.cpp CARTengine/src/f
  -sTOTAL_MEMORY=67108864 -sALLOW_MEMORY_GROWTH -sMAXIMUM_MEMORY=4GB
  
  Debugging
-  -sASSERTIONS
+  -sASSERTIONS , -g

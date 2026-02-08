@@ -23,6 +23,8 @@ namespace cart {
 		int count = 1;
 		for (size_t i = 0; i < ch.size(); i++)
 		{
+			if (!ch.at(i).lock().get()->IsVisible())continue;
+
 			Rectangle elemRect = ch.at(i).lock().get()->GetBounds();
 			contentWidth += elemRect.width;
 			float padding = m_padding * (count - 1);

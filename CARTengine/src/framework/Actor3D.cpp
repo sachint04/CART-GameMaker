@@ -1,6 +1,8 @@
 #include "Actor3D.h"
 #include "World.h"
 #include "AssetManager.h"
+
+
 namespace cart
 {
 #pragma region Cunstructor & Init
@@ -21,7 +23,8 @@ namespace cart
 		m_fontSize{18},
 		m_fontSpace{2.f},
 		m_animations{nullptr},
-		m_bPlayAnimReverse{false}
+		m_bPlayAnimReverse{false},
+		m_loopAnim{false}
 	{
 	}
 	void Actor3D::Init()
@@ -44,6 +47,27 @@ namespace cart
 	}
 	void Actor3D::Update3D(float _deltaTime, const Camera& camera)
 	{
+		if (m_bPlayAnim)
+		{
+			ModelAnimation anim = m_animations[m_currentAnimation];
+			if (m_currentFrame < 0 || m_currentFrame > anim.frameCount - 1)
+			{
+				//m_currentFrame = anim.frameCount - 1;
+				if (!m_loopAnim)
+				{
+					m_bPlayAnim = false;
+					onAnimFinish.Broadcast(GetWeakRef(), m_currentAnimation);
+				}
+				else {
+					PlayAnimation(m_currentAnimation, m_bPlayAnimReverse, m_loopAnim);
+				}
+
+			}
+			else {
+				UpdateModelAnimation(m_model, anim, m_currentFrame);
+				m_currentFrame = !m_bPlayAnimReverse ? m_currentFrame + 1 : m_currentFrame - 1;
+			}
+		}
 		if (!m_visible)return;
 		
 		m_ray = GetScreenToWorldRay(GetMousePosition(), camera);
@@ -79,36 +103,15 @@ namespace cart
 				}
 			}
 		}
-		if (m_bPlayAnim)
-		{
-			ModelAnimation anim = m_animations[m_currentAnimation];
-			if (m_currentFrame < 0  || m_currentFrame > anim.frameCount - 1)
-			{
-				//m_currentFrame = anim.frameCount - 1;
-				m_bPlayAnim = false;
-				onAnimFinish.Broadcast(GetWeakRef(), m_currentAnimation);
-
-			}
-			else {
-				UpdateModelAnimation(m_model, anim, m_currentFrame);
-				m_currentFrame = !m_bPlayAnimReverse? m_currentFrame + 1 : m_currentFrame - 1;
-			}
-		}
+		
 	}
 	void Actor3D::Draw(float _deltaTime)
 	{
 		if (!m_visible)return;
 		Actor::Draw(_deltaTime);
-	}
-	void Actor3D::Draw3D(float _deltaTime, const Camera& camera)
-	{
-		if (!m_visible)return;
-		BeginMode3D(camera);
-			DrawModelEx(m_model, m_location3, { m_rotation3.x, m_rotation3.y, m_rotation3.z }, m_rotation3.w, {(float)m_width, (float)m_height, (float)m_zSize}, WHITE);
-		EndMode3D();
 		if (m_bShowLabel)
 		{
-			Vector2 pos = GetWorldToScreen(m_location3, camera);
+			Vector2 pos = GetWorldToScreen(m_location3, m_owningworld->GetApplication()->GetCamera());
 			float boxWidth = 160;
 			float boxHeight = 40;
 			Rectangle rect{ pos.x - boxWidth/2.f, pos.y + 90.f, boxWidth, boxHeight};
@@ -120,7 +123,11 @@ namespace cart
 				fnt.reset();
 			}
 		}
-		
+	}
+	void Actor3D::Draw3D(float _deltaTime, const Camera& camera)
+	{
+		if (!m_visible)return;
+			DrawModelEx(m_model, m_location3, { m_rotation3.x, m_rotation3.y, m_rotation3.z }, m_rotation3.w, {(float)m_width, (float)m_height, (float)m_zSize}, WHITE);
 	}
 #pragma endregion
 	
@@ -162,8 +169,9 @@ namespace cart
 	{
 		m_bShowLabel = _flag;
 	}
-	void Actor3D::PlayAnimation(int index, bool reverse)
+	void Actor3D::PlayAnimation(int index, bool reverse, bool loop)
 	{
+		
 		if (index >= 0) {
 			m_bPlayAnim = true;
 			m_currentAnimation = index;
@@ -173,8 +181,10 @@ namespace cart
 			m_bPlayAnim = false;
 		}
 		m_bPlayAnimReverse = reverse;	
+		m_loopAnim = loop;
 		
-		m_currentFrame = !m_bPlayAnimReverse? 0 : m_animations[m_currentAnimation].frameCount - 1;
+		int framecount = m_animations[m_currentAnimation].frameCount;
+		m_currentFrame = !m_bPlayAnimReverse? 0 : framecount - 1;
 	}
 	bool Actor3D::UpdateTexture(const std::string& path, int matIndex) {
 

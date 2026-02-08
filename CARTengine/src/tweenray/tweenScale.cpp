@@ -33,6 +33,7 @@ namespace cart {
 			auto easingfunc = getEasingFunction(m_easing);
 			double t = easingfunc(t_raw);
 			if (t_raw <= 1.0) {
+				m_actor.lock().get()->SetTweening(true);
 				float scale = LERP(m_startScale, m_targetScale, (float)t);
 			//	std::string __id = m_actor.lock()->GetID();
 			
@@ -46,6 +47,7 @@ namespace cart {
 				//std::cout <<this << " -> Tween Move Complete \n";
 				m_ready = false;
 				m_go = false;
+				m_actor.lock().get()->SetTweening(false);
 				m_actor.lock()->SetScale(m_targetScale);
 
 				if(callback)

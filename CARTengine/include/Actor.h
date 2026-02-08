@@ -39,8 +39,9 @@ namespace cart {
 		virtual void AssetsLoadCompleted();
 		virtual void Destroy();
 		virtual std::string type();
+		virtual void SetTweening(bool flag);
+		virtual bool IsTweening() { return m_tweening; };
 
-		
 		bool IsReady() { return m_isReady; };
 		bool IsScaleLocked() { return m_isLockedScale; };
 		float GetRotation();
@@ -61,6 +62,7 @@ namespace cart {
 		bool m_areAssetsLoaded;
 		bool m_areChildrenReady;
 		bool m_isReady;
+		bool m_tweening;
 		float m_width;
 		float m_height;
 		float m_zSize;

@@ -22,7 +22,7 @@ namespace cart
 		void PlayDefaultAnim();
 		void SetLabel(const std::string& _label, const std::string& font, float size, float spacing);
 		void ShowLabel(bool _flag);
-		void PlayAnimation(int index, bool reverse = false);
+		void PlayAnimation(int index, bool reverse = false, bool loop = false);
 		bool UpdateTexture(const std::string& path, int matIndex);
 		bool IsAnimPlaying();
 		void Destroy()override;
@@ -45,6 +45,7 @@ namespace cart
 		bool m_isHover;
 		bool m_bPlayAnim;
 		bool m_bPlayAnimReverse;
+		bool m_loopAnim;
 		int m_animcount;
 		int m_currentFrame;
 		int m_currentAnimation;

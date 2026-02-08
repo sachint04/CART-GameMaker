@@ -25,9 +25,10 @@ namespace cart {
 		void Destroy()override;
 		void SetAligned(ALIGN _align)override;
 		void SetVAligned(V_ALIGN _valign)override;
+		void SetText(const std::string &txt)override;
 
 
-		void SetText(const std::string &txt);
+		void SetText(const char* chrt);
 		std::string GetInputText();
 		void UpdateLayout();
 		void PrepareInput(Rectangle bounds);
@@ -42,7 +43,7 @@ namespace cart {
 		int m_letterCount = 0;
 		bool m_mouseOnText;
 		int m_framesCounter = 0;
-		char name[MAX_INPUT_CHARS + 1] = "\0";
+		char m_chr[MAX_INPUT_CHARS + 1] = "\0";
 		std::string m_mobileinput;
 	//	std::vector<std::string> lines;
 		//std::vector<std::pair<std::pair<int, int>, Vector2>> m_lrange;
@@ -55,6 +56,8 @@ namespace cart {
 		bool m_touch;
 		bool m_hasUpated;
 		bool m_bMobileInput;
+		bool m_bPreparingInput;
+
 		float m_textmargin;
 		float m_keydownWaitTimeMultiplyer;
 		float m_keydownMulitiplyerDuration;

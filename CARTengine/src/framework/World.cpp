@@ -158,6 +158,12 @@ namespace cart {
 	{
 		Camera cam = m_owningApp->GetCamera();
 		UpdateCamera(&cam, CAMERA_PERSPECTIVE);
+
+		#pragma region Update HUD
+				m_HUD->Update(_deltaTime);
+		#pragma endregion
+
+		if (m_HUD->IsPopupActive())return;// pause game while popup is active
 		
 		for (size_t i = 0; i < m_Actors.size(); i++)
 		{
@@ -180,22 +186,21 @@ namespace cart {
 		}
 #pragma endregion
 
-#pragma region Update HUD
-		m_HUD->Update(_deltaTime);
 
-#pragma endregion
 
 	}
 
 	void World::Draw(float _deltaTime)
 	{
 			ClearBackground(RAYWHITE);
+			
+
 			for (auto iter = m_Actors.begin(); iter != m_Actors.end();  ++iter)
 			{				
 				iter->get()->Draw(_deltaTime);
 			}
 
-	//		m_HUD->Draw(_deltaTime);
+			m_HUD->Draw(_deltaTime);
 	}
 
 	void World::LateUpdate(float _deltaTime)
@@ -208,10 +213,10 @@ namespace cart {
 
 #pragma region Update HUD
 
-		if (m_HUD)
+		/*if (m_HUD)
 		{
 			m_HUD->LateUpdate(_deltaTime);
-		}
+		}*/
 #pragma endregion
 	}
 
@@ -261,6 +266,7 @@ namespace cart {
 				++iter;
 			}
 		}
+		m_HUD->CleanCycle();
 		AssetManager::Get().CleanCycle();
 	
 	}

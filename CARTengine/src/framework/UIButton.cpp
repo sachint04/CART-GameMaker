@@ -177,9 +177,9 @@ namespace cart {
 		if (!m_visible)return;
 		
 		UIElement::Draw(_deltaTime);
-
+		Rectangle rect = GetBounds();
 			if (m_IsSelected) {
-				DrawRectangle(m_location.x - 10.f, m_location.y - 10.f, m_width + 20.f, m_height + 20.f, m_color);
+				DrawRectangle(rect.x - 10.f, rect.y - 10.f, rect.width + 20.f, rect.height + 20.f, m_color);
 			}
 
 			
@@ -254,7 +254,7 @@ namespace cart {
 		m_textcolor = _prop.textcolor;
 		m_defaulttextcolor = _prop.textcolor;
 		m_texthovercolor = _prop.texthoverolor;
-		m_fontspace = _prop.fontspace;
+		m_fontspace = _prop.fontspacing;
 		m_minfontspace = _prop.minfontspace;
 		//UpdateLocation();
      //   m_ButtonDefaultColor = _prop._color;

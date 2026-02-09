@@ -245,7 +245,7 @@ namespace cart {
 		m_textcolor = _prop.textcolor;
 		m_defaulttextcolor = _prop.textcolor;
 		m_texthovercolor = _prop.texthoverolor;
-		m_fontspace = _prop.fontspace;
+		m_fontspace = _prop.fontspacing;
 		//UpdateLocation();
      //   m_ButtonDefaultColor = _prop._color;
 

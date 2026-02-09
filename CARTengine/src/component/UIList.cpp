@@ -71,7 +71,7 @@ namespace cart {
 			btnprop.overcol = WHITE;
 			btnprop.downcol = WHITE;
 			btnprop.align = RIGHT;
-			btnprop.fontspace = 2.f;
+			btnprop.fontspacing = 2.f;
 			btnprop.borderwidth = 1;
 			btnprop.bordercol = BLACK;
 			btnprop.size = { m_width - margin.x , tsize.y + btnpadding.y };

@@ -10,7 +10,7 @@ namespace cart {
 		m_text{ },
 		m_font{ },
 		m_fontsize{ },
-		m_margin(5),
+		m_margin(10),
 		m_align{ LEFT },
 		m_background{ 0,0,0,0 },
 		m_textColor{ BLACK },
@@ -91,7 +91,8 @@ namespace cart {
 		m_background = _prop.textbackground;
 		m_fontspacing = _prop.fontspacing;
 		m_minfontspacing = _prop.minfontspacing;
-		m_textColor = _prop.textcolor;		
+		m_textColor = _prop.textcolor;	
+		m_multiline = _prop.multiline;
 	}
 	void Text::SetFontName(const std::string& strfnt)
 	{
@@ -149,23 +150,24 @@ namespace cart {
 		float linespacing = 2.0f;
 		Vector2 msize = { 0,0 };
 		float msgheight = 0;
-		while (strcopy.find_first_of(spacedelimiter) != std::string::npos) {// create stings of line in
-			auto find = strcopy.find_first_of(spacedelimiter);
-			std::string f = strcopy.substr(0, find + 1);
-			std::string c = line + f;
-			msize = MeasureTextEx(*m_sharedfont, c.c_str(), (float)fsize, fspace);
-			if (msize.x >= rect.width) {
+		float maxwidth = rect.width - (m_margin * 2);
+		while (strcopy.find(spacedelimiter) != std::string::npos) {// create stings of line in
+			auto find = strcopy.find(spacedelimiter);			
+			line = line + strcopy.substr(0, find + 1);
+			msize = MeasureTextEx(*m_sharedfont, line.c_str(), (float)fsize, fspace);
+			if (msize.x > maxwidth) {
+				line.pop_back();
+				line = line.substr(0, line.find_last_of(spacedelimiter));
 				msize = MeasureTextEx(*m_sharedfont, line.c_str(), (float)fsize, fspace);
 				m_strlines.insert({ line, msize });// add line to list
-				line = "";// clear line    
+				line.clear();// clear line    
 				theight += msize.y + linespacing;
 			}
-			else {
-				line = c; // append last world to line
+			else {				
 				strcopy = strcopy.substr(find + 1);// remove last word from the string
 			};
 		}
-		if (strcopy.size() > 0)
+		if (!strcopy.empty())
 		{
 			line = line + strcopy;
 			msize = MeasureTextEx(*m_sharedfont, line.c_str(), (float)fsize, fspace);
@@ -177,54 +179,32 @@ namespace cart {
 		if (find == m_strlines.end())
 			m_strlines.insert({ "" , {0,0} });
 
-		int al = m_align;
-		int va = m_valign;
-
-		float sy = rect.y;
+		int al = m_align, va = m_valign;
+		
+		float sy = rect.y + m_margin;
 		if (va == 1) {
-			sy += ((rect.height - theight) * 0.5f);
+			sy = rect.y + ((rect.height - (theight + m_margin)) * 0.5f);
 		}
 		else if (va == 2) {
-			sy += (rect.height - theight);
+			sy = rect.y + (rect.height - (theight + m_margin));
 		}
+
 		for (auto iter = m_strlines.begin(); iter != m_strlines.end(); ++iter)
 		{
-			float sx = rect.x;
-			// Align
+			float sx = rect.x + m_margin;
+			//  Align
+			msize = MeasureTextEx(*m_sharedfont, iter->first.c_str(), (float)fsize, fspace);
 			if (al == 1) {
-				sx += (rect.width - iter->second.x) * 0.5f;
+				sx += (rect.width - (msize.x + m_margin)) * 0.5f;
 			}
 			else if (al == 2) {
-				sx += (rect.width - iter->second.x);
+				sx += (rect.width - (msize.x + m_margin));
 			}
 			iter->second = { sx, sy };
-			sy += iter->second.y + linespacing;
+			sy += msize.y + linespacing;
 		}
 #pragma endregion
-		//m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), fsize, fspace);
-		//int px = (m_pivot.x * m_width);
-		//int py = (m_pivot.y * m_height);
-
-		//switch (m_align)
-		//{
-		//case LEFT:
-		//	m_textLocation = { rect.x - px,
-		//						rect.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 - py } ;
-		//	break;
-		//case CENTER:
-		//	m_textLocation = { rect.x + ((rect.width - m_textsize.x) * 0.5f) * m_scale,
-		//					rect.y + ((rect.height - m_textsize.y) * 0.5f) * m_scale };
-		//	//m_textLocation = { m_location.x + (m_width * m_scale / 2) - (m_textsize.x * m_scale) / 2  -px,
-		//	//					m_location.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 - py };
-		//	break;
-
-		//case RIGHT:
-		//	m_textLocation = { rect.x + (m_width * m_scale) - (m_textsize.x * m_scale) - px,
-		//						rect.y + (m_height * m_scale / 2) - (m_textsize.y * m_scale) / 2 - py };
-		//	break;
-		//case JUSTIFIED :
-		//	break;
-		//}
+		
 
 
 	}

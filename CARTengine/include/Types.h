@@ -133,6 +133,10 @@ namespace cart {
         EmailAddress = 7
     };
 
+    enum class AlertResult {
+        Alert_Ok,
+        Alert_Cancel
+    };
 #pragma endregion
 
 #pragma region STRUCTS
@@ -256,7 +260,7 @@ namespace cart {
         Color texthoverolor = BLACK;
         float fontsize;
         float minfontsize;
-        float fontspace = 2.f;
+        float fontspacing = 2.f;
         float minfontspace = 1.f;
 
     };
@@ -387,7 +391,20 @@ namespace cart {
     struct UI_ANCHOR {float MinX = 0.f;float MaxX = 1.f;float MinY = 0.f;float MaxY = 1.f;} ;
 #pragma endregion
 
+#pragma region HUD themes
 
+    struct AlertTheme {
+        Color background = {232,232,232,255};
+        Color button = { 198,	195, 109, 255 };// pestal green
+        Color hover = { 0, 85, 111, 255 }; // blue green
+        Color disable = { 44, 118, 106,255 };// sea green
+        Color down = { 252, 220, 219,255 }; // pink
+        Color border = { 0, 85, 111, 255 }; // blue green
+        Color blocker = { 0,0,0,120 }; // bg blocker 
+    };
+   
+
+#pragma endregion
 
 
 }

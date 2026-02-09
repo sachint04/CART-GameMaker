@@ -217,11 +217,11 @@ namespace cart {
 
         auto foundimg = m_imageLoadedMap.find(path);
         if (foundimg != m_imageLoadedMap.end()) {                
-            if (foundimg->second) {  
-                Image* img = foundimg->second;
-                UnloadImage(*img);   
-              //  foundimg->second = nullptr;
-//                delete foundimg->second;
+            if (foundimg->second->data != NULL) {                 
+                if (IsImageValid(*foundimg->second))
+                {
+                    UnloadImage(*foundimg->second);
+                }
             }
             m_imageLoadedMap.erase(foundimg);
         }

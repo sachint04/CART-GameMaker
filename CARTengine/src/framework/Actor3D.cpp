@@ -126,7 +126,7 @@ namespace cart
 	}
 	void Actor3D::Draw3D(float _deltaTime, const Camera& camera)
 	{
-		if (!m_visible)return;
+		if (!m_visible || m_isPendingDestroy)return;
 			DrawModelEx(m_model, m_location3, { m_rotation3.x, m_rotation3.y, m_rotation3.z }, m_rotation3.w, {(float)m_width, (float)m_height, (float)m_zSize}, WHITE);
 	}
 #pragma endregion
@@ -223,6 +223,7 @@ namespace cart
 	
 		
 		SetVisible(false);
+		Actor::Destroy();
 	}
 	Actor3D::~Actor3D()
 	{		

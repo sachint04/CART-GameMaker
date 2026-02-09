@@ -25,7 +25,10 @@ namespace cart {
 	void TweenRotate::Update(double deltaTime) {
 	
 		//std::cout << "T -  " << Clock::Get().ElapsedTime() << " - TweenRotate Updating  \n";
-		
+		if (m_actor.expired()) {
+			Destroy();
+			return;
+		}
 		if (m_go == true) {
 			double delta = Clock::Get().ElapsedTime()  - m_timer;
 			double t_raw = delta / m_duration;

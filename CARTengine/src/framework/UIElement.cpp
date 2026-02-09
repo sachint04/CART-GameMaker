@@ -454,9 +454,7 @@ namespace cart {
 	void UIElement::AddText(const std::string& id, Text_Properties _prop)
 	{
 		weak<Text> _txt = m_owningworld->SpawnActor<Text>(id);
-		_prop.location = { m_location.x + _prop.location.x, m_location.y + _prop.location.y };
 		_txt.lock()->SetTextProperties(_prop);
-		Vector2 loc = { 0,0 };
 		_txt.lock()->Init();
 		_txt.lock()->SetVisible(true);
 		AddChild(_txt);

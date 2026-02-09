@@ -35,7 +35,7 @@ namespace cart {
 
 	void InputController::SetFocus(const std::string& id)
 	{
-		Logger::Get()->Trace(std::format("InputController::SetFocus() id {}", id));
+		//Logger::Get()->Trace(std::format("InputController::SetFocus() id {}", id));
 		if (m_curFocusedId.compare(id) != 0) {
 		// reset focus on previous item
 			auto findcurrent = std::find_if(m_uilist.begin(), m_uilist.end(), [&](const weak<UIElement>& p) {
@@ -61,7 +61,7 @@ namespace cart {
 	}
 
 	bool InputController::IsMouseOver(weak<Object> ui)
-	{
+	{		
 		weak<UIElement> shr_ui = std::dynamic_pointer_cast<UIElement>(ui.lock());
 		for (int i = m_uilist.size() - 1; i >= 0; --i)
 		{			

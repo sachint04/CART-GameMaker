@@ -101,7 +101,20 @@ namespace cart {
 	{
 		int found = -1;
 		weak<UIElement> uielem;
-		for (size_t i = 0; i < m_Actors.size(); i++)
+		for (auto iter = m_Actors.begin(); iter != m_Actors.end(); ++iter)
+		{
+			if (iter->second.get()->GetId().compare(id) == 0) {
+				iter--;
+				break;
+			}
+			else {
+				if (iter->second.get()->type().compare("UIElement") == 0) {
+					uielem = std::static_pointer_cast<UIElement>(iter->second.get()->GetWeakRef().lock());
+				}
+			}
+
+		}
+		/*for (size_t i = 0; i < m_Actors.size(); i++)
 		{
 			
 			if (m_Actors.at(i).get()->GetId().compare(id) == 0) {
@@ -113,17 +126,18 @@ namespace cart {
 					uielem = std::static_pointer_cast<UIElement>(m_Actors.at(i).get()->GetWeakRef().lock());
 				}
 			}
-		}
+		}*/
 		
 		return uielem;
 	}
 
 	weak<Object> World::Find(const std::string& id)
 	{
+
 		for (auto iter = m_Actors.begin(); iter != m_Actors.end(); ++iter)
 		{
-			if (iter->get()->GetId().compare(id) == 0) {
-				return iter->get()->GetWeakRef();
+			if (iter->second.get()->GetId().compare(id) == 0) {
+				return iter->second.get()->GetWeakRef();
 			}
 		}
 		return shared<Object>{ nullptr };
@@ -164,12 +178,16 @@ namespace cart {
 		#pragma endregion
 
 		if (m_HUD->IsPopupActive())return;// pause game while popup is active
-		
-		for (size_t i = 0; i < m_Actors.size(); i++)
+		for (auto iter = m_Actors.begin(); iter != m_Actors.end(); ++iter)
 		{
-			if(m_Actors.at(i).get()->IsPendingDestroy() == false)
-				m_Actors.at(i).get()->Update(_deltaTime);
+			if (iter->second.get()->IsPendingDestroy() == false)
+				iter->second.get()->Update(_deltaTime);
 		}
+		//for (size_t i = 0; i < m_Actors.size(); i++)
+		//{
+		//	if(m_Actors.at(i).get()->IsPendingDestroy() == false)
+		//		m_Actors.at(i).get()->Update(_deltaTime);
+		//}
 		if(m_currentStage != m_gameStages.end())
 		{
 			m_currentStage->get()->Update(_deltaTime);
@@ -197,7 +215,7 @@ namespace cart {
 
 			for (auto iter = m_Actors.begin(); iter != m_Actors.end();  ++iter)
 			{				
-				iter->get()->Draw(_deltaTime);
+				iter->second.get()->Draw(_deltaTime);
 			}
 
 			m_HUD->Draw(_deltaTime);
@@ -205,10 +223,10 @@ namespace cart {
 
 	void World::LateUpdate(float _deltaTime)
 	{
-		for (size_t i = 0; i < m_Actors.size(); i++)
+		for (auto iter = m_Actors.begin(); iter != m_Actors.end(); ++iter)
 		{
-			if (m_Actors.at(i).get()->IsPendingDestroy() == false)
-				m_Actors.at(i).get()->LateUpdate(_deltaTime);
+			if(iter->second.get()->IsPendingDestroy() == false)
+			iter->second.get()->LateUpdate(_deltaTime);
 		}
 
 #pragma region Update HUD
@@ -254,10 +272,10 @@ namespace cart {
 		for (auto iter = m_Actors.begin(); iter != m_Actors.end();)
 		{
 			//if (iter->get()->IsPendingDestroy() && iter->use_count() == 1)
-			if (iter->use_count() == 1)
+			if (iter->second.use_count() == 1)
 			{			
-				std::string id = iter->get()->GetId();
-				iter->reset();
+				std::string id = iter->second.get()->GetId();
+				iter->second.reset();
 				iter = m_Actors.erase(iter);
 				
 			}
@@ -275,7 +293,7 @@ namespace cart {
 	{
 		for (auto iter = m_Actors.begin(); iter != m_Actors.end();)
 		{
-			iter->get()->Destroy();
+			iter->second.get()->Destroy();
 			++iter;
 		}
 		for (auto stage : m_gameStages)

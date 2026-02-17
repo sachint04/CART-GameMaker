@@ -145,6 +145,11 @@ namespace cart
 		return 0;
 	}
 
+	void Application::SetHttpAssetPath(std::string path)
+	{
+		m_assetsdir_web = path;
+	}
+
 	void Application::Destroy() {
 		m_CurrentWorld.get()->Unload();
 		m_CurrentWorld.get()->Destroy();

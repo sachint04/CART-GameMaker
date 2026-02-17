@@ -45,6 +45,7 @@ namespace cart
 		virtual std::string GetResourceDisplayPath();
 		virtual float GetIconSize();
 		virtual Camera GetCamera()const { return m_camera; };
+		virtual void SetHttpAssetPath(std::string path);
 		static unique<network> net;
 
 		static Application* app;

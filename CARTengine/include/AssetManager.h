@@ -119,7 +119,7 @@ namespace cart {
         data.loadmessage = loadmessage;
         data.callback = callbackFunc;
         // ------------------------
-        m_preloadlist.push_back(data);// dont start start another load requrest while loading is in progress
+        m_preloadlist.push_back(data);// dont start  another load requrest while loading is in progress
 
         if (m_isLoading)return;
         m_isLoading = true;

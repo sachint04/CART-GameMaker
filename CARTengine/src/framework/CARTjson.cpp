@@ -3,6 +3,7 @@
 namespace cart
 {
 	json CARTjson::m_envsetting = {};
+	json CARTjson::m_app_config = {};
 	json CARTjson::m_config = {};
 	json CARTjson::m_userdata = {};
 	json CARTjson::m_templateinfo = {};
@@ -35,6 +36,12 @@ namespace cart
 	{
 		m_userdata = json::parse(strm);
 		return m_userdata;
+	}
+
+	json& CARTjson::readAppConfigData(const std::string& strm)
+	{
+		m_app_config = json::parse(strm);
+		return m_app_config;
 	}
 
 	json& CARTjson::readTemplateInfo(const std::string& strm)

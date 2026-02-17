@@ -56,7 +56,7 @@ namespace cart
         if (isVisible)
         {
             logdb.push_back({ LOG_ERROR, _t });
-            std::cout << _t << std::endl;
+            std::cout << "WARNING: " << _t << std::endl;
           //  throw std::runtime_error(_t.c_str());
         }
     }

@@ -2,7 +2,7 @@
 
 #include <raylib.h>
 #include "Object.h"
-
+#include "Logger.h"
 namespace cart
 {
 
@@ -49,7 +49,8 @@ namespace cart
 		void SetSessionData(void* data);
 		void* GetSessionData() { return m_sessionData; };
 
-
+		template<int index, typename... Args>
+		auto&& get_arg_by_index(Args&&... args);
 	
 		template<typename ActorType, typename... Args>
 		weak<ActorType> SpawnActor(Args... args);
@@ -68,8 +69,8 @@ namespace cart
 		double m_cleanCycleStartTime;
 
 		Application* m_owningApp;
-
-		List<shared<Actor>> m_Actors;
+		Dictionary<std::string, shared<Actor>> m_Actors;
+		//List<shared<Actor>> m_Actors;
 		List<shared<Actor>> m_PendingActors;
 		List<shared<GameStage>> m_gameStages;
 		shared<HUD> m_HUD;
@@ -78,12 +79,29 @@ namespace cart
 
 	};
 
+	template<int index, typename... Args>
+	auto&& World::get_arg_by_index(Args&&... args) {
+		// Expands the parameter pack into parameters of std::forward_as_tuple
+		// which returns a tuple-like object preserving reference types.
+		// std::get<index>() then extracts the desired element by its compile-time index.
+		return std::get<index>(std::forward_as_tuple(std::forward<Args>(args)...));
+	}
+
 
 	template<typename ActorType, typename...Args>
 	weak<ActorType> World::SpawnActor(Args...args)
 	{
+		auto&& first = get_arg_by_index<0>(std::forward<Args>(args)...);
+		std::string copyid = first;
+		int count = 0;
+		while (m_Actors.find(copyid) != m_Actors.end())
+		{
+			count++;
+			copyid = first + "_copy_" + std::to_string(count);
+		}
+		
 		shared<ActorType> newActor{ new ActorType(this, args...) };				
-		m_Actors.push_back(newActor);
+		m_Actors.insert({ copyid ,newActor});
 		return newActor;
 	}
 

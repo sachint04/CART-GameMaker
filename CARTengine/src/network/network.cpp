@@ -50,6 +50,7 @@ namespace cart {
         std::string delimiter = ",";
         std::string callerID = uid;
         std::string networkID = uid;
+        Logger::Get()->Trace(std::format("network::LoadAssetHTTPCallback() -> caller Id {} | network Id {} ",callerID, networkID));
         int found = uid.find(delimiter);// find Ids        
         if (found != std::string::npos) {
             try {
@@ -61,22 +62,29 @@ namespace cart {
             }
               trim(callerID);
               trim(networkID);
-            Logger::Get()->Trace(std::format("network::LoadAssetHTTPCallback caller callerId {} networkID {} \n", callerID, networkID));
+            //Logger::Get()->Trace(std::format("network::LoadAssetHTTPCallback caller callerId {} networkID {} \n", callerID, networkID));
         }
+        Logger::Get()->Trace(std::format("network::LoadAssetHTTPCallback() -> caller Id {} | network Id {} ", callerID, networkID));
 
+        found = false;
         for (auto iter = m_LoadAssetCallbacks.begin(); iter != m_LoadAssetCallbacks.end();)
         {
+            Logger::Get()->Trace(std::format("network::LoadAssetHTTPCallback() -> callback func Id {} | network Id {} ", iter->first, networkID));
             if (iter->first.compare(networkID) == 0)
             {
                 if ((iter->second)(callerID, url, data, size))
                 {
                     Logger::Get()->Trace(" network::LoadAssetHTTPCallback Callback removed \n");
                     m_LoadAssetCallbacks.erase(iter);
+                    found = true;
                     break;
                 }
 
             }
         }
+
+        if(!found)
+            Logger::Get()->Trace(std::format("network::LoadAssetHTTPCallback() -> callback func  nor found for  caller Id {} | network Id {} ", callerID, networkID));
     }
 
     std::string network::GetHost() {        

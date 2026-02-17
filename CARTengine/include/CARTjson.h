@@ -13,10 +13,13 @@ namespace cart
 			static json& readUserData(const char* _file);
 			static json& readUserData(const std::string& strm);
 
+			static json& readAppConfigData(const std::string& strm);
+
 			static json& readTemplateInfo(const char* _file);
 			static json& readTemplateInfo(const std::string& strm);
 
 			static json& GetAppData() { return m_config; };
+			static json& GetAppConfigData() { return m_app_config; };
 			static json& GetUserData();
 			static json& GetSessionData();			
 			static void UpdateUserData(const json& data);
@@ -27,6 +30,7 @@ namespace cart
 			~CARTjson();
 		private:
 			static json m_envsetting;
+			static json m_app_config;
 			static json m_config;
 			static json m_userdata;
 			static json m_sessiondata;

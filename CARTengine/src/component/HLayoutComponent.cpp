@@ -28,6 +28,7 @@ namespace cart {
 			Rectangle elemRect = ch.at(i).lock().get()->GetBounds();
 			contentWidth += elemRect.width;
 			float padding = m_padding * (count - 1);
+			//float gap	= m_gap
 			curContentWidth = m_margin + contentWidth + padding;
 			
 			if (curContentWidth > rect.width)

@@ -126,10 +126,27 @@ extern "C" {
 #ifdef __EMSCRIPTEN__
     EMSCRIPTEN_KEEPALIVE
 #endif
-        void ProcessMobileInput(char* input)
+      void ProcessMobileInput(char* input, int isBackspace)
     {
-        GetApplication()->NotifyMobileInput(input);
+        GetApplication()->NotifyMobileInput(input, isBackspace);
     }
+
+#ifdef __EMSCRIPTEN__
+    EMSCRIPTEN_KEEPALIVE
+#endif
+     void IntruptVirtualKeyboad()
+    {
+        GetApplication()->NotifyMobileKeyboardInterupt();
+    }
+
+#ifdef __EMSCRIPTEN__
+    EMSCRIPTEN_KEEPALIVE
+#endif
+      void LogTrace(char* input)
+    {
+        GetApplication()->LogTrace(input);
+    }
+
 #ifdef __cplusplus
 }
 #endif

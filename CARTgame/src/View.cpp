@@ -17,7 +17,8 @@ namespace cart{
 	void View::Init()
 	{
 		std::string resourcepath = m_owningworld->GetApplication()->GetAssetsPath();
-		m_preloadlist.push_back(std::string{ resourcepath + "cartengine.png" });
+		m_preloadlist.push_back({ std::string{ resourcepath + "cartengine.png"}, std::string{ resourcepath + "cartengine.png"}, ASSET_IMAGE, LOCKED });
+		
 		UIElement::Init();
 	}
 

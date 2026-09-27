@@ -1,16 +1,16 @@
 #pragma once
+#include <raylib.h>
 #include <string>
 #include <functional>
 #include <vector>
-#include <raylib.h>
 #include "easing.h"
 #include "Core.h"
 namespace cart {
 
-      
+
 
 #pragma region  ENUMNS
-    enum Layout_Component_Type {NO_LAYOUT, LAYOUT, V_LAYOUT, H_LAYOUT };
+    enum Layout_Component_Type { NO_LAYOUT, LAYOUT, V_LAYOUT, H_LAYOUT };
 
 
     enum STYLE_POSITION {
@@ -41,7 +41,7 @@ namespace cart {
     enum V_ALIGN {
         TOP,
         MIDDLE,
-        BOTTOM        
+        BOTTOM
     };
 
 
@@ -54,7 +54,9 @@ namespace cart {
         P_CONE,
         P_CIRCLE,
         P_BOX,
-        P_LINE
+        P_LINE,
+        P_CIRCLE_OUTLINE,
+        P_PLANE2D
     };
     enum SHAPE_TYPE {
         NONE,
@@ -133,16 +135,24 @@ namespace cart {
         EmailAddress = 7
     };
 
-    enum class AlertResult {
+    enum Popup_Button_Type {
         Alert_Ok,
-        Alert_Cancel
+        Alert_Cancel,
+        Modal_Close
     };
+
+    enum Asset_Type {
+        ASSET_IMAGE,
+        ASSET_MODEL,
+        ASSET_TEXT
+    };
+
 #pragma endregion
 
 #pragma region STRUCTS
     struct UI_Style {
         STYLE_POSITION style_Position = STYLE_POSITION_ABSOLUTE;
-       
+
 
     };
     typedef struct Async_Call_Header
@@ -153,7 +163,7 @@ namespace cart {
 
     }Async_Call_Header;
 
-    typedef struct Async_Call_Response 
+    typedef struct Async_Call_Response
     {
         Async_Call_Header request;
         ASYNC_CALLBACK_STATUS callbackstatus;
@@ -161,7 +171,7 @@ namespace cart {
         int progress;
         int totalBytes;
     }Async_Call_Response;
-       
+
     typedef struct Async_Call_Data {
         std::string id;
         std::string location;
@@ -175,12 +185,20 @@ namespace cart {
         TEXTURE_DATA_STATUS status;
     }TextureData;
 
+
+    typedef  struct {
+        std::string url;
+        std::string virtualpath;
+        Asset_Type type;
+        TEXTURE_DATA_STATUS texture_status;
+    }External_Asset;
+
     struct Preload_Data {
     public:
         std::string uid;
         int count;
         std::function<bool()> callback;
-        std::vector<std::string> list;
+        std::vector<External_Asset> list;
         std::string loadmessage;
     };
 
@@ -191,6 +209,7 @@ namespace cart {
         V_ALIGN valign = TOP;
         float margin = 0.f;
         float padding = 0.f;
+        float gap = 0.f;
     };
 
     struct UI_Properties {
@@ -201,46 +220,59 @@ namespace cart {
         SHAPE_TYPE shapetype = SHAPE_TYPE::RECTANGLE;
         FILL_TYPE filltype = SOLID_FILL;
         bool blockscale;
-        std::string texture;
         int linewidth = 0;
         int roundnessSegments = 36;
         int borderwidth;
         float scale{ 1.f };
         float rotation;
         float roundness = 0.5f;
+        std::string texture;
         Color color = WHITE;
-        Color textureColor =  WHITE ;
+        Color textureColor = WHITE;
         Vector2 size;
-        Vector2 defaultSize = {-1, -1};// Required incase of "Layout Component" with anchor x <> anchor width or anchor  y <> anchor height
+        Vector2 defaultSize = { -1, -1 };// Required incase of "Layout Component" with anchor x <> anchor width or anchor  y <> anchor height
         Vector2 location;
         Vector2 pivot;
+        Vector2 padding = { 0,0 };
         Rectangle texturesource;
-        Rectangle anchor = {0,0,0,0};
+        Rectangle anchor = { 0,0,0,0 };
         Color bordercol;
         UI_Layout_Properties layout_props;
         std::vector<Color> gradientcols;
     };
 
-	struct Text_Properties : UI_Properties{
+    struct Text_Properties : UI_Properties {
     public:
         bool multiline = false;
-		ALIGN align = ALIGN::LEFT;	
-		V_ALIGN valign = V_ALIGN::MIDDLE;	
-		float fontsize;
+        ALIGN align = ALIGN::LEFT;
+        V_ALIGN valign = V_ALIGN::MIDDLE;
+        float fontsize;
         float minfontsize = 0;
         float maxfontsize = 0;
         float fontspacing = 2.f;
         float minfontspacing = 1;
-		std::string font;
-		std::string text;
+        float linespace = 1.f;
+        std::string font;
+        std::string text;
         Color textbackground;
         Color textcolor;
-	};
 
+    };
+
+    struct Texture_Source_Rect {
+    public:
+        Rectangle defaultrect;
+        Rectangle hoverrect;
+        Rectangle downrect;
+        Rectangle disabledrect;
+    };
     struct Btn_Properties :UI_Properties {
     public:
         ALIGN align = ALIGN::LEFT;
-        bool isSelectable;
+        bool selectable;
+        bool dragable;
+        bool maintainoffset = true;
+        int cursorstyle = 4;
         Color btncol;
         Color overcol;
         Color downcol;
@@ -248,14 +280,20 @@ namespace cart {
         Rectangle texturesourceover;
         Rectangle texturesourcedown;
         Rectangle texturesourcedisable;
-       
+        Rectangle dragableboundry;
+        // only for ImageToggleButton
+        Texture_Source_Rect primarytogglerect;
+        Texture_Source_Rect secondarytogglerect;
+        std::string primarytexture;
+        std::string secondarytexture;
+        // End
     };
-    
+
     struct Btn_Text_Properties : Btn_Properties {
     public:
         ALIGN textAlign = ALIGN::LEFT;
         std::string font;
-        std::string text;        
+        std::string text;
         Color textcolor = BLACK;
         Color texthoverolor = BLACK;
         float fontsize;
@@ -276,55 +314,37 @@ namespace cart {
         bool colorActive = true;
     };
 
-   struct Particle_Properties {
+    struct Particle_Properties {
+        bool colorovertime;
+        bool scaleovertime;
+        bool burstonstart;
+        int blendmode = BLEND_ADDITIVE;
         std::string id;
         float lifetime;
         std::string texturepath;
-        float angluarvelocity;
+        int burstcount;
         float speed;
+        float acceleration;
         float startscale;
         float endscale;
         float startrotation;
         float endrotation;
+        float gravity = 0;
         Vector2 size;
         Vector2 startlocation;
         Vector2 velocity;
+        Vector3 angluarvelocity;
         Color color;
         Color startcolor;
         Color endcolor;
         easing_functions easing;
-        float gravity = 0;
-        int burstcount;
-        bool colorovertime;
-        bool scaleovertime;
-        bool burstonstart;
+        PARTILCE_EMITTER_SHAPE emittershape;
+        Vector2 emitterlocation;
+        Rectangle texturerect;
     };
 
     struct Particle_System_Propterties {
-        std::vector<std::string> texturepath;
-        int maxParticles;
-        float delay;
-        Particle_Properties particleprop;
-        PARTILCE_EMITTER_SHAPE shape;     
-        Rectangle locationoffset;
-        Vector2 minsize;
-        Vector2 maxsize;
-        float startscale;
-        float endscale;
-        Vector2 minvelocity;
-        Vector2 maxvelocity;
-        float minlifetime;
-        float maxlifetime;
-        Color color;
-        Color startcolor;
-        Color endcolor;
-        float maxangularvelocity;
-        float minangularvelocity;
-        easing_functions easing;
-        float gravity = 0;
-        std::vector<Color> colorspool;
-        int burstcount;
-        bool randomizeSpeed;
+        PARTILCE_EMITTER_SHAPE shape;
         bool randomizeSize;
         bool randomizeColor;
         bool looping;
@@ -332,11 +352,43 @@ namespace cart {
         bool colorovertime;
         bool scaleovertime;
         bool burstonstart;
-
+        bool playonstart = true;
+        bool usecolorpool;
+        bool randomizeSpeed;
+        int maxParticles;
+        int burstcount;
+        int blendmode = BLEND_ADDITIVE;
+        float delay;
+        float size = 1.f;
+        float startscale;
+        float endscale;
+        float speed;
+        float acceleration;
+        float minspeed;
+        float maxspeed;
+        float minlifetime;
+        float maxlifetime;
+        float maxrotation;
+        float minrotation;
+        Vector3 angularvelocity;
+        float gravity = 0;
+        float emittersize = 1.f;
+        Rectangle locationoffset;
+        Vector2 minsize;
+        Vector2 maxsize;
+        Color color;
+        Color startcolor;
+        Color endcolor;
+        easing_functions easing;
+        std::vector<Color> colorspoolstart;
+        std::vector<Color> colorspoolend;
+        std::vector<std::string> texturepath;
+        bool istexturesprite;
+        std::vector<Rectangle> texturecells;
     };
 
     struct PARTICLE_EMITTER_BOX {
-        Rectangle rect;        
+        Rectangle rect;
     };
 
     struct PARTICLE_EMITTER_CIRCLE {
@@ -385,26 +437,30 @@ namespace cart {
         LOG_TYPE type;
         std::string log;
     }LogData;
-   
-    struct Vec2_short {short int x; short int y;};
 
-    struct UI_ANCHOR {float MinX = 0.f;float MaxX = 1.f;float MinY = 0.f;float MaxY = 1.f;} ;
+    struct Vec2_short { short int x; short int y; };
+
+    struct UI_ANCHOR { float MinX = 0.f; float MaxX = 1.f; float MinY = 0.f; float MaxY = 1.f; };
+
+
+
 #pragma endregion
 
 #pragma region HUD themes
 
     struct AlertTheme {
-        Color background = {232,232,232,255};
-        Color button = { 198,	195, 109, 255 };// pestal green
-        Color hover = { 0, 85, 111, 255 }; // blue green
-        Color disable = { 44, 118, 106,255 };// sea green
-        Color down = { 252, 220, 219,255 }; // pink
-        Color border = { 0, 85, 111, 255 }; // blue green
-        Color blocker = { 0,0,0,120 }; // bg blocker 
+        Color background = { 0, 165, 173,255};
+        Color button = { 244,244,244, 255 };// pestal green
+        Color hover = { 0, 165, 173, 255 }; // blue green
+        Color disable = { 247, 247, 242,255 };// sea green
+        Color down = { 244,244,244,255 }; // pink
+        Color border = { 0,0,0,255 }; // blue green
+        Color textcol = { 0,0,0,255 };
+        Color blocker = { 0,0,0,0 }; // bg blocker 
     };
    
+    
 
-#pragma endregion
 
 
 }

@@ -8,15 +8,19 @@ namespace cart {
 		~Sprite2D();
 
 		void Init()override;
+		void Start()override;
 		void Update(float _deltaTime)override;
 		void Draw(float _deltaTime)override;
 		void LateUpdate(float _deltaTime)override;
 		virtual void SetUIProperties(UI_Properties _prop) override;
 		virtual void SetSize(Vector2 _size) override;
+		virtual void SetScale(float _scale) override;
 		virtual void SetLocation(Vector2 _location) override;
 		//virtual void UpdateLocation() override;
 		virtual void Destroy() override;
-		virtual bool HasTexture() override;				
+		virtual bool HasTexture() override;		
+		void OnLayoutChangeHandler()override;
+
 		Color GetTextureColor() { return m_textureColor; };
 		void SetTextureColor(Color col) { m_textureColor = col; };
 		void ReEvaluteTexture();
@@ -25,11 +29,12 @@ namespace cart {
 		virtual Rectangle GetTextureBounds();
 		void SetScreenMask(const Image& strmask);
 		void TransformIntrupted();
+		void UpdateMask();
 
 
 	protected:
-		void UpdateMask();
 		void ResizeImage();
+		void UpdateLocation();
 		bool UpdateAspectRatio();
 		std::string m_imgstr;
 		std::string m_strTexture;
@@ -43,7 +48,6 @@ namespace cart {
 		Vector2 m_textureSize;
 		bool m_bMasked;
 		bool m_bIsScaling;		
-		Color* imagepixel = nullptr;
 		Color* maskpixels = nullptr;
 	};
 }

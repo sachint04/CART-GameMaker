@@ -14,7 +14,11 @@ set(CART_GAME_TARGET_NAME CARTgame)
 #include raylib
 include(FetchContent)
 
-SET(RAYLIB_VERSION 4.5.0)
+SET(RAYLIB_VERSION 5.5)
+
+SET(RAYLIB_INSTALL OFF CACHE INTERNAL "")
+SET(BUILD_EXAMPLES OFF CACHE INTERNAL "")
+
 FetchContent_Declare(
 	raylib
 	URL https://github.com/raysan5/raylib/archive/refs/tags/${RAYLIB_VERSION}.tar.gz
@@ -34,3 +38,29 @@ FetchContent_MakeAvailable(nlohmann_json)
 
 add_subdirectory(CARTengine)
 add_subdirectory(CARTgame)
+
+
+# ============================================================================
+# WEBGL EMSCRIPTEN INSTALLATION HOOK
+# ============================================================================
+# Force the destination directory to live directly in your project root folder
+set(WEBGL_ROOT_OUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/www")
+
+# Explicitly create the "www" folder if it doesn't exist yet
+file(MAKE_DIRECTORY "${WEBGL_ROOT_OUT_DIR}")
+
+# 1. Copy the main HTML file and rename it to index.html
+install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/CARTgame/CARTgame.html"
+    DESTINATION "${WEBGL_ROOT_OUT_DIR}"  # <-- FIXED: Matches variable name above
+    RENAME "index.html"
+)
+
+# 2. Copy the matching JS, WASM, and data package files to the same folder
+install(
+    FILES 
+      "${CMAKE_CURRENT_BINARY_DIR}/CARTgame/CARTgame.js"
+      "${CMAKE_CURRENT_BINARY_DIR}/CARTgame/CARTgame.wasm"
+      "${CMAKE_CURRENT_BINARY_DIR}/CARTgame/CARTgame.data"
+    DESTINATION "${WEBGL_ROOT_OUT_DIR}"  
+)

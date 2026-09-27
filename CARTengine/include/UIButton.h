@@ -3,21 +3,24 @@
 #include "Sprite2D.h"
 
 namespace cart {
-
+    class Text;
 	class UIButton : public UIElement{
 	public:
     
         UIButton(World* _owningworld, const std::string& _id, bool isExcludedFromParentAutoControl = false);
         void SetTextProperties(Btn_Text_Properties _prop);
 
-        bool TestMouseOver(Vector2 _point);
-        void ButtonUp(Vector2 pos);
-        void ButtonDown(Vector2 pos);
-        void ButtonDrag(Vector2 pos);
-        void MouseHovered();     
-        void MouseOut();
-        void SetButtonProperties(Btn_Properties _prop);
-        void SetButtonProperties(Btn_Text_Properties _prop);
+       virtual void ButtonUp(Vector2 pos);
+       virtual void ButtonDown(Vector2 pos);
+       virtual void ButtonDrag(Vector2 pos);
+       virtual void MouseHovered();
+       virtual void MouseOut();
+     
+        
+       bool TestMouseOver(Vector2 _point);
+       void SetButtonText(const std::string& _text);
+       void SetButtonProperties(Btn_Properties _prop);
+       void SetButtonProperties(Btn_Text_Properties _prop);
 
 
         Delegate<weak<Object>, Vector2> onButtonClicked;
@@ -29,6 +32,7 @@ namespace cart {
 
       //  Rectangle GetBounds() override;
         void Init() override;
+        void Start() override;
         void SetScale(float _scale) override;
         void SetUIProperties(UI_Properties _prop) override;
         void Update(float _deltaTime) override;
@@ -42,6 +46,7 @@ namespace cart {
         virtual void SetHoverColor(Color _color);
         virtual void SetDownColor(Color _color);
         virtual void SetDisableColor(Color _color);
+        virtual const std::string GetButtonText() const { return m_text; };
         void UpdateTextLocation();
         void SetFontName(const std::string& strfnt);
 		~UIButton();
@@ -49,12 +54,9 @@ namespace cart {
     protected:
         bool m_touch;
         int tCount;
-        
 	private:
         int m_margin;
-        Vector2 m_textsize;
-        Vector2 m_fontLocation;
-        Vector2 m_locmouse;
+        int m_cursorstyle;
         std::string m_fontstr;
         std::string m_text;
         ALIGN m_align = LEFT;
@@ -62,6 +64,14 @@ namespace cart {
         float m_minfontsize;
         float m_fontspace;
         float m_minfontspace;
+        bool m_IsButtonDown;
+        bool m_IsMouseOver;
+        bool m_IsSelected;
+        bool m_IsSelectable;
+        Vector2 m_textsize;
+        Vector2 m_fontLocation;
+        Vector2 m_locmouse;
+    
         Color m_defaulttextcolor;
         Color m_defaulttexturecolor;
         Color m_textcolor;
@@ -70,15 +80,15 @@ namespace cart {
         Color m_ButtonDownColor;
         Color m_ButtonHoverColor;
         Color m_ButtonDisableColor;
-        bool m_IsButtonDown;
-        bool m_IsMouseOver;
-        bool m_IsSelected;
-        bool m_IsSelectable;
-        shared<Font> m_font;
+      
         Rectangle m_texturesourcedefault;
         Rectangle m_texturesourceover;
         Rectangle m_texturesourcedown;
         Rectangle m_texturesourcedisable;
+        
+        shared<Font> m_font;
+        weak<Text> m_btntext;
+        Text_Properties m_btntxtprop;
 
      
 	};

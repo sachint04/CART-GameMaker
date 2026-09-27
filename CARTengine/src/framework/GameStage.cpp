@@ -13,7 +13,9 @@ namespace cart
     }
     void GameStage::Destroy()
     {
-
+        if (IsPendingDestroy())return;
+        onStageFinished.Destroy();
+        Object::Destroy();
     }
      GameStage::~GameStage()
     {

@@ -6,7 +6,7 @@
 #include <map>
 #include <unordered_map>
 #include <unordered_set>
-
+#include <nlohmann/json.hpp>
 
 
 
@@ -39,6 +39,8 @@ namespace cart {
     using Dictionary = std::unordered_map<keyType, valType, hasher>;
 
     using uint8 = unsigned char;
+
+    using json = nlohmann::json;
 
     // a macro
     

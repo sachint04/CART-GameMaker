@@ -31,7 +31,9 @@ namespace cart
 		m_Id{id},
 		m_margin{},
 		m_padding{},
-		m_valign{}
+		m_valign{},
+		m_align{},
+		m_gap{0}
 	{
 		m_type = LAYOUT;
 	}
@@ -53,6 +55,7 @@ namespace cart
 		m_valign = props.valign;
 		m_margin = props.margin;
 		m_padding = props.padding;
+		m_gap = props.gap;
 	}
 
 #pragma endregion
@@ -80,7 +83,7 @@ namespace cart
 			if (min != max)// anchor is a rectangle area
 			{
 				float fscale = csr ? (pr2 / pds) * str : mis;// MAXIMUM OF -> minimum scale and  max streach 
-				p = (pr1 + min) + (csr)? p1* fscale : p1 * mis; // parent start + anchor min + cur left/top [x/y] 
+				p = (pr1 + min) + ((csr)? p1* fscale : p1 * mis); // parent start + anchor min + cur left/top [x/y] 
 				float re = (csr) ? ods * fscale : ods * mis;
 				s = p2 * fscale;// -(min + p + re); // parent start + anchor max - right/botton [width/height]
 			}
@@ -98,19 +101,20 @@ namespace cart
 
 		Vector2 canvas_size, ownerpivot, midAnchor, rawPosition; 
 		Rectangle parentRect, anchor;
-		auto parent = m_owner.get()->parent();
+		weak<UIElement> parent = std::dynamic_pointer_cast<UIElement>(m_owner.get()->GetParent().lock());
 		ownerpivot = m_owner.get()->GetPivot();
 		rawPosition = m_owner.get()->GetRawLocation();
 		defaultW = m_owner.get()->GetDefaultWidth();
 		defaultH = m_owner.get()->GetDefaultHeight();
 		float scaleX = World::UI_CANVAS.get()->ScaleX();
 		float scaleY = World::UI_CANVAS.get()->ScaleY();
-		if (!parent.expired()) {
+		auto lock = parent.lock();
+		if (lock) {
 			// owner is ready
-			if (!parent.lock()->IsLayoutUpdated()) 
+			if (!lock->IsLayoutUpdated())
 			{
 				// owner not updated
-				if (parent.lock()->UpdateLayout())// Update Parent first
+				if (lock->UpdateLayout())// Update Parent first
 				{
 					// update parent first
 					/*parentx = parent.lock()->GetLocation().x - (parent.lock()->GetPivot().x * parent.lock()->GetSize().x);
@@ -171,7 +175,7 @@ namespace cart
 		m_owner.get()->SetSize({ w, h });
 		m_owner.get()->SetLocation({ cx, cy });
 		
-		m_owner.get()->OnLayoutChange();
+		m_owner.get()->OnLayoutChangeHandler();
 		m_isUpdated = true;
 		return m_isUpdated;
 		
@@ -179,7 +183,7 @@ namespace cart
 
 	bool LayoutComponent::HasParent()
 	{		
-		return !m_owner.get()->parent().expired();
+		return !m_owner.get()->GetParent().expired();
 	}
 
 	

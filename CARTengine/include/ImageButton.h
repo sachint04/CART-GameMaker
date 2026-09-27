@@ -11,13 +11,13 @@ namespace cart {
         void SetTextProperties(Btn_Text_Properties _prop);
 
         bool TestMouseOver(Vector2 _point);
-        void ButtonUp(Vector2 pos);
-        void ButtonDown(Vector2 pos);
-        void ButtonDrag(Vector2 pos);
-        void MouseHovered();     
-        void MouseOut();
-        void SetButtonProperties(Btn_Properties _prop);
-        void SetButtonProperties(Btn_Text_Properties _prop);
+       virtual void ButtonDown(Vector2 pos);
+       virtual void SetButtonProperties(Btn_Properties _prop);
+       virtual void SetButtonProperties(Btn_Text_Properties _prop);
+       virtual void ButtonUp(Vector2 pos);
+       virtual void ButtonDrag(Vector2 pos);
+       virtual void MouseHovered();
+       virtual void MouseOut();
 
 
         Delegate<weak<Object>, Vector2> onButtonClicked;
@@ -41,23 +41,37 @@ namespace cart {
         void Destroy() override;
         void UpdateTextLocation();
         void SetFontName(const std::string& strfnt);
+        void EnableDrag(bool flag);
+        void SetDragBounds(Rectangle rect);
+        bool IsDraggable() { return m_bDraggable; };
+        bool IsDragging() { return m_isDragging; };
 		~ImageButton();
         
     protected:
         bool m_touch;
         int tCount;
-        
-	private:
+        Rectangle m_texturesourcedefault;
+        Rectangle m_texturesourceover;
+        Rectangle m_texturesourcedown;
+        Rectangle m_texturesourcedisable;
+        bool m_bButtonDown;
+        bool m_bMouseOver;
+        bool m_bSelected;
+        bool m_bSelectable;
+        bool m_bDraggable;
+        bool m_isDragging;
+        bool m_bMaintainOffset;
         int m_margin;
+        float m_fontsize;
+        float m_fontspace;
         float m_borderwidth;
         Vector2 m_textsize;
         Vector2 m_fontLocation;
         Vector2 m_locmouse;
+        Vector2 m_offset;
         std::string m_fontstr;
         std::string m_text;
         ALIGN m_align = LEFT;
-        float m_fontsize;
-        float m_fontspace;
         Color m_defaulttextcolor;
         Color m_defaulttexturecolor;
         Color m_textcolor;
@@ -67,15 +81,8 @@ namespace cart {
         Color m_ButtonHoverColor;
         Color m_ButtonDisableColor;
         Color m_borderColor;
-        bool m_IsButtonDown;
-        bool m_IsMouseOver;
-        bool m_IsSelected;
-        bool m_IsSelectable;
         shared<Font> m_font;
-        Rectangle m_texturesourcedefault;
-        Rectangle m_texturesourceover;
-        Rectangle m_texturesourcedown;
-        Rectangle m_texturesourcedisable;
+        Rectangle m_dragableboundry;
 
      
 	};

@@ -16,15 +16,20 @@ namespace cart
 		virtual void Destroy();
 		virtual std::string GetId()const;
 		virtual bool IsReady() { return m_isReady; };
-		bool IsPendingDestroy() const { return m_isPendingDestroy; }
+		virtual bool IsUI();
+		virtual weak<Object> SortChildrenByZindex();
 		
 		virtual weak<Object> GetWeakRef();
 		virtual weak<const Object> GetWeakRef() const;
-		Delegate<Object*> onDestory;
+		virtual weak<Object> GetParent();
+
+		bool IsPendingDestroy() const { return m_isPendingDestroy; };
+		//Delegate<Object*> onDestory;
 	protected:
 		std::string m_id;
 		bool m_isReady;
 		bool m_isPendingDestroy;
+		weak<Object> m_parentObj;
 	private:
 	};
 }

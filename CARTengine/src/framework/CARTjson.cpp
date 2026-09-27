@@ -38,12 +38,6 @@ namespace cart
 		return m_userdata;
 	}
 
-	json& CARTjson::readAppConfigData(const std::string& strm)
-	{
-		m_app_config = json::parse(strm);
-		return m_app_config;
-	}
-
 	json& CARTjson::readTemplateInfo(const std::string& strm)
 	{
 
@@ -60,7 +54,12 @@ namespace cart
 		return m_templateinfo;
 	}
 
-	json& CARTjson::GetUserData() { 
+	json& CARTjson::GetAppData()
+	{
+		return m_config;
+	}
+
+	json& CARTjson::GetUserData() {
 		return m_userdata;
 	}
 
@@ -91,6 +90,11 @@ namespace cart
 
 	std::string CARTjson::GetUserDataString() {
 		return m_userdata.dump();
+	}
+
+	std::string CARTjson::GetAppDataString()
+	{
+		return m_config.dump();
 	}
 
 	CARTjson::~CARTjson()

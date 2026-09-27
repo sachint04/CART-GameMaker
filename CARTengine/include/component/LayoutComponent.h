@@ -42,6 +42,7 @@ namespace cart {
 		float m_anchorMaxY;
 		float m_padding;
 		float m_margin;
+		float m_gap;
 		Rectangle m_Rect;
 		shared<UIElement> m_owner;
 	};

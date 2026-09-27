@@ -9,7 +9,6 @@
 namespace cart {
 	
 	class TweenBuilder : public TweenBuilderBase {
-	
 	public:
 		
 		TweenBuilder(const std::string& id, weak<Actor> actor) ;

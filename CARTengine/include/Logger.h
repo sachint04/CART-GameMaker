@@ -43,8 +43,8 @@ namespace cart
 		Color borderColor = BLACK;         // Container border color
 		Font font;       // Get default system font
 
-		void DrawTextBoxed(Font font, const char* text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint);
-		void DrawTextBoxedSelectable(Font font, const char* text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint, int selectStart, int selectLength, Color selectTint, Color selectBackTint);
+		Vector2 DrawTextBoxed(Font font, const char* text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint);
+		Vector2 DrawTextBoxedSelectable(Font font, const char* text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint, int selectStart, int selectLength, Color selectTint, Color selectBackTint);
 
 		std::string strinfo = "Info ->";
 		std::string stralert = "ALERT! ->";
@@ -56,6 +56,7 @@ namespace cart
 		Rectangle container = { 25.0f, 25.0f, 250.f, 600.f };
 		Rectangle resizer = { 283.f, 408 , 10, 10 };
 		Rectangle clearbtn = { 283.f, 28.0f , 30, 14 };
+		Rectangle wordwrapbtn = { 250.f, 28.0f , 60, 14 };
 		float minWidth = 60;
 		float minHeight = 60;
 		float maxWidth = 800.0f;

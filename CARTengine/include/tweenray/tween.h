@@ -19,19 +19,20 @@ namespace cart {
 
         };
 
+        static int tweenId;
+        static float m_cleanCycleIter;
+        static  double m_cleanCycleStartTime;
+        static Dictionary <int, TweenBuilderBase*> tweenlist;
+        static List<TweenBuilderBase*> pendingDeleteTween;
+
         static TweenBuilder* create(weak<Actor> actor);
         static void Update(double deltaTime);
         static int GetTweenCount();
         static void AddTween(int id, TweenBuilderBase* tween);
-        static Dictionary <int, TweenBuilderBase*> tweenlist;
-        static List<TweenBuilderBase*> pendingDeleteTween;
+        static bool Abort();
+        static void Abort(const std::string& actorid);
         static void CleanCycle();
-        static int tweenId;
-        static float m_cleanCycleIter;
-        static  double m_cleanCycleStartTime;
-
         static long GetSizeOfPendingTweens();
-
     };
 
 }

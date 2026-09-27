@@ -27,16 +27,21 @@ namespace cart {
 		m_ButtonDownColor{},
 		m_ButtonHoverColor{},
 		m_ButtonDisableColor{},
-		m_IsButtonDown{ false },
-		m_IsMouseOver{ false },
-		m_IsSelected{ false },
-		m_IsSelectable{ false },
+		m_bButtonDown{ false },
+		m_bMouseOver{ false },
+		m_bSelected{ false },
+		m_bSelectable{ false },
+		m_bDraggable{false},
 		m_borderwidth{ 0 },
 		m_borderColor{ GRAY },
 		m_texturesourcedefault{},
 		m_texturesourceover{},
 		m_texturesourcedown{},
-		m_texturesourcedisable{}
+		m_texturesourcedisable{},
+		m_dragableboundry{},
+		m_bMaintainOffset{true},
+		m_offset{0,0},
+		m_isDragging{false}
 	{
 	}
 
@@ -59,8 +64,6 @@ namespace cart {
 		UpdateTextLocation();
 	}
 
-	
-
 #pragma endregion
 
 #pragma region LOOP
@@ -68,7 +71,7 @@ namespace cart {
 	void ImageButton::Update(float _deltaTime)
 	{
 
-		if (!m_active || !m_visible || m_pendingUpdate)return;
+		if (!m_visible || m_pendingUpdate)return;
 
 		Sprite2D::Update(_deltaTime);
 #if defined(PLATFORM_ANDROID)
@@ -106,41 +109,44 @@ namespace cart {
 		}
 
 #else
-		
-		Vector2 tPos = { (float)GetMouseX(), (float)GetMouseY() };
-		bool mouseonBtn = m_owningworld->GetInputController()->IsMouseOver(GetWeakRef());
+		if (m_active) {
+			Vector2 tPos = { (float)GetMouseX(), (float)GetMouseY() };
+			bool mouseonBtn = m_owningworld->GetInputController()->IsMouseOver(GetWeakRef());
 
-		if (mouseonBtn) {//Mouse over
-			if (m_touch) // Mouse/touch active
-			{
-				if (IsMouseButtonReleased(0)) { // Mouse/Touch Released
-					ButtonUp(tPos);
-					m_touch = false;
+			if (mouseonBtn || (m_bButtonDown && m_bDraggable )) {//Mouse over
+				if (m_touch) // Mouse/touch active
+				{
+				
+					if (IsMouseButtonReleased(0)) { // Mouse/Touch Released
+						ButtonUp(tPos);
+						m_touch = false;
+					}
+					if (m_bButtonDown) {// Drading		
+						ButtonDrag(tPos);					
+					}
 				}
-				if (IsMouseButtonPressed(0)) {// Drading						
-					ButtonDrag(tPos);
+				else {
+					if (IsMouseButtonPressed(0)) {// Drading
+
+						ButtonDown(tPos);// Mouse /Touch  Pressed
+						m_touch = true;
+					}
+					if (IsMouseButtonUp(0)) {// Mouse over the button //
+						MouseHovered();
+					}
 				}
 			}
 			else {
-				if (IsMouseButtonPressed(0)) {// Drading
-					ButtonDown(tPos);// Mouse /Touch  Pressed
-					m_touch = true;
+
+				if (m_bMouseOver) {
+					if (!m_bButtonDown || !m_bDraggable ) {
+						MouseOut();
+					}
 				}
-				if (IsMouseButtonUp(0)) {// Mouse over the button //
-					MouseHovered();
+				if (m_bButtonDown) {
+					ButtonUp(tPos);
+					m_touch = false;
 				}
-			}
-
-
-		}
-		else {
-
-			if (m_IsMouseOver) {
-				MouseOut();
-			}
-			if (m_IsButtonDown) {
-				ButtonUp(tPos);
-				m_touch = false;
 			}
 		}
 #endif
@@ -149,27 +155,8 @@ namespace cart {
 	void ImageButton::Draw(float  _deltaTime)
 	{
 		if (!m_visible)return;
-	
+		
 		Sprite2D::Draw(_deltaTime);
-		/*if (m_IsSelected == true) {
-			DrawRectangle(m_location.x - 10.f, m_location.y - 10.f, m_width + 20.f, m_height + 20.f, m_color);
-		}*/
-	/*	if (m_strTexture.size() == 0) {
-			if (m_shapeType == SHAPE_TYPE::CIRCLE)
-			{
-				DrawCircle(m_location.x + m_width / 2.f, m_location.y + m_width / 2.f, m_width, m_color);				
-
-			}
-			else if (m_shapeType == SHAPE_TYPE::ROUNDED_RECTANGLE)
-			{
-				DrawRectangleRounded({ m_location.x, m_location.y, m_width, m_height }, 0.2f, 2, m_color);
-			}
-			else
-			{
-				
-				DrawRectangle(m_location.x, m_location.y, m_width, m_height, m_color);
-			}
-		}*/
 		Color calcColor = { m_textcolor.r, m_textcolor.g, m_textcolor.b, m_color.a };
 		if (m_text.size() > 0) {
 				m_font = AssetManager::Get().LoadFontAsset(m_fontstr, m_fontsize);			
@@ -179,13 +166,10 @@ namespace cart {
 	}
 
 
-
 	void ImageButton::SetSelected(bool _flag)
-	{
-		if (m_IsSelected && !_flag) {
-			m_texturesource = m_texturesourcedefault;
-		}
-		m_IsSelected = _flag;
+	{		
+		m_bSelected = _flag;
+		m_texturesource = m_bSelected ? m_texturesourceover :  m_texturesourcedefault;
 	}
 
 	void ImageButton::SetActive(bool _flag)
@@ -193,10 +177,10 @@ namespace cart {
 		Sprite2D::SetActive(_flag);		
 		if (!_flag) {
 			MouseOut();
-			m_IsSelected = false;
+			m_bSelected = false;
 			m_touch = false;
 		}
-		m_color = (_flag) ? m_ButtonDefaultColor : m_ButtonDisableColor;
+	//	m_color = (_flag) ? m_ButtonDefaultColor : m_ButtonDisableColor;
 	}
 
 
@@ -213,7 +197,7 @@ namespace cart {
 		m_ButtonHoverColor = _prop.overcol;
 		m_ButtonDownColor = _prop.downcol;
 		m_ButtonDisableColor = _prop.disablecol;
-		m_IsSelectable = _prop.isSelectable;
+		m_bSelectable = _prop.selectable;
 		m_defaulttexturecolor = _prop.textureColor;
 		m_borderwidth = _prop.borderwidth;
 		m_borderColor = _prop.bordercol;
@@ -221,11 +205,15 @@ namespace cart {
 		m_texturesourceover = _prop.texturesourceover;
 		m_texturesourcedown = _prop.texturesourcedown;
 		m_texturesourcedisable = _prop.texturesourcedisable;
+		m_bDraggable = _prop.dragable;
+		m_dragableboundry = _prop.dragableboundry;
+		m_bMaintainOffset = _prop.maintainoffset;
+
 	}
 	void ImageButton::SetButtonProperties(Btn_Text_Properties _prop)
 	{
 		SetTextProperties(_prop);	
-		m_IsSelectable = _prop.isSelectable;
+		m_bSelectable = _prop.selectable;
 
 	}
 
@@ -266,7 +254,7 @@ namespace cart {
 	void ImageButton::SetColor(Color _color)
 	{
 		m_ButtonDefaultColor = _color;
-		m_color = _color;
+		//m_color = _color;
 	}
 
 
@@ -288,6 +276,16 @@ namespace cart {
 		m_fontstr = strfnt;
 	}
 
+	void ImageButton::EnableDrag(bool flag)
+	{
+		m_bDraggable = flag;
+	}
+
+	void ImageButton::SetDragBounds(Rectangle rect)
+	{
+		m_dragableboundry = rect;
+	}
+
 
 	bool ImageButton::TestMouseOver(Vector2 _point)
 	{
@@ -302,19 +300,23 @@ namespace cart {
 #pragma region  UI EVENTS
 	void ImageButton::ButtonUp(Vector2 pos)
 	{
-		m_IsButtonDown = false;
+		m_bButtonDown = false;
+		//Logger::Get()->Trace(std::format("Button Up {} ", GetId()));
 		if (m_strTexture.size() > 0)
 			m_textureColor = m_defaulttexturecolor;
 		else
 			m_color = m_ButtonDefaultColor;
 		
+		m_offset = { 0,0 };
+		m_isDragging = false;
 		onButtonUp.Broadcast(GetWeakRef(),  pos);
 		
 	}
 	
 	void ImageButton::ButtonDown(Vector2 pos)
 	{
-		m_IsButtonDown = true;
+		m_bButtonDown = true;
+	//	Logger::Get()->Trace(std::format("Button Down {} ", GetId()));
 		if (m_strTexture.size() > 0)
 			m_textureColor = m_ButtonDownColor;
 		else
@@ -322,15 +324,23 @@ namespace cart {
 		
 
 		if (m_texturetype == TEXTURE_PART) {
-			if(!m_IsSelected)
+			if(!m_bSelected)
 			m_texturesource = m_texturesourcedown;
 			else
 			m_texturesource = m_texturesourceover;
 				
 		}
 		
-		if (m_IsSelectable == true) {
-			m_IsSelected = true;
+		if (m_bSelectable == true) {
+			m_bSelected = true;
+		}
+		if (m_bDraggable)
+		{
+			if (m_bMaintainOffset) {
+				Rectangle rect = GetBounds();
+				Vector2 p = { rect.x + rect.width * m_pivot.x, rect.y + rect.height * m_pivot.y };
+				m_offset = { p.x - pos.x   , p.y - pos.y};
+			}
 		}
 		m_owningworld->GetInputController()->SetFocus(GetId());
 		onButtonDown.Broadcast(GetWeakRef(), pos);
@@ -339,12 +349,23 @@ namespace cart {
 
 	void ImageButton::ButtonDrag(Vector2 pos) {
 		
-		onButtonDrag.Broadcast(GetWeakRef(), pos);
+		if (m_bDraggable) {
+			//Logger::Get()->Trace(std::format("Dragging {} ", GetId()));
+			if (pos.x > m_dragableboundry.x && pos.x < m_dragableboundry.x + m_dragableboundry.width &&
+				pos.y > m_dragableboundry.y && pos.y < m_dragableboundry.y + m_dragableboundry.height)
+			{
+				SetLocation({pos.x + m_offset.x, pos.y + m_offset.y});
+			}
+			onButtonDrag.Broadcast(GetWeakRef(), { pos.x + m_offset.x, pos.y + m_offset.y });
+			m_isDragging = true;
+		}
 	}
 
 
 	void ImageButton::MouseHovered()
 	{
+
+
 		if (m_strTexture.size() > 0)
 			m_textureColor = m_ButtonHoverColor;
 		else
@@ -356,14 +377,14 @@ namespace cart {
 		if (m_texturetype == TEXTURE_PART) {
 			m_texturesource = m_texturesourceover;
 		}
-		m_IsMouseOver = true;
+		m_bMouseOver = true;
 		SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
 		onButtonHover.Broadcast(GetWeakRef() );
 	
 	}
 	void ImageButton::MouseOut()
 	{
-		if(m_IsMouseOver == true){
+		if(m_bMouseOver == true){
 			if (m_strTexture.size() > 0)
 				m_textureColor = m_defaulttexturecolor;
 			else
@@ -371,7 +392,7 @@ namespace cart {
 
 
 			if (m_texturetype == TEXTURE_PART) {
-				if(m_IsSelected)
+				if(m_bSelected)
 					m_texturesource = m_texturesourceover;
 				else
 				m_texturesource = m_texturesourcedefault;
@@ -379,13 +400,14 @@ namespace cart {
 			if (m_text.size() > 0)
 				m_textcolor = m_defaulttextcolor;
 
-			m_IsMouseOver = false;
+			
+			m_bMouseOver = false;
 			SetMouseCursor(0);
-		
-			m_IsButtonDown = false;
 			SetMouseCursor(MOUSE_CURSOR_ARROW);
 			onButtonOut.Broadcast(GetWeakRef() );
+			m_isDragging = false;
 		}
+
 	}
 
 	
@@ -407,6 +429,14 @@ namespace cart {
 		if (m_isPendingDestroy)return;
 
 		m_owningworld->GetInputController()->RemoveUI(GetId());
+
+		onButtonClicked.Destroy();
+		onButtonDown.Destroy();
+		onButtonUp.Destroy();
+		onButtonDrag.Destroy();
+		onButtonHover.Destroy();
+		onButtonOut.Destroy();
+
 		Sprite2D::Destroy();
 	}
 

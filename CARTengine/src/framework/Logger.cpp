@@ -1,5 +1,6 @@
 #include <raylib.h>
 #include <stdexcept>
+#include "Application.h"
 #include "Logger.h"
 #include "Core.h"
 namespace cart
@@ -39,8 +40,8 @@ namespace cart
         {
             logdb.push_back({ LOG_INFO, _t });
         }
+            std::cout << _t << std::endl;
        
-        std::cout << _t << std::endl;
    }
 
     void Logger::Warn(std::string _t)
@@ -49,6 +50,7 @@ namespace cart
         {
             logdb.push_back({ LOG_WARNING, _t });
         }
+        std::cout << "WARNING! : " << _t << std::endl;
     }
 
     void Logger::Error(std::string _t)
@@ -56,9 +58,9 @@ namespace cart
         if (isVisible)
         {
             logdb.push_back({ LOG_ERROR, _t });
-            std::cout << "WARNING: " << _t << std::endl;
           //  throw std::runtime_error(_t.c_str());
         }
+        std::cout << "ERROR!: " << _t << std::endl;
     }
 
     void Logger::SetRect(Rectangle _rect)
@@ -102,11 +104,13 @@ namespace cart
 #pragma region LOOP
 	void Logger::Update(float _deltaTime)
 	{
+#ifdef __LOGGER__
+
 
 
         if (!isVisible)return;
        
-        if (IsKeyPressed(KEY_SPACE)) wordWrap = !wordWrap;
+       // if (IsKeyPressed(KEY_SPACE)) wordWrap = !wordWrap;
         Vector2 mouse = GetMousePosition();
       
         // Check if the mouse is inside the container and toggle border color
@@ -140,6 +144,7 @@ namespace cart
         else
         {
             // Check if we're resizing
+            
 
             if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) { // Mouse Release
                 if (CheckCollisionPointRec(mouse, clearbtn))
@@ -147,23 +152,34 @@ namespace cart
                     Clear();
                     m_ismouseOverUI = true;
                 }
+                else if (CheckCollisionPointRec(mouse, wordwrapbtn))
+                {
+                    wordWrap = !wordWrap;
+                }
             }
 
             if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))// Mouse down
-            {                
-                if (CheckCollisionPointRec(mouse, resizer) ) {
-                    {
-                        resizing = true;
-                    }
-                    m_ismouseOverUI = true;
-                }
-                else if (CheckCollisionPointRec(mouse, titlebarRect) && !CheckCollisionPointRec(mouse, clearbtn))
+            {          
+                if (!CheckCollisionPointRec(mouse, clearbtn) && !CheckCollisionPointRec(mouse, wordwrapbtn))
                 {
-                    dragging = true;
-                    m_ismouseOverUI = true;
+                   
+                   if (CheckCollisionPointRec(mouse, resizer) ) {
+                        {
+                            resizing = true;
+                        }
+                        m_ismouseOverUI = true;
+                    }
+                    else if (CheckCollisionPointRec(mouse, titlebarRect) && !CheckCollisionPointRec(mouse, clearbtn))
+                    {
+                        dragging = true;
+                        m_ismouseOverUI = true;
+                    }
+                    else {
+                        m_ismouseOverUI = false;
+                    }
                 }
                 else {
-                    m_ismouseOverUI = false;
+                    m_ismouseOverUI = true;
                 }
             }
             else {
@@ -183,10 +199,16 @@ namespace cart
         resizer.x = container.x + container.width - 17;
         resizer.y = container.y + container.height - 17;
 
+        wordwrapbtn.x = clearbtn.x - 80;
+        wordwrapbtn.y = clearbtn.y;
         lastMouse = mouse; // Update mouse
+#endif // __LOGGER__
 	}
 
     void Logger::Draw(float _deltaTime) {
+
+#ifdef __LOGGER__
+
 
         if (!isVisible)return;
         font = GetFontDefault();
@@ -207,6 +229,7 @@ namespace cart
         int size = logdb.size();
         int offset = std::max(size, size - m_max_log_count);
         int cnt = 0;
+        float linespaceing = 0.f;
         if (offset > 0) {
 
             for (auto iter = logdb.end() - 1;  iter != logdb.end() - offset; --iter)
@@ -233,30 +256,87 @@ namespace cart
             else if (iter->type == LOG_WARNING) {
                 txtcol = { 204,51,0,255 };
             }
-            DrawTextBoxed(font, iter->log.c_str(), { container.x + 4, (float)pos + 4, container.width, rect.y + 4 }, fontsize, 2.0f, wordWrap, txtcol);
-            pos += rect.y;
+           Vector2 p =  DrawTextBoxed(font, iter->log.c_str(), { container.x + 4, (float)pos + 4, container.width, rect.y + 4 }, fontsize, 2.0f, wordWrap, txtcol);
+            pos = p.y;
         }
        
         DrawRectangle(container.x, container.y - 20, container.width, 20, borderColor);// draw Title bar
         DrawRectangleRec(clearbtn, WHITE);// clear Text box
+        DrawRectangleRec(wordwrapbtn, WHITE);// clear Text box
+
         DrawRectangleRec(resizer, borderColor);             // Draw the resize box
         DrawTriangle({ resizer.x + 1, resizer.y + 1 }, { resizer.x + 1 , resizer.y + resizer.height - 1 }, { resizer.x + resizer.width -1 , resizer.y + 1 }, WHITE);
       
         DrawText("Clear", clearbtn.x + 2, clearbtn.y + 2, 10, BLACK);
+        DrawText("Word Warp", wordwrapbtn.x + 2, wordwrapbtn.y + 2, 10, BLACK);
         DrawText("LOG:", container.x + 5, container.y - 14, 10, WHITE);
         DrawRectangleLinesEx(container, 2.f, BLACK);
+#endif // __LOGGER__
     }
 #pragma endregion
 
 #pragma region DrawText
     // Draw text using font inside rectangle limits
-    void Logger::DrawTextBoxed(Font font, const char* text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint)
+    Vector2 Logger::DrawTextBoxed(Font font, const char* text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint)
     {
-        DrawTextBoxedSelectable(font, text, rec, fontSize, spacing, wordWrap, tint, 0, 0, WHITE, WHITE);
+       return DrawTextBoxedSelectable(font, text, rec, fontSize, spacing, wordWrap, tint, 0, 0, WHITE, WHITE);
+      // Vector2 textsize = MeasureTextEx(font, text, fontSize, spacing);
+       //if (textsize.x >= rec.width)
+       //{
+       //    std::string strcopy = text;
+       //    std::vector<std::string>  lines = {};
+       //    std::string line = "";
+
+       //    std::string spacedelimiter = " ";
+       //    Vector2 msize = {};
+       //    while (strcopy.find(spacedelimiter) != std::string::npos) {// create stings of line in
+       //        auto find = strcopy.find(spacedelimiter);
+       //        line = line + strcopy.substr(0, find + 1);
+       //        msize = MeasureTextEx(font, line.c_str(), fontsize, spacing);
+       //        if (msize.x > rec.width) {
+       //            line.pop_back();
+       //            line = line.substr(0, line.find_last_of(spacedelimiter));
+       //            msize = MeasureTextEx(font, line.c_str(), fontsize, spacing);
+       //            lines.push_back(line);// add line to list
+       //            line.clear();// clear line                       
+       //        }
+       //        else {
+       //            strcopy = strcopy.substr(find + 1);// remove last word from the string
+       //        };
+       //    }
+       //    if (!strcopy.empty())
+       //    {
+       //        line = line + strcopy;
+       //        msize = MeasureTextEx(font, line.c_str(), fontsize, spacing);
+       //        if (msize.x > rec.width) {
+       //            auto find = line.find_last_of(spacedelimiter);
+       //            if (find != std::string::npos) {
+       //                if (lines.empty()) {
+       //                    lines.push_back(line.substr(0, find));
+       //                }
+       //                lines.push_back(line.substr(find + 1));
+       //            }
+       //        }
+       //        else {
+       //         lines.push_back(line);;
+       //        }
+       //    }
+       //    for (auto ln : lines) {
+       //        DrawText(ln.c_str(), rec.x, rec.y, fontSize, tint);
+       //        rec.y += textsize.y;
+       //    }
+       //    rec.y = rec.y - textsize.y;
+       //}
+       //else {
+
+       //    DrawText(text, rec.x, rec.y, fontsize, tint);
+       //}
+       //
+       //return { rec.x, rec.y  };
     }
 
 
-    void Logger::DrawTextBoxedSelectable(Font font, const char* text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint, int selectStart, int selectLength, Color selectTint, Color selectBackTint)
+    Vector2 Logger::DrawTextBoxedSelectable(Font font, const char* text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint, int selectStart, int selectLength, Color selectTint, Color selectBackTint)
     {
         int length = TextLength(text);  // Total length in bytes of the text, scanned by codepoints in loop
 
@@ -369,7 +449,7 @@ namespace cart
 
                 if (wordWrap && (i == endLine))
                 {
-                    textOffsetY += (font.baseSize + font.baseSize / 2) * scaleFactor;
+                    textOffsetY += (font.baseSize + font.baseSize * 0.1f) * scaleFactor;
                     textOffsetX = 0;
                     startLine = endLine;
                     endLine = -1;
@@ -382,7 +462,9 @@ namespace cart
             }
 
             if ((textOffsetX != 0) || (codepoint != ' ')) textOffsetX += glyphWidth;  // avoid leading spaces
+            
         }
+        return { rec.x , rec.y + textOffsetY };
     }
 #pragma endregion
 }

@@ -7,6 +7,8 @@ using namespace std::literals;
 
 namespace cart {
 
+	using TimePoint = steady_clock::time_point;
+
 	class Clock {
 	public:
 		static Clock& Get();
@@ -18,7 +20,9 @@ namespace cart {
 		void TimeScale(float _t);
 		double TimeScale();
 		void Tick();
+		milliseconds ToMiliseconds(int ms);
 		time_t Now();
+		TimePoint SteadyTime();
 		~Clock();
 	protected:
 		Clock();
@@ -32,6 +36,7 @@ namespace cart {
 		duration<double> m_deltaTime;
 
 		float m_timeScale;
+
 	};
 
 }

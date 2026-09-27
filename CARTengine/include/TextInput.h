@@ -8,7 +8,7 @@ namespace cart {
 	class TextInput : public Text
 	{
 	protected:
-		void OnScreenSizeChange() override;
+		void OnScreenSizeChangeHandler() override;
 	public:
 		TextInput(World* _owningworld, const std::string& _id);
 		~TextInput();
@@ -26,12 +26,14 @@ namespace cart {
 		void SetAligned(ALIGN _align)override;
 		void SetVAligned(V_ALIGN _valign)override;
 		void SetText(const std::string &txt)override;
+		std::string GetFontName()override;
 
 
 		void SetText(const char* chrt);
 		std::string GetInputText();
 		void UpdateLayout();
-		void PrepareInput(Rectangle bounds);
+		void PrepareInput();
+		void FormatInput(Rectangle bounds);
 		void CalculateCursor(Rectangle bounds);
 		void ShowCharLimitWarning(Rectangle bounds);
 		void ShowRemainingCharCount(Rectangle bounds);
@@ -57,6 +59,8 @@ namespace cart {
 		bool m_hasUpated;
 		bool m_bMobileInput;
 		bool m_bPreparingInput;
+		bool m_bnewline;
+		bool m_textoutofbound;
 
 		float m_textmargin;
 		float m_keydownWaitTimeMultiplyer;
@@ -72,6 +76,7 @@ namespace cart {
 		Vector2 m_cursorLoc;
 	/*	shared<Font> fnt;*/
 		shared<Font> m_infofnt;
+		void SetCursorAt(Vector2 pos);
 		void TextLine(Rectangle rect);
 		//void CharsToVec();
 	};

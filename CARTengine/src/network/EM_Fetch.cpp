@@ -7,7 +7,7 @@
 
 namespace cart {
 
-	Dictionary<std::string, std::function<bool(std::string, ASYNC_CALLBACK_STATUS, const char*, int, int)>> EM_Fetch::mCallbacks{};
+	Dictionary<std::string, std::function<bool(std::string, std::string, std::string, ASYNC_CALLBACK_STATUS, int)>> EM_Fetch::mCallbacks{};
 
 
 	 std::string EM_Fetch::GetHost() {
@@ -64,7 +64,7 @@ namespace cart {
     /// <param name="size"></param>
     /// <param name="userdata"></param>
 
-    void EM_Fetch::HTTPCallback(std::string uid, ASYNC_CALLBACK_STATUS status, const char* data, int progress, int totalbytes) {
+  /*  void EM_Fetch::HTTPCallback(std::string uid, ASYNC_CALLBACK_STATUS status, const char* data, int progress, int totalbytes) {
 
 
 		for (auto iter = EM_Fetch::mCallbacks.begin(); iter != EM_Fetch::mCallbacks.end(); ++iter)
@@ -81,43 +81,120 @@ namespace cart {
 			}
 
 		}
-    }
+    }*/
 
-	
+
 #ifdef __EMSCRIPTEN__
-
-
 	void EM_Fetch::Fetch_Succeeded(struct emscripten_fetch_t* fetch)
 	{
-		std::string url = { fetch->url };
-		uint64_t numbytes = fetch->numBytes;
-		uint64_t totalBytes = fetch->totalBytes;
-		ASYNC_CALLBACK_STATUS status = OK;
-		EM_Fetch::HTTPCallback(url , status, fetch->data, 0, (int)totalBytes);
-		emscripten_fetch_close(fetch); // Also free data on failure.
+		FetchContext* context = static_cast<FetchContext*>(fetch->userData);
+		if (fetch->data != NULL && fetch->numBytes > 0)
+		{
+			const char* vpath = context->virtualpath.c_str(); // "assets/cards/template01/card.glb"
+			const char* dirPath = GetDirectoryPath(vpath);   // returns "assets/cards/template01"
+
+			if (dirPath != nullptr && strlen(dirPath) > 0)
+			{
+				// Recursively create the full directory tree
+				// This is safe even if some parts of the path already exist
+				EM_ASM({
+					try {
+						FS.mkdirTree(UTF8ToString($0));
+					}
+					 catch (e) {
+						 // Silently handle cases where path already exists or is root
+					}
+				}, dirPath);
+			}
+
+			// 1. Save to the virtual filesystem (MEMFS/IDBFS)
+			void* dataPtr = const_cast<char*>(fetch->data);
+			if(SaveFileData(context->virtualpath.c_str(), dataPtr, static_cast<int>(fetch->numBytes)))
+			{
+				Logger::Get()->Trace(std::format(" EM_Fetch::Fetch_Succeeded() SUCCESS | url {} | virtual path {}", context->url, context->virtualpath));
+				
+				if (FileExists(vpath))
+				{
+					// Verify file size matches expected download size
+					int savedSize = GetFileLength(vpath);
+
+					if (savedSize == (int)fetch->numBytes) {
+						Logger::Get()->Trace(std::format("VERIFIED | {} exists and size matches ({} bytes)", vpath, savedSize));
+					}
+					else {
+						Logger::Get()->Error(std::format("VERIFICATION FAILED | Size mismatch for {}: expected {}, got {}", vpath, fetch->numBytes, savedSize));
+					}
+				}
+				else {
+					Logger::Get()->Error(std::format("VERIFICATION FAILED | {} not found in FS after save", vpath));
+				}
+			}
+			else {
+				Logger::Get()->Error(std::format(" EM_Fetch::Fetch_Succeeded() FAILED | url {} | virtual path {}", context->url, context->virtualpath));
+			}
+			
+		}
+
+		//FILE* fp = fopen(vpath.c_str(), "wb"); // Or a cleaned filename
+		//if (fp) {
+		//	fwrite(fetch->data, 1, fetch->numBytes, fp);
+		//	fclose(fp);
+		//	
+		//	EM_ASM({
+		//		FS.syncfs(false, function(err) {
+		//			if (err) 
+		//			{
+		//				console.error("EM_Fetch::Fetch_Succeeded() | Failed to sync to IndexedDB", err);
+		//				//Logger::Get()->Trace(std::format("EM_Fetch::Fetch_Succeeded() Failed to sync to IndexedDB url {} | vpath {}", url, vpath));
+		//			}
+		//		});
+		//	});
+		//	Logger::Get()->Trace(std::format("EM_Fetch::Fetch_Succeeded() url {} | vpath {}", url, vpath));
+		//}
+		//else {
+		//	Logger::Get()->Trace(std::format("EM_Fetch::Fetch_Succeeded() FAILED to fwrite url {} | vpath {}", url, vpath));
+		//} 
+		if (EM_Fetch::mCallbacks.contains(context->url)) {
+			EM_Fetch::mCallbacks[context->url](context->uid, context->url, context->virtualpath, OK,  100);
+			EM_Fetch::mCallbacks.erase(context->url);
+		}
+		delete context; // Clean up the heap-allocated string
+		emscripten_fetch_close(fetch);
+	
 	}
 
 	void EM_Fetch::Fetch_Failed(struct emscripten_fetch_t* fetch)
 	{
-		std::string url = { fetch->url };
+		FetchContext* context = static_cast<FetchContext*>(fetch->userData);
 		ASYNC_CALLBACK_STATUS status = FAILED;
-		const char* nodata = { nullptr };
-		EM_Fetch::HTTPCallback(url, status, nodata, 0, -1 );
+		if (EM_Fetch::mCallbacks.contains(context->url)) {
+			EM_Fetch::mCallbacks[context->url](context->uid, context->url, context->virtualpath, FAILED, 0);
+			EM_Fetch::mCallbacks.erase(context->url);
+		}
 		emscripten_fetch_close(fetch); // Also free data on failure.
 	}
 	void EM_Fetch::Fetch_Progress(emscripten_fetch_t* fetch)
 	{
-		if (fetch->status != 200) {
-			// Handle error or non-success status
-			return;
-		}
-		
+		FetchContext* context = static_cast<FetchContext*>(fetch->userData);
+		if (!context) return;
+
+		// Standard safety check: status 0 often means "in progress" before header arrival
+		if (fetch->status >= 400) return;
+
 		if (fetch->totalBytes > 0) {
-			int per = fetch->dataOffset * 100.0 / fetch->totalBytes;			
-			std::string url = { fetch->url };			
+			// Use double for precision, then cast to int
+			int per = static_cast<int>((static_cast<double>(fetch->numBytes) / fetch->totalBytes) * 100.0);
+
+			std::string url(fetch->url);
 			ASYNC_CALLBACK_STATUS status = PROGRESS;
-			const char* nodata = { nullptr };
-			EM_Fetch::HTTPCallback(url, status, nodata, per, fetch->totalBytes);
+			Logger::Get()->Trace(std::format("EM_Fetch::Fetch_Progress() PROGRESS url {} | per {}", url, per));
+			// Note: fetch->data contains the partial data downloaded so far.
+			// Usually, we don't pass partial data to the object until it's 100% complete.			
+		}
+		else {
+			// Fallback for when totalBytes is unknown (Streamed data)
+			std::string url(fetch->url);			
+			Logger::Get()->Trace(std::format("EM_Fetch::Fetch_Progress() PROGRESS UNKNOWN url {}", url));
 		}
 		
 	}

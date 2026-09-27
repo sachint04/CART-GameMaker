@@ -21,7 +21,10 @@ namespace cart {
 
 
      // Private constructor to prevent direct instantiation
-    UICanvas::UICanvas(World* _owningworld, const std::string& _id) :UIElement{ _owningworld,  _id }, m_safeRect {} {
+    UICanvas::UICanvas(World* _owningworld, const std::string& _id) :UIElement{ _owningworld,  _id }, 
+        m_safeRect{}, 
+        m_currentGesture{ GESTURE_NONE }
+    {
     }
 
     void UICanvas::Init()
@@ -43,13 +46,72 @@ namespace cart {
 
     void UICanvas::Update(float _deltaTime)
     {
+      
+#pragma region Gestures
+
+
+        m_currentGesture = GetGestureDetected();
+        Vector2 touchPosition = GetTouchPosition(0);       
+        if (CheckCollisionPointRec(touchPosition, {0, 0, (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT}))
+        {
+            // Store gesture string
+            switch (m_currentGesture)
+            {
+            case GESTURE_NONE :
+                onGestureNone.Broadcast();
+                break;
+            case GESTURE_TAP: 
+             //   Logger::Get()->Trace(std::format("UICanvas::Update() TAP x {} | y {} ", touchPosition.x, touchPosition.y));
+                onGestureTap.Broadcast(touchPosition);
+                break;
+            //case GESTURE_DOUBLETAP: 
+                Logger::Get()->Trace(std::format("UICanvas::Update() Doluble TAP x {} | y {} ", touchPosition.x, touchPosition.y));
+                onGestureDoubleTap.Broadcast(touchPosition);
+                break;
+            case GESTURE_HOLD: 
+            //    Logger::Get()->Trace(std::format("UICanvas::Update() HOLD x {} | y {} ", touchPosition.x, touchPosition.y));
+                onGestureTapHold.Broadcast(touchPosition);
+                break;
+            case GESTURE_DRAG: 
+            //    Logger::Get()->Trace(std::format("UICanvas::Update() Drag x {} | y {} ", touchPosition.x, touchPosition.y));
+                onGestureDrag.Broadcast(GetGestureDragVector());
+                break;
+            case GESTURE_SWIPE_RIGHT: 
+            case GESTURE_SWIPE_LEFT: 
+            case GESTURE_SWIPE_UP: 
+            case GESTURE_SWIPE_DOWN: 
+                float dragAng; Vector2 dragVec;
+                dragAng = GetGestureDragAngle();
+                dragVec = GetGestureDragVector();
+            //    Logger::Get()->Trace(std::format("UICanvas::Update() Swipe ang {} | Drag Vec x {} | y {} ", dragAng, dragVec.x, dragVec.y));
+                onSwipe.Broadcast(dragAng, dragVec);
+                break;
+            case GESTURE_PINCH_IN:
+                float pinchInAngle; Vector2 pinchInVec;
+                pinchInAngle = GetGesturePinchAngle();
+                pinchInVec = GetGesturePinchVector();
+               // Logger::Get()->Trace(std::format("UICanvas::Update() Pinch In ang {} | Vec x {} | y {} ", pinchInAngle, pinchInVec.x, pinchInVec.y));
+                onGesturePinch.Broadcast(false, pinchInAngle, pinchInVec);// 0 = pinch in 
+                break;
+            case GESTURE_PINCH_OUT: 
+                float pinchOutAngle; Vector2 pinchOutVec;
+                pinchOutAngle = GetGesturePinchAngle();
+                pinchOutVec = GetGesturePinchVector();
+              //  Logger::Get()->Trace(std::format("UICanvas::Update() Pinch OUT ang {} | Vec x {} | y {} ", pinchOutAngle, pinchOutVec.x, pinchOutVec.y));
+                onGesturePinch.Broadcast(true, pinchOutAngle, pinchOutVec); // 1= pinch out
+                break;
+            default: break;
+            }
+        }
+#pragma endregion
         bool bmoverui = m_owningworld->GetInputController()->IsMouseOver(GetWeakRef());
         if (bmoverui) {
            if (IsMouseButtonPressed(0)) {
             //   Logger::Get()->Trace("UICanvas::Update() IsMouseButtonPressed!");
                m_owningworld->GetInputController()->SetFocus(GetId());
-            };
-       };
+            }
+       }
+
     }
 
     void UICanvas::Draw(float _deltaTime)
@@ -166,6 +228,8 @@ namespace cart {
         return  (float)SCREEN_HEIGHT / (float)DEFAULT_CANVAS_HEIGHT;
     }
 
+ 
+
     float UICanvas::StrechX() {
         return CANVAS_STRECH_X;
     }
@@ -182,6 +246,14 @@ namespace cart {
 
 
     UICanvas::~UICanvas() {
+
+        onGestureNone.Destroy();
+        onGestureTap.Destroy();
+        onGestureTapHold.Destroy();
+        onGestureDrag.Destroy();
+        onGestureDoubleTap.Destroy();
+        onGesturePinch.Destroy();
+        onSwipe.Destroy();
     }
 #pragma endregion
 }

@@ -31,7 +31,7 @@ namespace cart {
 			Destroy();
 			return;
 		}
-		
+	
 		if (m_go == true) {
 			double delta = Clock::Get().ElapsedTime()  - m_timer;
 			double t_raw = delta / m_duration;
@@ -90,11 +90,7 @@ namespace cart {
 		}
 
 
-		if (m_ready == true) {
-	
-			m_timer = Clock::Get().ElapsedTime();
-			m_go = true;
-		}
+		
 	}
 
 	
@@ -121,6 +117,8 @@ namespace cart {
 		m_duration = _duration;	
 		m_ready = true;	
 		m_easing = _easing;
+		m_timer = Clock::Get().ElapsedTime();
+		m_go = true;
 		//std::cout << this << " ->  tweenMove : to " << _vec.x << _vec.y << std::endl;
 		return this;
 	}
@@ -148,6 +146,8 @@ namespace cart {
 		m_duration = _duration;
 		m_ready = true;
 		m_easing = _easing;
+		m_timer = Clock::Get().ElapsedTime();
+		m_go = true;
 		//std::cout << this << " ->  tweenMove : to " << _vec.x << _vec.y << std::endl;
 		return this;
 	}

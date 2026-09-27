@@ -1,26 +1,59 @@
-add_executable(${CART_GAME_TARGET_NAME}
+set(ENGINE_LIB
+	${CMAKE_CURRENT_SOURCE_DIR}/include/game.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/gameplayHUD.h	
+	${CMAKE_CURRENT_SOURCE_DIR}/include/Levelone.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/GameStageOne.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/puzzleimagecontroller.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/PatternSprite.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/View.h
+)
+
+set(ENGINE_SRC 
 
 	${CMAKE_CURRENT_SOURCE_DIR}/src/GameFramework/main.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/include/game.h
+	
 	${CMAKE_CURRENT_SOURCE_DIR}/src/GameFramework/game.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/include/gameplayHUD.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/GameFramework/gameplayHUD.cpp
-	
-	${CMAKE_CURRENT_SOURCE_DIR}/include/Levelone.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/Levelone.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/include/GameStageOne.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/GameStageOne.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/include/puzzleimagecontroller.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/puzzleimagecontroller.cpp
-	
-	${CMAKE_CURRENT_SOURCE_DIR}/include/PatternSprite.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/PatternSprite.cpp
-
-	${CMAKE_CURRENT_SOURCE_DIR}/include/View.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/View.cpp
-	
-
 )
+
+add_executable(${CART_GAME_TARGET_NAME}
+	${ENGINE_SRC}
+	${ENGINE_LIB}
+)
+
+if(EMSCRIPTEN)
+	set_target_properties(CARTgame PROPERTIES SUFFIX ".html")
+
+    target_link_options(CARTgame PRIVATE
+        "-O3"
+        "-sUSE_GLFW=3"
+        "-sFETCH"               # Fixes: emscripten_fetch, emscripten_fetch_close
+        "--bind"                 # Fixes: _emval_get_global, _emval_new_cstring
+        "-sASYNCIFY"
+        "-sFORCE_FILESYSTEM=1"
+        "-sTOTAL_MEMORY=67108864"
+        "-sALLOW_MEMORY_GROWTH"
+        "-sMAXIMUM_MEMORY=4GB"
+        
+        # Link your custom JavaScript libraries directly into the build
+        "--js-library=${PROJECT_SOURCE_DIR}/webmerge.js"
+        "--post-js=${PROJECT_SOURCE_DIR}/glfw-override.js"
+        "--shell-file=${PROJECT_SOURCE_DIR}/shell.html"
+        
+        # Exported function arrays
+        "-sEXPORTED_FUNCTIONS=['_free','_malloc','_main','_GetHTTPCallback','_ProcessByteArray','_beforeMain','_OnStageResized','_ProcessMobileInput','_IntruptVirtualKeyboad','_LogTrace']"
+        "-sEXPORTED_RUNTIME_METHODS=['ccall','UTF8ToString','stringToUTF8']"
+        
+        # Virtual File System asset preloader
+        "--preload-file=D:/xampp1/htdocs/cardmakerasset/fonts@assets/fonts"
+    )
+endif()
+
 target_link_libraries(${CART_GAME_TARGET_NAME} PUBLIC ${CART_ENGINE_TARGET_NAME} )
 
 

@@ -1,123 +1,124 @@
 # Create a shared library with game source files
-set(ENGINE_SRC 
+set(ENGINE_LIB
 	${CMAKE_CURRENT_SOURCE_DIR}/include/Application.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Application.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/Delegate.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Delegate.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/AssetManager.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/AssetManager.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/UICanvas.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/UICanvas.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/Core.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Core.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/World.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/World.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/Clock.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Clock.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/Types.h
-	${CMAKE_CURRENT_SOURCE_DIR}/include/MathUtility.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/MathUtility.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/include/CARTjson.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/CARTjson.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/easing.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/easing.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/Logger.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Logger.cpp
-	
+	${CMAKE_CURRENT_SOURCE_DIR}/include/CARTjson.h
 	${CMAKE_CURRENT_SOURCE_DIR}/include/Object.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Object.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/Actor.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Actor.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/Sprite.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Sprite.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/Shape.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Shape.cpp	
 	${CMAKE_CURRENT_SOURCE_DIR}/include/UIButton.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/UIButton.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/ImageButton.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/ImageButton.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/include/ImageToggleButton.h
 	${CMAKE_CURRENT_SOURCE_DIR}/include/Sprite2D.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Sprite2D.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/UIElement.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/UIElement.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/Text.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Text.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/TextInput.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/TextInput.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/Actor3D.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Actor3D.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/HUD.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/HUD.cpp
-
+	${CMAKE_CURRENT_SOURCE_DIR}/include/SimpleButton.h
 	${CMAKE_CURRENT_SOURCE_DIR}/include/component/controls/transformCntrl.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/component/controls/transformCntrl.cpp
-	
 	${CMAKE_CURRENT_SOURCE_DIR}/include/GameStage.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/GameStage.cpp
-	
 	${CMAKE_CURRENT_SOURCE_DIR}/include/ProgressView.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/ProgressView.cpp
-		
-		
+	${CMAKE_CURRENT_SOURCE_DIR}/include/Material.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/DefaultMaterial.h
 	${CMAKE_CURRENT_SOURCE_DIR}/include/component/UIList.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/component/UIList.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/component/IController.h
 	${CMAKE_CURRENT_SOURCE_DIR}/include/component/InputController.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/component/InputController.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/component/ColorPalette.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/component/ColorPalette.cpp
-	
-
 	${CMAKE_CURRENT_SOURCE_DIR}/include/component/IComponent.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/component/IComponent.cpp
-	
 	${CMAKE_CURRENT_SOURCE_DIR}/include/component/ComponentFactory.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/component/ComponentFactory.cpp
-	
 	${CMAKE_CURRENT_SOURCE_DIR}/include/component/LayoutComponentFactory.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/component/LayoutComponentFactory.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/component/LayoutComponent.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/component/LayoutComponent.cpp	
 	${CMAKE_CURRENT_SOURCE_DIR}/include/component/VLayoutComponent.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/component/VLayoutComponent.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/component/HLayoutComponent.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/component/HLayoutComponent.cpp
-
-	
-	
-
 	${CMAKE_CURRENT_SOURCE_DIR}/include/tweenray/tweenBuilderBase.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/tweenray/tweenBuilderBase.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/tweenray/tween.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/tweenray/tween.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/tweenray/tweenBuilder.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/tweenray/tweenBuilder.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/tweenray/tweenMove.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/tweenray/tweenMove.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/tweenray/tweenRotate.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/tweenray/tweenRotate.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/tweenray/tweenScale.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/tweenray/tweenScale.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/tweenray/tweenColor.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/tweenray/tweenColor.cpp
-	
-		
 	${CMAKE_CURRENT_SOURCE_DIR}/include/network/network.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/network/network.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/network/EM_Fetch.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/network/EM_Fetch.cpp
-
-	${CMAKE_CURRENT_SOURCE_DIR}/include/cssparser/cparsecss.hpp
-	
+	${CMAKE_CURRENT_SOURCE_DIR}/include/utils/StringUtils.h
 	${CMAKE_CURRENT_SOURCE_DIR}/include/utils/JSutils.h
-	
 	${CMAKE_CURRENT_SOURCE_DIR}/include/utils/MobileKeyboard.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/dynamics/particlesystem/Particle.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/dynamics/particlesystem/ParticleSystem.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/dynamics/particlesystem/ParticleManager.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/MathUtility.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/utils/rlights.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/cssparser/cparsecss.hpp
+)
+set(ENGINE_SRC 
+
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Application.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Delegate.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/AssetManager.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/UICanvas.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Core.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/World.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Clock.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/MathUtility.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/CARTjson.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/easing.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Logger.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Object.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Actor.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Sprite.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Shape.cpp	
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/UIButton.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/ImageButton.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/ImageToggleButton.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Sprite2D.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/UIElement.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Text.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/TextInput.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Actor3D.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/HUD.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/SimpleButton.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/component/controls/transformCntrl.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/GameStage.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/ProgressView.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/Material.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/framework/DefaultMaterial.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/component/UIList.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/component/InputController.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/component/ColorPalette.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/component/IComponent.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/component/ComponentFactory.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/component/LayoutComponentFactory.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/component/LayoutComponent.cpp	
+	${CMAKE_CURRENT_SOURCE_DIR}/src/component/VLayoutComponent.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/component/HLayoutComponent.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/tweenray/tweenBuilderBase.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/tweenray/tween.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/tweenray/tweenBuilder.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/tweenray/tweenMove.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/tweenray/tweenRotate.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/tweenray/tweenScale.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/tweenray/tweenColor.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/network/network.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/network/EM_Fetch.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/utils/MobileKeyboard.cpp
-	
+	${CMAKE_CURRENT_SOURCE_DIR}/src/dynamics/particlesystem/Particle.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/dynamics/particlesystem/ParticleManager.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/dynamics/particlesystem/ParticleSystem.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/utils/rlights.cpp
 	)
 add_library(${CART_ENGINE_TARGET_NAME} 
 	STATIC
 	${ENGINE_SRC}
+	${ENGINE_LIB}
 )
 target_include_directories(${CART_ENGINE_TARGET_NAME} PUBLIC 
 	${CMAKE_CURRENT_SOURCE_DIR}/include

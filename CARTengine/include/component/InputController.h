@@ -7,7 +7,7 @@ namespace cart
 	class Object;
 	class UIElement;
 	
-	class InputController 
+	class InputController
 	{
 	public: 
 		
@@ -16,6 +16,7 @@ namespace cart
 		void RegisterUI(weak<Object> ui);
 		void RemoveUI(const std::string& id);
 		void SetFocus(const std::string& id);
+		void SortChildrenByZindex();
 		std::string GetFocusedId() { return m_curFocusedId; };
 		bool HasFocus() { return m_curFocusedId.size() > 0; };
 		void Clear();

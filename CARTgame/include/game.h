@@ -21,7 +21,7 @@ namespace cart {
 
         Game(int _winWidth, int _winHeight, const std::string& title);
         void Init() override;
-        std::string& GetAssetsPath()override;
+        std::string GetAssetsPath()override;
         std::string GetResourceDisplayPath()override;
         float GetIconSize()override;
         ~Game();

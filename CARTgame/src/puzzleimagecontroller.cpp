@@ -38,7 +38,8 @@ namespace cart{
 void PuzzleImageController::Init()
 {
     std::string resourcepath = m_owningworld->GetApplication()->GetAssetsPath();
-    m_preloadlist.push_back(resourcepath + "patterns2.png");
+    m_preloadlist.push_back({ std::string{resourcepath + "patterns2.png"}, std::string{resourcepath + "patterns2.png"}, ASSET_IMAGE, LOCKED });
+    
     UIElement::Init();
 //#endif //  __EMSCRIPTEN__
 }
@@ -136,7 +137,7 @@ void PuzzleImageController::Start()
     txtbtnui.textcolor = WHITE;
     txtbtnui.text = std::string{ "Reset" };
     txtbtnui.fontsize = 16;
-    txtbtnui.fontspace = 1.8;
+    txtbtnui.fontspacing = 1.8;
     txtbtnui.font = staticassetpath + FONT_NAME;
     txtbtnui.location = { bgrect.x + bgrect.width - 110.f, bgrect.y - 50.f };
     txtbtnui.textAlign = ALIGN::CENTER;

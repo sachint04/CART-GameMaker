@@ -28,13 +28,23 @@ namespace cart {
         float Scale();
         float ScaleX();
         float ScaleY();
-
         Vector2 GetDefaultCanvasSize();
         Delegate<> onScreenSizeChange;
+
+
+        Delegate<>onGestureNone;
+        Delegate<Vector2>onGestureTap;
+        Delegate<Vector2>onGestureTapHold;
+        Delegate<Vector2>onGestureDrag;
+        Delegate<Vector2> onGestureDoubleTap;
+        Delegate<bool, float, Vector2> onGesturePinch;
+        Delegate<float, Vector2> onSwipe;
+
 
         UICanvas(World* _owningworld, const std::string& _id);
         ~UICanvas();
 	private:
+        int m_currentGesture;
 
         Dictionary<std::string, weak<IComponent>> elemlist;
         Rectangle m_safeRect;

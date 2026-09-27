@@ -1,3 +1,5 @@
+#include <raylib.h>
+#include <rlgl.h> 
 #include <string>
 #include <thread>
 #include <chrono>
@@ -15,13 +17,28 @@
 
 
 #ifdef __EMSCRIPTEN__
+	#include <emscripten/emscripten.h>
 	#include "utils/MobileKeyboard.h"
 #endif // __EMSCRIPTEN__
 
+#ifdef __EMSCRIPTEN__	
+	#include <GLES3/gl3.h>
+#elif _WIN32
+
+#else
+	#include <GL/gl.h>   
+#endif
 namespace cart
 {
+	Camera Application::CAMERA = {0};
+	int Application::CAMERA_MODE = CAMERA_PERSPECTIVE;
 	unique<network> Application::net{ nullptr };
 	Application* Application::app = { nullptr };
+	int Application::GPT_TIER;
+
+	double Application::CAMERA_NEAR_PLANE = 1.0f;
+	double Application::CAMERA_FAR_PLANE = 50.0f;
+	bool Application::BACK_FACE_CULLING = true;
 
 	Application::Application(int _winWidth, int _winHeight, const std::string& title)
 		:m_winWidth{ _winWidth },
@@ -35,7 +52,6 @@ namespace cart
 		m_static_assetsdir{},
 		m_dataModel{},
 		m_gameConfig{},
-		m_camera{},
 		m_config_json{},
 		m_mobileInputListeners{}
 	{
@@ -48,12 +64,41 @@ namespace cart
 	//	SetConfigFlags(FLAG_MSAA_4X_HINT|FLAG_VSYNC_HINT);
 		//Logger::Get()->Trace(std::format("Application Init size {} | {} ", SCREEN_WIDTH, SCREEN_HEIGHT));
 		InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, m_title.c_str());
-		SetTargetFPS(m_targetFrameRate);
+		if(BACK_FACE_CULLING)rlEnableBackfaceCulling();
+#ifdef __EMSCRIPTEN__
+		int depthBits = 0;
+		glGetIntegerv(GL_DEPTH_BITS, &depthBits);
+		TraceLog(LOG_INFO, "Hardware Depth Buffer Bits: %i", depthBits);
+#endif // __EMSCRIPTEN__
 	}
 
 	void Application::Start() {				
 		Run();
+	}
 
+	void Application::MainLoopWrapper(void* arg) {
+		static_cast<Application*>(arg)->UpdateDrawFrame();
+	}
+
+	void Application::UpdateDrawFrame()
+	{
+		Clock::Get().Tick();
+		float deltaTime = GetFrameTime();
+		Update(deltaTime);
+		BeginDrawing();
+			rlSetClipPlanes(CAMERA_NEAR_PLANE, CAMERA_FAR_PLANE);
+			ClearBackground(RAYWHITE);
+			Draw(deltaTime);
+			Logger::Get()->Draw(deltaTime);
+		EndDrawing();
+		LateUpdate(deltaTime);	
+		Logger::Get()->Update(deltaTime);
+		if (WindowShouldClose()) {
+#ifdef __EMSCRIPTEN__
+			emscripten_cancel_main_loop();
+#endif // __EMSCRIPTEN__
+			m_exit = true;
+		}
 	}
 
 	/// <summary>
@@ -68,33 +113,35 @@ namespace cart
 	{
 		Logger::Get()->Trace("APPLICATION  Run() !!");
 		Clock::Get().Reset();
+#ifdef __EMSCRIPTEN__
+			emscripten_set_main_loop_arg(Application::MainLoopWrapper, this, 0, 1);
+#else
+		SetTargetFPS(m_targetFrameRate);
 		while (m_exit == false)
 		{
-			ClearBackground(RAYWHITE);
-			Clock::Get().Tick();
-			double deltaTime = Clock::Get().DeltaTime();
-			Update(deltaTime);
-			Logger::Get()->Update(deltaTime);
+			//Clock::Get().Tick();
+			//double deltaTime = Clock::Get().DeltaTime();
+			//Update(deltaTime);
+			//Logger::Get()->Update(deltaTime);
 
-			BeginDrawing();
-			Draw(deltaTime);
-			Logger::Get()->Draw(deltaTime);
-			EndDrawing();
-
-			LateUpdate(deltaTime);
-
-
-
-			if (WindowShouldClose())m_exit = true;
+			//BeginDrawing();
+			//	ClearBackground(RAYWHITE);
+			//	Draw(deltaTime);
+			//	Logger::Get()->Draw(deltaTime);
+			//EndDrawing();
+			//	LateUpdate(deltaTime);
+			UpdateDrawFrame();
 		}
+#endif // __EMSCRIPTEN__
 		Clock::Get().Release();
 		m_CurrentWorld->Unload();
 		AssetManager::Get().CleanCycle();
 		AssetManager::Get().Unload();
 		AssetManager::Get().Release();
 		 net = nullptr;
+		Destroy();
 		//int leak = _CrtDumpMemoryLeaks();
-	
+		
 		CloseWindow();
 	}
 
@@ -125,12 +172,12 @@ namespace cart
 		return m_CurrentWorld.get();
 	}
 
-	std::string& Application::GetAssetsPath()
+	std::string Application::GetAssetsPath()
 	{
 		return m_assetsdir;
 	}
 
-	std::string& Application::GetStaticAssetsPath()
+	std::string Application::GetStaticAssetsPath()
 	{
 		return m_static_assetsdir;
 	}
@@ -142,6 +189,9 @@ namespace cart
 	}
 
 	float Application::GetIconSize() {
+		return 0;
+	}
+	float Application::GetIconSize2() {
 		return 0;
 	}
 
@@ -252,6 +302,19 @@ namespace cart
 		if (found != m_mobileInputListeners.end()) {
 			m_mobileInputListeners.erase(found);
 		}
+	}
+
+	void Application::ApplyCustomClipping(double nearPlan, double farPlan)
+	{
+		float aspect = (float)GetScreenWidth() / (float)GetScreenHeight();
+		// Use the nearPlan to calculate the frustum dimensions
+		double top = nearPlan * tan(CAMERA.fovy * 0.5 * DEG2RAD);
+		double right = top * aspect;
+
+		rlMatrixMode(RL_PROJECTION);
+		rlLoadIdentity();
+		rlFrustum(-right, right, -top, top, nearPlan, farPlan);
+		rlMatrixMode(RL_MODELVIEW);
 	}
 
 	json& Application::SetEnviornmentSettings(char* _setting)

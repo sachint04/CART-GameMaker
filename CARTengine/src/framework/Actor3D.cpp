@@ -1,8 +1,7 @@
 #include "Actor3D.h"
 #include "World.h"
 #include "AssetManager.h"
-
-
+#include "MathUtility.h"
 namespace cart
 {
 #pragma region Cunstructor & Init
@@ -16,15 +15,14 @@ namespace cart
 		m_isHover{0},
 		m_currentFrame{0},
 		m_currentAnimation{0},
-		m_label{},
 		m_bShowLabel{false},
 		m_bPlayAnim{false},
-		m_strfont{},
-		m_fontSize{18},
-		m_fontSpace{2.f},
 		m_animations{nullptr},
 		m_bPlayAnimReverse{false},
-		m_loopAnim{false}
+		m_loopAnim{false},
+		m_bInstanced{false},
+		m_meshBoundingBox{},
+		m_scale3{1.f,1.f ,1.f }
 	{
 	}
 	void Actor3D::Init()
@@ -42,62 +40,80 @@ namespace cart
 
 	void Actor3D::Update(float _deltaTime)
 	{
-		if (!m_visible)return;
-		Actor::Update(_deltaTime);
+
 	}
-	void Actor3D::Update3D(float _deltaTime, const Camera& camera)
+	void Actor3D::Update3D(float _deltaTime)
 	{
-		if (m_bPlayAnim)
+		if (!m_visible)return;
+		bool animfinished = false;
+		if (m_bPlayAnim)		
 		{
 			ModelAnimation anim = m_animations[m_currentAnimation];
-			if (m_currentFrame < 0 || m_currentFrame > anim.frameCount - 1)
-			{
-				//m_currentFrame = anim.frameCount - 1;
-				if (!m_loopAnim)
+			if (m_currentFrame < 0 || m_currentFrame > anim.frameCount - 1)// Loo
+			{				
+				m_currentFrame = m_bPlayAnimReverse ? 0 :anim.frameCount - 1;
+				animfinished = true;// animation playing forward hence mark finished
+			}
+			else {
+				UpdateModelAnimation(m_model, anim, m_currentFrame);				
+				m_currentFrame = !m_bPlayAnimReverse ? m_currentFrame + 1 : m_currentFrame - 1;				
+			}
+
+			if (animfinished) {
+
+				// Animation finished
+				if (!m_loopAnim) // Not loopiung
 				{
 					m_bPlayAnim = false;
 					onAnimFinish.Broadcast(GetWeakRef(), m_currentAnimation);
+					// Callback
+					auto find = std::find_if(m_AnimCallbacks.begin(), m_AnimCallbacks.end(), [&](const auto& p)
+					{
+						return p.first == m_currentAnimation;
+					});
+					if (find != m_AnimCallbacks.end()) {
+
+						find->second(m_currentAnimation, GetWeakRef());
+						find->first = -1;
+						//m_AnimCallbacks.erase(find);//TBD : Delete completed callbacks on cleanup
+					}
 				}
 				else {
+					// Looping Play again
 					PlayAnimation(m_currentAnimation, m_bPlayAnimReverse, m_loopAnim);
 				}
-
-			}
-			else {
-				UpdateModelAnimation(m_model, anim, m_currentFrame);
-				m_currentFrame = !m_bPlayAnimReverse ? m_currentFrame + 1 : m_currentFrame - 1;
 			}
 		}
-		if (!m_visible)return;
 		
-		m_ray = GetScreenToWorldRay(GetMousePosition(), camera);
-	
 		
-		m_collision = GetRayCollisionBox(m_ray,
-		{
-			{m_location3.x - m_width / 2, m_location3.y - m_height / 2, m_location3.z - m_zSize / 2},
-			{m_location3.x + m_width / 2, m_location3.y + m_height / 2, m_location3.z + m_zSize / 2}
-		});
+
+		
+		//{
+		//	{m_location3.x - m_width / 2, m_location3.y - m_height / 2, m_location3.z - m_zSize / 2},
+		//	{m_location3.x + m_width / 2, m_location3.y + m_height / 2, m_location3.z + m_zSize / 2}
+		//});
 	
-
-
 		if (!m_owningworld->GetHUD().lock()->IsMouseOverUI(GetMousePosition()) && m_active) {
+			
 			if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
 			{
-				if (m_collision.hit)
+				m_collision = GetRaycastHit(GetMousePosition(), m_model);				
+				if (m_collision.hit )
 				{
 					onTouch.Broadcast(GetWeakRef(), GetMousePosition());
 					//m_currentFrame = 0;
 				}
 			}
 			if ( !m_isHover) {
+				m_collision = GetRaycastHit(GetMousePosition(), m_model);
 				if (m_collision.hit) {
 					onHover.Broadcast(GetWeakRef(), GetMousePosition());					
 					m_isHover = true;
 				}
 			}
 			else {
-				if (!m_collision.hit) {
+				m_collision = GetRaycastHit(GetMousePosition(), m_model);
+				if (m_isHover && !m_collision.hit) {
 					onOut.Broadcast(GetWeakRef(), GetMousePosition());
 					m_isHover = false;
 				}
@@ -107,36 +123,33 @@ namespace cart
 	}
 	void Actor3D::Draw(float _deltaTime)
 	{
-		if (!m_visible)return;
-		Actor::Draw(_deltaTime);
-		if (m_bShowLabel)
-		{
-			Vector2 pos = GetWorldToScreen(m_location3, m_owningworld->GetApplication()->GetCamera());
-			float boxWidth = 160;
-			float boxHeight = 40;
-			Rectangle rect{ pos.x - boxWidth/2.f, pos.y + 90.f, boxWidth, boxHeight};
-			DrawRectangleRounded(rect, 0.8f, 2, { 255,255, 255, 150 });
-			shared<Font> fnt = AssetManager::Get().LoadFontAsset(m_strfont, m_fontSize);
-			if (fnt) {
-				Vector2 fsize = MeasureTextEx(*fnt,m_label.c_str(), m_fontSize, m_fontSpace);
-				DrawTextEx(*fnt, m_label.c_str(), { rect.x + (rect.width / 2.f - (fsize.x / 2.f)), rect.y + (rect.height / 2.f - fsize.y /2.f) }, m_fontSize, m_fontSpace, BLACK);
-				fnt.reset();
-			}
-		}
+			
 	}
-	void Actor3D::Draw3D(float _deltaTime, const Camera& camera)
+	void Actor3D::Draw3D(float _deltaTime)
 	{
 		if (!m_visible || m_isPendingDestroy)return;
-			DrawModelEx(m_model, m_location3, { m_rotation3.x, m_rotation3.y, m_rotation3.z }, m_rotation3.w, {(float)m_width, (float)m_height, (float)m_zSize}, WHITE);
+		Shader shader = m_model.materials[0].shader;
+		m_collision = GetRaycastHit(GetMousePosition(), m_model);
+		
+	//	DrawBoundingBox(GetMeshBoundingBox(m_model.meshes[0]), RED);
+
+		DrawModelEx(m_model, m_location3, { m_rotation3.x, m_rotation3.y, m_rotation3.z }, m_rotation3.w, m_scale3, WHITE);
+		
 	}
+
 #pragma endregion
 	
 #pragma region  Helper
 
 
-	void Actor3D::SetModel(Model model)
+	void Actor3D::SetModel(Model& model)
 	{
 		m_model = model;
+		m_meshBoundingBox = GetMeshBoundingBox(m_model.meshes[0]);
+	}
+	void Actor3D::SetScale3(Vector3 _scale)
+	{
+		m_scale3 = _scale;
 	}
 	void Actor3D::SetAnimations(ModelAnimation * animations, const int& count)
 	{
@@ -155,21 +168,14 @@ namespace cart
 	{
 		m_currentFrame = 0;
 		m_currentAnimation = 0;
-		ModelAnimation anim = m_animations[0];
-		UpdateModelAnimation(m_model, anim, m_currentFrame);
+		ModelAnimation anim = m_animations[0];		
 	}
-	void Actor3D::SetLabel(const std::string& _label, const std::string& font, float size, float spacing)
+	void Actor3D::SetInstanced(bool flag)
 	{
-		m_label = _label;
-		m_strfont = font;
-		m_fontSize = size;
-		m_fontSpace = spacing;
+		m_bInstanced = true;
 	}
-	void Actor3D::ShowLabel(bool _flag)
-	{
-		m_bShowLabel = _flag;
-	}
-	void Actor3D::PlayAnimation(int index, bool reverse, bool loop)
+
+	void Actor3D::PlayAnimation(int index, bool reverse, bool loop, AnimationCallback callback)
 	{
 		
 		if (index >= 0) {
@@ -185,9 +191,12 @@ namespace cart
 		
 		int framecount = m_animations[m_currentAnimation].frameCount;
 		m_currentFrame = !m_bPlayAnimReverse? 0 : framecount - 1;
+		if (callback) {
+			m_AnimCallbacks.push_back({ m_currentAnimation, callback });
+		}
 	}
 	bool Actor3D::UpdateTexture(const std::string& path, int matIndex) {
-
+		Logger::Get()->Trace(std::format("Actor3D::UpdateTexture() path {} ", path));
 		shared<Texture2D> tex = AssetManager::Get().LoadTextureAsset(path, LOCKED);
 		SetTextureFilter(*tex, TEXTURE_FILTER_BILINEAR);
 		if (!tex)
@@ -204,27 +213,45 @@ namespace cart
 		return m_bPlayAnim;
 	}
 
+	RayCollision Actor3D::GetRaycastHit(Vector2 _pos, Model & model)
+	{
+		Ray ray = GetScreenToWorldRay(_pos, Application::CAMERA);
+		BoundingBox  localbox = GetMeshBoundingBox(model.meshes[0]);
+
+		BoundingBox worldBox;
+		worldBox.min = Vector3Add(localbox.min, m_location3);
+		worldBox.max = Vector3Add(localbox.max, m_location3);
+
+		//m_collision = GetRayCollisionBox(m_ray, worldBox);
+		return GetRayCollisionBox(ray, worldBox);
+	}
+
 #pragma endregion
 
 #pragma region CleanUp
 	void Actor3D::Destroy()
 	{
+		if (IsPendingDestroy())return;
+
 		if (m_animations && IsModelAnimationValid(m_model, *m_animations)) {
 
 			UnloadModelAnimations(m_animations, m_animcount);
 		}
-
-		if (m_model.meshes != NULL && IsModelValid(m_model)  )
+		if (IsModelValid(m_model))
 		{
 			UnloadModel(m_model);
-			m_model.meshes = NULL;
-
 		}
-	
-		
+		m_AnimCallbacks.clear();
+
+		onHover.Destroy();
+		onOut.Destroy();
+		onTouch.Destroy();
+		onAnimFinish.Destroy();
+
 		SetVisible(false);
 		Actor::Destroy();
 	}
+	
 	Actor3D::~Actor3D()
 	{		
 	}

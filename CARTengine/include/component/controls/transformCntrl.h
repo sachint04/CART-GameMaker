@@ -9,12 +9,21 @@
 #pragma once
 #include "UIElement.h"
 namespace  cart {
+
+	typedef struct{
+		std::string name;
+		Rectangle rect;
+
+	}Transform_Controls;
+
 	class Actor;
 	class UIButton;
+	class ImageButton;
 	class World;
 	class Shape;
 	class World;
 	class TransformCntrl : public UIElement {
+
 
 	public:
 		TransformCntrl(World* _owningworld, const std::string& id);
@@ -22,11 +31,13 @@ namespace  cart {
 
 		void Init() override;
 		void Start() override;
+		//void Update(float _deltatime) override;
+		void Draw(float _deltatime) override;
 		void Destroy()override;
 		void Reset();
 		Rectangle GetBounds() override;
 
-		void Update(float _deltaTime) override;
+		void UpdateUIControls();
 		
 		//void SetDefaultRect(Rectangle rect);
 		void SetMinMaxRect(Rectangle rect);
@@ -36,40 +47,36 @@ namespace  cart {
 		Delegate<Vector2> onButtonUp;
 		Delegate<>onStop;
 	private:
-		weak<UIButton> m_topleftCntrl;
-		weak<UIButton>  m_toprightCntrl;
-		weak<UIButton>  m_bottomleftCntrl;
-		weak<UIButton>  m_bottomrightCntrl;
-		weak<UIButton> m_translateCntrl;
+		weak<ImageButton> m_topleftCntrl;
+		weak<ImageButton>  m_toprightCntrl;
+		weak<ImageButton>  m_bottomleftCntrl;
+		weak<ImageButton>  m_bottomrightCntrl;
+		weak<ImageButton> m_translateCntrl;
 		weak<Shape> m_outline;
 
 		void onScaleHandler(weak<Object> btn, Vector2 pos);
 		
-		void onDragStart(weak<Object>, Vector2 pos);
-		void onDragEnd(weak<Object>, Vector2 pos);
-		void onDragOut(weak<Object>);
-		void onButtonClick(weak<Object>, Vector2 pos);
-		void onTranslateStart(weak<Object>, Vector2 pos);
-		void onTranslateContinue(weak<Object>, Vector2 pos);
-		void onTranslateEnd(weak<Object>);
+		void OnDragStartHandler(weak<Object>, Vector2 pos);
+		void OnDragEndHandler(weak<Object>, Vector2 pos);
+		void OnDragOutHandler(weak<Object>);
+		void OnButtonClickHandler(weak<Object>, Vector2 pos);
+		void OnTranslateStartHandler(weak<Object>, Vector2 pos);
+		void OnTranslateContinueHandler(weak<Object>, Vector2 pos);
+		void OnTranslateEndHandler(weak<Object>);
+		void SetScale(Vector2 pos);
 		bool IsActiveCtrl(std::string _cntrl);
-
-		void Draw(float _deltaTime)override;
 
 		float cntrlsize;
 		float cntrlhalf;
 		Rectangle m_MinMaxRect;
-		//Vector2 m_minSize;
-		//Vector2 m_maxSize;
 		float m_aspectRatio;
 		std::string curDragCntrl;
 		bool m_isScaling;
 		bool m_isTranslating;
 		bool m_isfixedAspectRatio;
 		Vector2 m_tmpPivot;
-		Vector2 m_tempTargetLoc;
-	//	Rectangle m_targetInitState;
-	//	Vector2 m_center;
+		//Vector2 m_tempTargetLoc;
+
 		
 	};
 }

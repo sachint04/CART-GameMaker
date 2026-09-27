@@ -36,7 +36,7 @@ double easeInCubic( double t ) {
 }
 
 double easeOutCubic( double t ) {
-    return 1 + (--t) * t * t;
+    return 1 + (--t) * (t * t);
 }
 
 double easeInOutCubic( double t ) {

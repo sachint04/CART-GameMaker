@@ -70,7 +70,12 @@ namespace cart {
 #endif // __LOGGER__
 #pragma endregion
 
-        m_camera = { { 0.0f, 0.01f, 10.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, 45.f, CAMERA_PERSPECTIVE };// CREATE CAMERA
+        CAMERA = { { 0.0f, 0.0f, 10.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, 45.f, CAMERA_MODE };// CREATE CAMERA
+        CAMERA.fovy = 45.f;        
+        CAMERA.position = { 0.0f, 0.0f, 10.0f };
+        CAMERA.target = { 0.0f, 0.0f, 0.0f };
+        CAMERA.up = { 0.0f, 1.0f, 0.0f };
+        CAMERA.projection = CAMERA_MODE;
         Application::Init(); // CREATE APPLIATION WINDOW
 
         // CREATE NEW WORLD
@@ -106,7 +111,7 @@ namespace cart {
 
     }
 
-    std::string& Game::GetAssetsPath()
+    std::string Game::GetAssetsPath()
     {
 #ifdef __EMSCRIPTEN__
         return  m_assetsdir_web;

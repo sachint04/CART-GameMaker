@@ -20,7 +20,24 @@ namespace cart {
 		//std::cout << this << " -> Base deleted \n";
 	};
 
+	bool cart::TweenBuilderBase::Abort()
+	{
+		m_go = false;
+		Destroy();
+		return true;
+	}
 
+	weak<Actor> TweenBuilderBase::actor()
+	{
+		return m_actor;
+	}
+
+	void TweenBuilderBase::Destroy()
+	{
+		if (IsPendingDestroy())return;
+		m_go = false;
+		Object::Destroy();
+	}
 	
 
 }

@@ -34,15 +34,7 @@ namespace cart {
 		//if (tweenlist.size() == 0)return;
 
 		double curTime = Clock::Get().ElapsedTime();
-		double elapsetime = curTime - m_cleanCycleStartTime;
-		long garbagesize = GetSizeOfPendingTweens();
-		if (garbagesize >= (double)5000 || elapsetime >= m_cleanCycleIter) {
-			CleanCycle();
-			m_cleanCycleStartTime = Clock::Get().ElapsedTime();
-		}
-
-
-
+	
 		for (auto iter = tweenlist.begin(); iter != tweenlist.end();) {
 			if (iter->second->IsPendingDestroy() == true) {
 			//	std::cout << "Tween Complete " << iter->second->GetID().c_str() << std::endl;
@@ -54,17 +46,20 @@ namespace cart {
 				++iter;
 			}
 		}
+		double elapsetime = curTime - m_cleanCycleStartTime;
+		long garbagesize = GetSizeOfPendingTweens();
+		if (garbagesize >= (double)5000 || elapsetime >= m_cleanCycleIter) {
+			CleanCycle();
+			m_cleanCycleStartTime = Clock::Get().ElapsedTime();
+		}
 	}
-
 
 	int Tween::GetTweenCount()
 	{
 		tweenId++;
 		return tweenId;
 	}
-
 	
-
 	void Tween::AddTween(int id, TweenBuilderBase* tween)
 	{
 	/*	auto found = tweenlist.find(id);
@@ -76,6 +71,28 @@ namespace cart {
 
 	}
 
+	bool Tween::Abort()
+	{
+		for (auto iter = tweenlist.begin(); iter != tweenlist.end();) {
+			bool success = iter->second->Abort();
+				iter = tweenlist.erase(iter);
+			if (!success) {
+				Logger::Get()->Error(std::format("Tween::Abort() Error! Failed to Abort Tween {} ", iter->second->GetId()));
+			}
+		}
+		return true;
+	}
+
+	void Tween::Abort(const std::string& actorid)
+	{
+		std::erase_if(tweenlist, [actorid](const auto& pair) {
+			if (auto lock = pair.second->actor().lock()) {
+
+				return lock->GetId() == actorid;
+			}
+			return false;
+		});
+	}
 
 	void Tween::CleanCycle() {
 

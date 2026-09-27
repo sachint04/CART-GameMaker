@@ -1,4 +1,7 @@
 #include "Actor.h"
+#include "stdexcept"
+
+#include "Clock.h"
 #include "World.h"
 #include "AssetManager.h"
 #include "Logger.h"
@@ -31,7 +34,9 @@ namespace cart {
 		m_areChildrenReady{false},
 		m_rawWidth{},
 		m_rawHeight{},
-		m_tweening{false}
+		m_tweening{false},
+		m_zIndex{0},
+		m_padding{ 0 }
 	{
 	}
 	void Actor::Start()
@@ -41,7 +46,7 @@ namespace cart {
 	}
 	void Actor::Init()
 	{
-		LoadAssets();
+		LoadAssets_async();
 		
 	}
 
@@ -49,6 +54,32 @@ namespace cart {
 
 #pragma region CleanUp
 
+	void Actor::Destroy()
+	{
+		if (m_isPendingDestroy)return;
+		m_customData.clear();
+		for (auto iter = m_preloadlist.begin(); iter != m_preloadlist.end();)
+		{
+			if (iter->type == ASSET_IMAGE) {
+				bool islocked = AssetManager::Get().IsAssetLocked(iter->virtualpath, iter->type);
+				if (!islocked) {
+					AssetManager::Get().UnloadTextureAsset(iter->virtualpath);
+				}
+			}
+			else if (iter->type == ASSET_MODEL) {
+				if (iter->texture_status == UNLOCKED) {
+					// TBD
+				}
+			}
+			iter = m_preloadlist.erase(iter);
+		}
+		m_preloadlist.clear();
+
+		onReady.Destroy();
+		Object::Destroy();
+		// move all items to pending destroy
+		m_owningworld->MoveToPendingDestroy();
+	}
 
 	Actor::~Actor()
 	{
@@ -71,6 +102,11 @@ namespace cart {
 	{
 		return m_owningworld->GetAppWindowSize();
 	}
+
+	void Actor::SetCustomData(json data)
+	{
+		m_customData = data;
+	}
 		
 	void Actor::SetLocation(Vector2 _location)
 	{
@@ -84,13 +120,21 @@ namespace cart {
 
 	void Actor::Offset(Vector2 _location)
 	{
-		Vector2 loc = { m_location.x + _location.x, m_location.y + _location.y };
-		SetLocation(loc);
+
+		m_location.x += _location.x;
+		m_location.y += _location.y;
+	
+	//	SetLocation(loc);
 	}
 
 	void Actor::SetScale(float _scale)
 	{
 		m_scale = _scale;
+	}
+
+	void Actor::SetScale3(Vector3 _scale)
+	{
+		// No implementation
 	}
 
 	void Actor::SetRotation(float _rotation)
@@ -170,6 +214,38 @@ namespace cart {
 	
 	void Actor::Update(float _deltaTime)
 	{
+		
+		// Call this EVERY FRAME in your main loop (Native only)
+#ifdef _WIN32
+		std::vector<DelayedTask> tasksToRun;
+		auto now = Clock::Get().SteadyTime();
+		try {
+			for (auto it = m_tasks.begin(); it != m_tasks.end(); ) {
+				if (now >= it->targetTime) {
+					if (it == m_tasks.end()) {
+						throw std::runtime_error("Iterator corruption detected: Container was modified inside func()!");
+					}
+					tasksToRun.push_back(std::move(*it));
+					//auto callback = it->func;
+					//				it->func(); // Runs on Main Thread
+					it = m_tasks.erase(it);
+
+				
+				}
+				else {
+					++it;
+				}
+			}
+		}catch (const std::exception& e) {
+			std::cerr << "Application Error: " << e.what() << std::endl;
+			// Handle or safely log the error state here
+		}
+		for (const auto& task : tasksToRun) {
+			if (task.func) {
+				task.func();
+			}
+		}
+#endif
 	}
 
 	void Actor::Draw(float _deltaTime)
@@ -186,6 +262,12 @@ namespace cart {
 		m_height = _size.y;
 	}
 
+	void Actor::UpdateRawSize(Vector2 _size)
+	{
+		m_rawWidth = _size.x;
+		m_rawHeight = _size.y;
+	}
+
 	void Actor::SetSize(Vector3 _size)
 	{
 		m_width = _size.x;
@@ -196,31 +278,24 @@ namespace cart {
 	/// <summary>
 	/// Load Texture before rendering page
 	/// </summary>
-	void Actor::LoadAssets()
+	void Actor::LoadAssets_async()
 	{
 		if (m_preloadlist.size() > 0) {			
 			AssetManager::Get().LoadAssetList(GetId(), m_preloadlist, m_strloadMsg, GetWeakRef(), &Actor::AssetsLoadCompleted);
 		}
 		else {
 			AssetsLoadCompleted();
-		}
-		
+		}		
 	}
 
 	void Actor::AssetsLoadCompleted()
 	{
-		//Logger::Get()->Trace(std::format("{} Asset Load complete!", GetId()));
+		Logger::Get()->Trace(std::format("{} Asset Load complete!", GetId()));
 		m_areAssetsLoaded = true;
 		Start();
 	}
 
-	void Actor::Destroy()
-	{
-		if (m_isPendingDestroy)return;
-		
-		m_preloadlist.clear();
-		Object::Destroy();
-	}
+	
 
 	std::string Actor::type()
 	{
@@ -232,9 +307,62 @@ namespace cart {
 		m_tweening = flag;
 	}
 
+	weak<Object> Actor::GetParent()
+	{
+		return m_parentObj.lock();	
+		
+	}
+
+	weak<Object> Actor::SortChildrenByZindex()
+	{
+		return Object::SortChildrenByZindex();
+	}
+
+	bool Actor::AddChild(weak<Actor> elem)
+	{
+		return false;
+	}
+
+	weak<Object> Actor::Child(const std::string& id)
+	{
+		return weak<Object>();
+	}
+
+
+	void Actor::SetZindex(int index, bool sort)
+	{
+		m_zIndex = index;
+		
+	}
+
+	void Actor::SetMaterial(weak<Material> mat)
+	{
+		m_material = mat;
+	}
+
+	weak<Material> Actor::GetMaterial()
+	{
+		return m_material.lock();
+	}
+
 	void Actor::SetVisible(bool _flag)
 	{
 		m_visible = _flag;
+	}
+
+	void Actor::PostDelayed(std::function<void()> func, std::chrono::milliseconds delay) {
+#ifdef __EMSCRIPTEN__
+		// Web already handles the main-thread loop for us
+		auto* f = new std::function<void()>(func);
+		emscripten_async_call([](void* arg) {
+			auto* task = static_cast<std::function<void()>*>(arg);
+			(*task)();
+			delete task;
+		}, f, static_cast<int>(delay.count()));
+#else
+		// Native needs to be tracked manually
+		m_tasks.push_back({ func, std::chrono::steady_clock::now() + delay });
+#endif
 	}
 
 #pragma endregion

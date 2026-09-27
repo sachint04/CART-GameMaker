@@ -6,7 +6,10 @@
 
 namespace cart
 {
-
+	Vector3 Vector3Add(Vector3 vec1, Vector3 vec2)
+	{
+		return {vec1.x + vec2.x, vec1.y + vec2.y, vec1.z + vec2.z};
+	}
 	Vector2 AngleToVector(float rotation) {
 		float radians = DegreesToRadians(rotation);
 		Vector2 vec {std::cos(radians), std::sin(radians)};
@@ -14,12 +17,10 @@ namespace cart
 	}
 
 	Vector2 GetPointInCircle() {
-		float ran = RandomRange(0.f, 1.f) * 360.f;
-		float radian = DegreesToRadians(ran);
-		float x = std::cos(radian) ;
-		float y = std::sin(radian);
-		Vector2 p = { x,y };
-		return p;
+		float angle = RandomRange(0.f, 2.f * PI);
+		float r = std::sqrt(RandomRange(0.f, 1.f));
+
+		return { std::cos(angle) * r, std::sin(angle) * r };
 	}
 
 	Vector2 GetPointOnRectangle()

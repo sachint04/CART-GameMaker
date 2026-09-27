@@ -7,6 +7,7 @@
 #include "World.h"
 #include "HUD.h"
 #include "UICanvas.h"
+#include "Text.h"
 namespace cart {
 	
 #pragma region  INIT
@@ -40,7 +41,10 @@ namespace cart {
 		m_texturesourcedown{},
 		m_texturesourcedisable{},
 		m_ButtonDisableColor{GRAY},
-		m_minfontsize{}
+		m_minfontsize{},
+		m_cursorstyle{4},
+		m_minfontspace{0.8f},
+		m_btntxtprop{}
 	{
 	}
 
@@ -48,19 +52,22 @@ namespace cart {
 	{
 		m_owningworld->GetInputController()->RegisterUI(GetWeakRef());
 		UIElement::Init();
-
-		/*if (m_text.size() > 0) {
-			m_font = AssetManager::Get().LoadFontAsset(m_fontstr, m_fontsize);
-			m_textsize = MeasureTextEx(*m_font, m_text.c_str(), m_fontsize, 2.f);
-			UpdateTextLocation();
-		}*/
 		
+	}
+
+	void UIButton::Start()
+	{
+		if (!m_text.empty()) {
+			m_btntext = AddText(GetId() + "_text", m_btntxtprop);
+			m_btntext.lock()->UpdateLayout();
+		}
+		
+		UIElement::Start();
 	}
 
 	void UIButton::SetScale(float _scale)
 	{
 		UIElement::SetScale(_scale);
-		//UpdateTextLocation();
 	}
 
 	
@@ -71,16 +78,25 @@ namespace cart {
 	
 	void UIButton::Update(float _deltaTime)
 	{
-		if (!m_visible || m_pendingUpdate)return;
+		if (!m_visible)return;
 		if (m_fontstr.size() > 0) {
-			float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
-			float fspace = std::max(m_minfontspace, m_fontspace * World::UI_CANVAS.get()->Scale());
+			float fsize = m_fontsize;
+			float fspace = m_fontspace;
+			if (HasComponents()) {
+				if (HasLayoutComponent(LAYOUT)) {
+					fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
+					//fspace = std::max(m_minfontspace, m_fontspace * World::UI_CANVAS.get()->Scale());
+					fspace = std::max(m_minfontspace, m_fontspace * World::UI_CANVAS.get()->Scale());
+				}
+			}
+
+			/*float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
+			float fspace = std::max(m_minfontspace, m_fontspace * World::UI_CANVAS.get()->Scale());*/
 
 			m_font = AssetManager::Get().LoadFontAsset(m_fontstr, fsize);
 			m_textsize = MeasureTextEx(*m_font, m_text.c_str(), fsize, fspace);
-			UpdateTextLocation();
+		//	UpdateTextLocation();
 		}
-		
 		if (!m_active)return;
 
 
@@ -182,13 +198,21 @@ namespace cart {
 				DrawRectangle(rect.x - 10.f, rect.y - 10.f, rect.width + 20.f, rect.height + 20.f, m_color);
 			}
 
-			
-			
 			if (m_text.size() > 0) {
-				float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
-				float fspace = std::max(m_minfontspace, m_fontspace * World::UI_CANVAS.get()->Scale());
-				m_font = AssetManager::Get().LoadFontAsset(m_fontstr, fsize);
-				DrawTextEx(*m_font, m_text.c_str(), m_fontLocation, fsize, fspace, m_textcolor);
+				float fsize = m_fontsize;
+				float fspace = m_fontspace;
+				
+				if (HasComponents()) {
+					if (HasLayoutComponent(LAYOUT)) {
+						fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
+						fspace = std::max(m_minfontspace, m_fontspace * World::UI_CANVAS.get()->Scale());
+					}
+				}
+				/*float fsize = std::max(m_minfontsize, std::ceil(m_fontsize * World::UI_CANVAS.get()->Scale()));
+				float fspace = std::max(m_minfontspace, m_fontspace * World::UI_CANVAS.get()->Scale());*/
+				//m_font = AssetManager::Get().LoadFontAsset(m_fontstr, fsize);
+				//DrawTextEx(*m_font, m_text.c_str(), m_fontLocation, fsize, fspace, m_textcolor);
+				
 			}
 
 	}
@@ -196,13 +220,12 @@ namespace cart {
 
 #pragma endregion
 	
-#pragma region Helpers
-	
+#pragma region Helpers	
 	void UIButton::SetSelected(bool _flag)
 	{
 		m_IsSelected = _flag;
+		m_textcolor = m_IsSelected ? m_texthovercolor : m_defaulttextcolor;
 	}
-
 	void UIButton::SetActive(bool _flag)
 	{
 		UIElement::SetActive(_flag);		
@@ -217,7 +240,6 @@ namespace cart {
 		m_color = (_flag)?m_ButtonDefaultColor : m_ButtonDisableColor;
 		m_textcolor = (_flag) ? m_defaulttextcolor : textDisabledColor;
 	}
-
 	void UIButton::SetButtonProperties(Btn_Properties _prop)
 	{
 		UIElement::SetUIProperties(_prop);
@@ -226,26 +248,42 @@ namespace cart {
 		m_ButtonHoverColor = _prop.overcol;
 		m_ButtonDownColor = _prop.downcol;
 		m_ButtonDisableColor = _prop.disablecol;
-		m_IsSelectable = _prop.isSelectable;
+		m_IsSelectable = _prop.selectable;
 		m_defaulttexturecolor = _prop.textureColor;
+		m_cursorstyle = _prop.cursorstyle;
 
 	}
 	void UIButton::SetButtonProperties(Btn_Text_Properties _prop)
 	{
 		//UIElement::SetUIProperties(_prop);
 		SetTextProperties(_prop);	
-		m_IsSelectable = _prop.isSelectable;
+		m_IsSelectable = _prop.selectable;
 
 	}
-
 	void UIButton::SetUIProperties(UI_Properties _prop)
 	{
 		UIElement::SetUIProperties(_prop);
 	}
-
 	void UIButton::SetTextProperties(Btn_Text_Properties _prop)
 	{
 		SetButtonProperties((Btn_Properties)_prop);
+		m_btntxtprop.font = _prop.font;
+		m_btntxtprop.text = _prop.text;
+		m_btntxtprop.textcolor = _prop.textcolor;
+		m_btntxtprop.color = {0,0,0,0};
+		m_btntxtprop.align = CENTER;
+		m_btntxtprop.valign = MIDDLE;
+		m_btntxtprop.anchor = {0.5f,0.5f,0.5f,0.5f };
+		m_btntxtprop.pivot = { 0.5f,0.5f };
+		m_btntxtprop.size = _prop.size;
+		m_btntxtprop.location = { 0,0 };
+		m_btntxtprop.scale = _prop.scale;
+		m_btntxtprop.fontsize = _prop.fontsize;
+		m_btntxtprop.minfontsize = _prop.minfontsize;
+		m_btntxtprop.fontspacing = _prop.fontspacing;
+		m_btntxtprop.minfontspacing = _prop.minfontspace;
+		m_btntxtprop.component = _prop.component;
+
 		m_fontstr = _prop.font;
 		m_text = _prop.text;
 		m_fontsize = _prop.fontsize;
@@ -256,73 +294,56 @@ namespace cart {
 		m_texthovercolor = _prop.texthoverolor;
 		m_fontspace = _prop.fontspacing;
 		m_minfontspace = _prop.minfontspace;
+
+		
 		//UpdateLocation();
      //   m_ButtonDefaultColor = _prop._color;
 
 	}
-
-	/*void UIButton::UpdateLocation()
-	{
-		UIElement::UpdateLocation();
-
-	}*/
-
 	void UIButton::SetLocation(Vector2 _location)
 	{
 		UIElement::SetLocation(_location);
-	//	UpdateTextLocation();
+		
 	}
-
 	void UIButton::SetColor(Color _color)
 	{
 		m_ButtonDefaultColor = _color;
 		m_color = _color;
 	}
-	
 	void UIButton::SetHoverColor(Color _color)
 	{
 		m_ButtonHoverColor = _color;
 	}
-	
 	void UIButton::SetDownColor(Color _color)
 	{
 		m_ButtonDownColor = _color;
 	}
-
 	void UIButton::SetDisableColor(Color _color)
 	{
 		m_ButtonDisableColor = _color;
 	}
-
 	void UIButton::UpdateTextLocation() {
 		if (m_text.size() == 0)return;
-			Rectangle rect = GetBounds();
-			float margin_x, margin_y;
-		//if (m_textsize.x < rect.width) {
-			margin_x = (rect.width - m_textsize.x)* 0.5f;
-			margin_y = (rect.height - m_textsize.y) * 0.5f;
 
-			m_fontLocation = { rect.x + margin_x, rect.y + margin_y  };
-		//}
-		//else {
-	//		m_fontLocation = { rect.x +  , rect.y };
-//		}
+		Rectangle rect = GetBounds();
+		float margin_x, margin_y;
+		margin_x = (rect.width - m_textsize.x)* 0.5f;
+		margin_y = (rect.height - m_textsize.y) * 0.5f;		
+
+		if (!m_btntext.expired())
+		m_btntext.lock()->SetLocation({ rect.x + margin_x, rect.y + margin_y });		
 	}
-
 	void UIButton::SetFontName(const std::string &strfnt)
 	{
 		m_fontstr = strfnt;
 	}
-
-
 	bool UIButton::TestMouseOver(Vector2 _point)
 	{
 		return CheckCollisionPointRec(_point, GetBounds());
 	}
-
-	
-	
-
+	void UIButton::SetButtonText(const std::string& _text) {
+		m_btntext.lock()->SetText(_text);
+	}
 #pragma endregion
 
 #pragma region  UI EVENTS
@@ -330,6 +351,10 @@ namespace cart {
 	{
 		m_IsButtonDown = false;
 		m_color = m_ButtonDefaultColor;		
+
+		if (!m_btntext.expired())
+		m_btntext.lock()->SetTextColor(m_textcolor);
+
 		onButtonUp.Broadcast(GetWeakRef(),  pos);
 	}
 	
@@ -337,6 +362,9 @@ namespace cart {
 	{
 		m_IsButtonDown = true;		
 		m_color = m_ButtonDownColor;
+		
+		if(!m_btntext.expired())
+		m_btntext.lock()->SetTextColor(m_textcolor);
 		
 		if (m_IsSelectable == true) {
 			m_IsSelected = true;
@@ -356,9 +384,13 @@ namespace cart {
 	{
 		
 		m_color = m_ButtonHoverColor;
-		m_textcolor = m_texthovercolor;
+		m_textcolor = m_texthovercolor;		
+
+		if (!m_btntext.expired())
+		m_btntext.lock()->SetTextColor(m_textcolor);
+		
 		m_IsMouseOver = true;
-		SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+		SetMouseCursor(m_cursorstyle);
 		onButtonHover.Broadcast(GetWeakRef() );
 
 
@@ -367,7 +399,11 @@ namespace cart {
 	{
 		//if(m_IsMouseOver == true){
 			m_color = m_ButtonDefaultColor;
-			m_textcolor = m_defaulttextcolor;
+			m_textcolor =  m_IsSelected ? m_texthovercolor : m_defaulttextcolor;
+			
+			if (!m_btntext.expired())
+			m_btntext.lock()->SetTextColor(m_textcolor);
+
 			m_IsMouseOver = false;
 			SetMouseCursor(0);
 
@@ -378,6 +414,8 @@ namespace cart {
 			}
 		//}
 	}
+
+
 
 	
 #pragma endregion
@@ -396,23 +434,32 @@ namespace cart {
 	void UIButton::Destroy() {
 		if (m_isPendingDestroy)return;
 
-		m_textsize = {};
-		m_fontLocation = {};
-		m_locmouse = {};
-		m_defaulttextcolor = {};
-		m_defaulttexturecolor = {};
-		m_textcolor = {};
-		m_texthovercolor = {};
-		m_ButtonDefaultColor = {};
-		m_ButtonDownColor = {};
-		m_ButtonHoverColor = {};		
-		m_texturesourcedefault = {};
-		m_texturesourceover = {};
-		m_texturesourcedown = {};
-		m_texturesourcedisable = {};
+		//m_textsize = {};
+		//m_fontLocation = {};
+		//m_locmouse = {};
+		//m_defaulttextcolor = {};
+		//m_defaulttexturecolor = {};
+		//m_textcolor = {};
+		//m_texthovercolor = {};
+		//m_ButtonDefaultColor = {};
+		//m_ButtonDownColor = {};
+		//m_ButtonHoverColor = {};		
+		//m_texturesourcedefault = {};
+		//m_texturesourceover = {};
+		//m_texturesourcedown = {};
+		//m_texturesourcedisable = {};
 		m_font.reset();
 		SetMouseCursor(0);
 		m_owningworld->GetInputController()->RemoveUI(GetId());
+
+		onButtonClicked.Destroy();
+		onButtonDown.Destroy();
+		onButtonUp.Destroy();
+		onButtonDrag.Destroy();
+		onButtonHover.Destroy();
+		onButtonOut.Destroy();
+
+
 		UIElement::Destroy();
 	}
 

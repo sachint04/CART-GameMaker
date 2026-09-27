@@ -56,6 +56,15 @@ namespace cart {
 		}
 	}
 
+	void InputController::SortChildrenByZindex()
+	{
+		std::sort(m_uilist.begin(), m_uilist.end(), [](const weak<UIElement> a, const weak<UIElement> b) {
+			
+			if (!a.lock() || !b.lock()) return a.lock() < b.lock(); // Move nulls to the start			
+			return a.lock()->GetZindex() < b.lock()->GetZindex();
+		});
+	}
+
 	void InputController::Clear() {
 		m_uilist.clear();
 	}
@@ -79,6 +88,8 @@ namespace cart {
 	
 		return false;
 	}
+
+
 
 	InputController::~InputController()
 	{

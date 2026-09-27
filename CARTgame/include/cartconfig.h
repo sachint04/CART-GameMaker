@@ -9,7 +9,7 @@ std::string GetResourceDir()
 #ifdef NDEBUG // release build
 	return "assets/";
 #else // debug build
-	return "D:/c++/CART/CARTgame/assets/";
+	return "D:/c++/CART-Engine-GitRepo/CART-GameMaker/CARTgame/assets/";
 #endif // 
 
 }

@@ -67,14 +67,15 @@ namespace cart {
         Logger::Get()->Trace(std::format("network::LoadAssetHTTPCallback() -> caller Id {} | network Id {} ", callerID, networkID));
 
         found = false;
-        for (auto iter = m_LoadAssetCallbacks.begin(); iter != m_LoadAssetCallbacks.end();)
+        for (auto iter = m_LoadAssetCallbacks.begin(); iter != m_LoadAssetCallbacks.end(); ++iter)
         {
-            Logger::Get()->Trace(std::format("network::LoadAssetHTTPCallback() -> callback func Id {} | network Id {} ", iter->first, networkID));
-            if (iter->first.compare(networkID) == 0)
+            Logger::Get()->Trace(std::format("network::LoadAssetHTTPCallback() -> callback Looking for callback func Id {} | network Id {} ", iter->first, networkID));
+            if (iter->first ==  networkID)
             {
+                Logger::Get()->Trace(std::format("network::LoadAssetHTTPCallback() -> callback Function found Id {} | network Id {} ", iter->first, networkID));
                 if ((iter->second)(callerID, url, data, size))
                 {
-                    Logger::Get()->Trace(" network::LoadAssetHTTPCallback Callback removed \n");
+                    Logger::Get()->Trace(" network::LoadAssetHTTPCallback Callback Executed and removed \n");
                     m_LoadAssetCallbacks.erase(iter);
                     found = true;
                     break;

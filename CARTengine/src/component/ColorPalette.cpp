@@ -6,19 +6,20 @@ namespace cart {
 #pragma region  Constructor / Init
 
 	ColorPalette::ColorPalette(World* _owningworld, const std::string& _id, bool isExcludedFromParentAutoControl, float palatteiconsize)
-		:UIElement{ _owningworld, _id, isExcludedFromParentAutoControl },
+		:UIButton{ _owningworld, _id, isExcludedFromParentAutoControl },
 		m_palatteiconsize{ palatteiconsize },
 		colorState{},
 		colorsRecs{},
-		mousePoint{0,0}
+		mousePoint{ 0,0 }		
 	{
 	}
 	void ColorPalette::Init()
 	{
-		UIElement::Init();
-		for (int i = 0; i < 21; i++)
+		UIButton::Init();
+
+		for (int i = 0; i < colCount ; i++)
 		{
-			Rectangle vec = { m_location.x + m_palatteiconsize * (i % 7) , m_location.y + (m_palatteiconsize * (i / 7)), m_palatteiconsize,m_palatteiconsize };
+			Rectangle vec = { m_location.x + m_palatteiconsize * (i % cols) , m_location.y + (m_palatteiconsize * (i / cols)), m_palatteiconsize,m_palatteiconsize };
 			colorsRecs.push_back(vec);
 			colorState.push_back(0);
 		}
@@ -26,7 +27,7 @@ namespace cart {
 	}
 	void ColorPalette::Start()
 	{
-		UIElement::Start();
+		UIButton::Start();
 	}
 #pragma endregion
 
@@ -34,41 +35,19 @@ namespace cart {
 	void ColorPalette::Update(float _deltaTime)
 	{
 		if (!m_visible)return;
-		UIElement::Update(_deltaTime);
-		mousePoint = GetMousePosition();
-		if (IsMouseButtonReleased(0)) {
-			for (int i = 0; i < 21; i++)
-			{
-				if (CheckCollisionPointRec(mousePoint, colorsRecs[i])) colorState.at(i) = 1;
-				else colorState.at(i) = 0;
-			}
-		}
+		UIButton::Update(_deltaTime);
+		
 		
 	}
 	void ColorPalette::Draw(float _deltaTime)
 	{
 		if (!m_visible)return;
 
-		UIElement::Draw(_deltaTime);
-		Color colors[21] = {
-		   DARKGRAY, MAROON, ORANGE, DARKGREEN, DARKBLUE, DARKPURPLE, DARKBROWN,
-		   GRAY, RED, GOLD, LIME, BLUE, VIOLET, BROWN, LIGHTGRAY, PINK, YELLOW,
-		   GREEN, SKYBLUE, PURPLE, BEIGE };
+		UIButton::Draw(_deltaTime);
 
-		const char* colorNames[21] = {
-			"DARKGRAY", "MAROON", "ORANGE", "DARKGREEN", "DARKBLUE", "DARKPURPLE",
-			"DARKBROWN", "GRAY", "RED", "GOLD", "LIME", "BLUE", "VIOLET", "BROWN",
-			"LIGHTGRAY", "PINK", "YELLOW", "GREEN", "SKYBLUE", "PURPLE", "BEIGE" };
-
-		for (int i = 0; i < 21; i++)    // Draw all rectangles
+		for (int i = 0; i < colCount; i++)    // Draw all rectangles
 		{
-			DrawRectangleRec(colorsRecs.at(i), Fade(colors[i], colorState.at(i) ? 0.6f : 1.0f));
-
-			if (IsKeyDown(KEY_SPACE) || colorState.at(i) == 1)
-			{
-				onPicked.Broadcast(colors[i]);
-				colorState.at(i) = 0;
-			}
+			DrawRectangleRec(colorsRecs.at(i), Fade(colors[i], colorState.at(i) ? 0.6f : 1.0f));			
 		}
 	}
 	
@@ -77,7 +56,7 @@ namespace cart {
 #pragma region  Helper
 	void ColorPalette::SetVisible(bool _flag)
 	{
-		UIElement::SetVisible(_flag);
+		UIButton::SetVisible(_flag);
 
 	}
 
@@ -91,12 +70,25 @@ namespace cart {
 	}
 #pragma endregion
 
+#pragma region Event Handlers
+	void ColorPalette::ButtonUp(Vector2 pos)
+	{
+		for (int i = 0; i < colorsRecs.size(); i++)
+		{
+			if (CheckCollisionPointRec(pos, colorsRecs[i])) {
+				onPicked.Broadcast(colors[i]);
+				break;
+			}			
+		}
+	}
+#pragma endregion
 
 #pragma region  CLeanUp
 	ColorPalette::~ColorPalette()
 	{
 		colorsRecs.clear();
 		colorState.clear();
+		onPicked.Destroy();
 	}
 #pragma endregion
 }

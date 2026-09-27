@@ -25,6 +25,13 @@ mergeInto(LibraryManager.library, {
 		const filename = Module.UTF8ToString(filenamePtr);
 		JSUploadImage(id, url, dir, imageData, w, h, filename);
 	},
+	Delete:function(_id, _url, _dir, filenamePtr){
+		const id = Module.UTF8ToString(_id);
+		const url = Module.UTF8ToString(_url);
+		const dir = Module.UTF8ToString(_dir);
+		const filename = Module.UTF8ToString(filenamePtr);
+		JSDeleteFile(id, url, dir, filename);
+	},
 	LoadAssetHTTP:function(_id, _url)
 	{
 		const id = Module.UTF8ToString(_id);
@@ -50,6 +57,10 @@ mergeInto(LibraryManager.library, {
 	ToggleMobileKeyboard(_flag)
 	{
 		JSToggleMobileKeyboard(_flag);
+	},
+	GetGPUTier(){
+		
+		
 	}
 	
 });

@@ -169,6 +169,9 @@ namespace cart {
 	void UIList::Destroy()
 	{
 		if (m_isPendingDestroy)return;
+		onSelect.Destroy();
+		onOpen.Destroy();
+		onClose.Destroy();
 		UIElement::Destroy();
 	}
 #pragma endregion

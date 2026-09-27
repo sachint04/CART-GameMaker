@@ -52,12 +52,24 @@ namespace cart {
 		std::time_t t = system_clock::to_time_t(now);		
 		return t;
 	}
+
+	TimePoint Clock::SteadyTime()
+	{
+		return steady_clock::now();
+	}
+
 	void Clock::Tick()
 	{
 		steady_clock::time_point curTime = steady_clock::now();
 		m_deltaTime = curTime - m_previousTime;
 		m_previousTime = steady_clock::now();
 		m_elapsedTime = m_previousTime - m_startTime;
+	}
+
+	milliseconds Clock::ToMiliseconds(int ms)
+	{
+		
+		return milliseconds(ms);
 	}
 
 	uint64_t Clock::getCurrentTimeMillis() {

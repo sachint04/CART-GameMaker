@@ -1,6 +1,7 @@
 #pragma once
-#include <functional>
 #include <raylib.h>
+#include "rlgl.h"
+#include <functional>
 #include <nlohmann/json.hpp>
 #include "Core.h"
 #include "utils/JSutils.h"
@@ -8,6 +9,17 @@
 #include "network/network.h"
 #include "Object.h"
 #include "Types.h"
+
+
+#ifdef _WIN32
+	#define GLSL_VERSION            330
+#else   
+	#define GLSL_VERSION            120
+#endif
+
+#ifndef __LOGGER__
+//#define __LOGGER__ // Custom Logger view
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,15 +48,16 @@ namespace cart
 		virtual void Invoke();
 		virtual void Init();
 		virtual void Start();
+		virtual void UpdateDrawFrame();
 		virtual void Run();
 		virtual void QuitApplication();
 		virtual DataFile& GetModel() { return m_dataModel; };
 		virtual World* GetCurrentWorld();
-		virtual std::string& GetAssetsPath();
-		virtual std::string& GetStaticAssetsPath();		
+		virtual std::string GetAssetsPath();
+		virtual std::string GetStaticAssetsPath();		
 		virtual std::string GetResourceDisplayPath();
 		virtual float GetIconSize();
-		virtual Camera GetCamera()const { return m_camera; };
+		virtual float GetIconSize2();
 		virtual void SetHttpAssetPath(std::string path);
 		static unique<network> net;
 
@@ -68,6 +81,9 @@ namespace cart
 		void MobileKeyboardInterupt();
 		void LogTrace(char* str);
 		void RemoveMobileInputListener(std::string id);
+		void ApplyCustomClipping(double nearPlan, double farPlan);
+
+
 		json& SetEnviornmentSettings(char* _setting);
 		DataFile& GetGameConfig(){ return m_gameConfig; };
 		json& GetGameConfigJSON() { return m_config_json; };
@@ -81,7 +97,12 @@ namespace cart
 		
 		template<typename ClassName>
 		void RegisterListernerToMobileInput(std::string id, weak<Object> obj, void(ClassName::* callback)(char*, int));
-
+		static Camera CAMERA;
+		static int CAMERA_MODE;
+		static int GPT_TIER;
+		static double CAMERA_NEAR_PLANE;
+		static double CAMERA_FAR_PLANE;
+		static bool BACK_FACE_CULLING;
 	protected:
 		virtual void Update(float deltaTime);
 		virtual void Draw(float deltaTime);
@@ -98,11 +119,10 @@ namespace cart
 		DataFile m_dataModel; 
 		DataFile m_gameConfig;
 		json m_config_json;
-		Camera m_camera;
 
 	private:
 		Dictionary<std::string, std::function<bool(char*, int)>> m_mobileInputListeners;
-
+		static void MainLoopWrapper(void* arg);
 		//shared<World> m_PendingWorld;
 	};
 	

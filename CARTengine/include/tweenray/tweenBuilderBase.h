@@ -32,14 +32,15 @@ namespace cart {
 
 		}
 		*/
-
+		virtual bool Abort();
+		void Destroy()override;
 		virtual ~TweenBuilderBase();
 
 		TweenMove* move() const;
 		TweenRotate* rotate() const;
 		TweenScale* scale() const;
 		TweenColor* color() const;
-
+		weak<Actor> actor();
 		virtual void Update(double deltaTime) {
 			
 		}

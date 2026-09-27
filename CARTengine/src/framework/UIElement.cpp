@@ -1,12 +1,16 @@
-#include "UIElement.h"
-#include "AssetManager.h"
-#include "Text.h"
-#include "UIButton.h"
 #include <memory>
 #include "World.h"
-#include "Logger.h"
+#include "AssetManager.h"
+#include "UIElement.h"
 #include "UICanvas.h"
+#include "Logger.h"
 #include "component/LayoutComponentFactory.h"
+#include "component/InputController.h"
+#include "UIButton.h"
+#include "ImageButton.h"
+#include "Text.h"
+
+
 
 extern int DEFAULT_CANVAS_WIDTH;
 extern int DEFAULT_CANVAS_HEIGHT;
@@ -25,7 +29,6 @@ namespace cart {
 		m_defaultSize{},
 		m_isExcludedFromParentAutoControl{ isExcludedFromParentAutoControl },
 		m_shapeType{ SHAPE_TYPE::RECTANGLE },
-		m_parent{ shared<UIElement>{nullptr} },
 		m_borderwidth{0},
 		m_borderColor{ GRAY },
 		m_texturetype{ TEXTURE_FULL },
@@ -56,6 +59,7 @@ namespace cart {
 			m_areChildrenReady = true;		
 			Actor::Start();// There are no childres hence set Ready
 		}
+		m_owningworld->GetHUD().lock()->onModalClose.BindAction(GetWeakRef(), &UIElement::OnModalClose);
 	}
 #pragma endregion
 
@@ -64,6 +68,17 @@ namespace cart {
 	void UIElement::Update(float _deltaTime)
 	{
 		if (!m_active || !m_visible)return;
+
+		for (auto& child : m_children) {
+			if (child) {
+			//	Logger::Get()->Trace(std::format("UIElement::Update() child {} ", child.get()->GetId()));
+				if (!child->IsPendingDestroy())
+				{
+					child->Update(_deltaTime);
+				}
+			}
+		}
+		Actor::Update(_deltaTime);
 	}
 
 	void UIElement::Draw(float _deltaTime)
@@ -71,6 +86,13 @@ namespace cart {
 		if (!m_visible)return;
 	
 		DrawBGColor();
+		
+
+		for (auto& child : m_children) {
+			if (child && !child->IsPendingDestroy()) {
+				child->Draw(_deltaTime);
+			}
+		}
 	}
 	void UIElement::LateUpdate(float _deltaTime)
 	{
@@ -94,23 +116,48 @@ namespace cart {
 		m_roundnessSegments = _prop.roundnessSegments;
 		m_isLockedScale = _prop.blockscale;
 		SetSize(_prop.size);
-		m_defaultSize = _prop.defaultSize.x && _prop.defaultSize.y  != -1.f? _prop.defaultSize : _prop.size ;
+	//	m_defaultSize = _prop.defaultSize.x && _prop.defaultSize.y  != -1.f? _prop.defaultSize : _prop.size ;
 		m_rawWidth = _prop.size.x;
 		m_rawHeight = _prop.size.y;
+		m_padding = _prop.padding;
+		SetDefaultSize();
 		if (_prop.component != NO_LAYOUT)AddUIComponent(_prop.component, _prop.layout_props);
 	}
 #pragma endregion
 
 #pragma region  Helpers
+
 	void UIElement::SetSize(Vector2 _size) {
 		m_width = _size.x;
 		m_height = _size.y;
 		//UpdateLocation();
 	}
 
-	void UIElement::LoadAssets()
+	void UIElement::SetDefaultSize()
 	{
-		Actor::LoadAssets();
+		if (m_anchor.x != m_anchor.width || m_anchor.y != m_anchor.height)
+		{
+			Rectangle rect = {};
+			weak<UIElement> parent = std::dynamic_pointer_cast<UIElement>(m_parentObj.lock());
+			if (auto lock = parent.lock()) {
+				rect = lock->GetBounds();
+			}
+			else {
+				rect = World::UI_CANVAS.get()->GetBounds();
+			}
+			m_defaultSize = { (rect.width * m_anchor.width) - (rect.width * m_anchor.x),
+								(rect.height * m_anchor.height) - (rect.height * m_anchor.y) };
+		}
+		else {
+			m_defaultSize = { m_rawWidth, m_rawHeight };
+
+		}
+	}
+
+
+	void UIElement::LoadAssets_async()
+	{
+		Actor::LoadAssets_async();
 	}
 
 	bool UIElement::HasTexture()
@@ -147,13 +194,16 @@ namespace cart {
 	}
 	
 	Rectangle UIElement::GetBounds() {
-		float x = m_location.x, y = m_location.y , w = m_width * m_scale, h = m_height * m_scale, px, py;
+		
+		float x = m_location.x, y = m_location.y , w = m_width, h = m_height, px, py;
 			Rectangle  pr;
-		if (m_parent.expired()) {
-			pr = { 0 ,0,(float)SCREEN_WIDTH, (float)SCREEN_HEIGHT };
+		weak<UIElement> parent = std::dynamic_pointer_cast<UIElement>(m_parentObj.lock());
+		if (auto lock = parent.lock()) 
+		{
+			pr = parent.lock().get()->GetBounds();
 		}
 		else {
-			pr = m_parent.lock().get()->GetBounds();
+			pr = { 0 ,0,(float)SCREEN_WIDTH, (float)SCREEN_HEIGHT };
 		}
 		// Set width from Anchor position
 		if (m_anchor.x != m_anchor.width) {
@@ -164,7 +214,7 @@ namespace cart {
 		}
 		else {
 			if (m_ui_comp_factory.HasComponents())
-				x = pr.x + (m_anchor.x * pr.width) - (m_pivot.x * w) + m_location.x;
+				x = pr.x + (m_anchor.x * pr.width) - m_pivot.x * w  + m_location.x;
 			else
 				x = m_location.x - m_pivot.x * w;
 
@@ -185,16 +235,20 @@ namespace cart {
 
 		if (m_bAspectRatio && m_anchor.x == m_anchor.width && m_anchor.y == m_anchor.height) {
 			float r = m_rawHeight < m_rawWidth ?m_rawHeight / m_rawWidth : m_rawWidth / m_rawHeight;
-			w = h < w ? h / r : w;
-			h = w < h ? w / r : h;
+			
+			float tmpW = h < w ? h / r : w;
+			float tmpH = w < h ? w * r : h;
+
+			w = tmpW; h = tmpH;
+
 
 			if (m_ui_comp_factory.HasComponents())
-				y = pr.y + m_anchor.y * pr.height - m_pivot.y * h + m_location.y;
+				y = pr.y + m_anchor.y * pr.height - m_pivot.y * h  + m_location.y;
 			else
 				y = m_location.y - m_pivot.y * h;
 
 			if (m_ui_comp_factory.HasComponents())
-				x = pr.x + (m_anchor.x * pr.width) - (m_pivot.x * w) + m_location.x;
+				x = pr.x + (m_anchor.x * pr.width) - m_pivot.x * w + m_location.x;
 			else
 				x = m_location.x - m_pivot.x * w;
 		}
@@ -207,7 +261,7 @@ namespace cart {
 			return { x - px - w * 0.5f, y - m_pivot.y - h * 0.5f, w * 2.f, h * 2.f };// shape size will change for cirle;
 		}
 		
-		return{  x,  y , w , h };
+		return{  x ,  y , w , h };
 	}
 
 	void UIElement::AddUIComponent(Layout_Component_Type type, UI_Layout_Properties layout_props)
@@ -248,6 +302,11 @@ namespace cart {
 		m_style = _style;
 	}
 
+	void UIElement::OnModalClose()
+	{
+		m_owningworld->GetHUD().lock()->onModalClose.RemoveActionsByObjectId(GetId());
+	}
+
 	void UIElement::SetLayoutLocation(Vector2 _loc)
 	{
 		m_layoutlocation = _loc;
@@ -256,6 +315,12 @@ namespace cart {
 	void UIElement::SetLayoutSize(Vector2 _size)
 	{
 		m_layoutSize = _size;
+	}
+
+	weak<UIElement> UIElement::GetUIParent()
+	{
+		weak<UIElement> p = std::dynamic_pointer_cast<UIElement>(m_parentObj.lock());
+		return p;
 	}
 
 	std::vector<weak<UIElement>> UIElement::Children()
@@ -330,7 +395,6 @@ namespace cart {
 	void UIElement::DrawBGColor()
 	{
 		float scScale =  World::UI_CANVAS.get()->Scale();
-		
 		Rectangle parentRect, rect = GetBounds();
 		/*if (m_parent.expired())
 		{			
@@ -351,8 +415,8 @@ namespace cart {
 
 			if (m_borderwidth > 0)
 			{
-				int bw = m_borderwidth;// std::max((int)(m_borderwidth * scScale), 1);
-				DrawRectangleRounded({ rect.x - bw, rect.y - bw, rect.width + bw * 2, rect.height + bw * 2 }, m_roundness, m_roundnessSegments, m_borderColor);
+				//int bw = m_borderwidth;// std::max((int)(m_borderwidth * scScale), 1);
+				DrawRectangleRounded({ rect.x - m_borderwidth, rect.y - m_borderwidth, rect.width + m_borderwidth * 2, rect.height + m_borderwidth * 2 }, m_roundness, m_roundnessSegments, m_borderColor);
 				//DrawRectangleRoundedLinesEx(rect, m_roundness , m_roundnessSegments , m_borderwidth, m_borderColor);
 
 			}
@@ -363,8 +427,8 @@ namespace cart {
 			int bw = m_borderwidth;// std::max((int)(m_borderwidth * scScale), 1);
 			if (m_borderwidth > 0)
 			{
-				int bw = std::max((int)(m_borderwidth* scScale), 1);
-				DrawRectangle(rect.x - bw, rect.y - bw, rect.width + bw * 2, rect.height + bw * 2, m_borderColor);
+				//int bw = std::max((int)(m_borderwidth), 1);
+				DrawRectangle(rect.x - m_borderwidth, rect.y - m_borderwidth, rect.width + m_borderwidth * 2, rect.height + m_borderwidth * 2, m_borderColor);
 			//	DrawRectangleRoundedLinesEx({ rect.x - bw, rect.y - bw, rect.width + bw * 2, rect.height + bw * 2 }, 0, 0, (float)bw, m_borderColor);
 				//DrawRectangleLinesEx(GetBounds(), (float)bw, m_borderColor);
 			}
@@ -399,7 +463,7 @@ namespace cart {
 		m_isExcludedFromParentAutoControl = _flag;
 	}
 
-	weak<UIElement> UIElement::parent()
+	/*weak<UIElement> UIElement::parent()
 	{
 		return m_parent;
 	}
@@ -407,7 +471,8 @@ namespace cart {
 	void UIElement::parent(weak<UIElement> parent)
 	{
 		m_parent = parent;
-	}
+		GetParent(m_parent);
+	}*/
 
 	weak<IComponent> UIElement::GetComponentById(const std::string& id)
 	{
@@ -444,6 +509,11 @@ namespace cart {
 		return std::string{"UIElement"};
 	}
 
+	bool UIElement::IsUI()
+	{
+		return true;
+	}
+
 	void UIElement::MaintainAspectRatio(bool _flag)
 	{
 		m_bAspectRatio = _flag;
@@ -451,13 +521,27 @@ namespace cart {
 #pragma endregion
 	
 #pragma region  Create Child Elements
-	void UIElement::AddText(const std::string& id, Text_Properties _prop)
+	weak<Text> UIElement::AddText(const std::string& id, Text_Properties _prop)
 	{
 		weak<Text> _txt = m_owningworld->SpawnActor<Text>(id);
-		_txt.lock()->SetTextProperties(_prop);
-		_txt.lock()->Init();
-		_txt.lock()->SetVisible(true);
 		AddChild(_txt);
+		if (auto lock = _txt.lock())
+		{
+			lock->SetTextProperties(_prop);
+			lock->Init();
+			lock->SetVisible(true);
+		}
+		return _txt;
+	}
+
+	weak<Object> UIElement::SortChildrenByZindex()
+	{
+		std::sort(m_children.begin(), m_children.end(), [](const shared<UIElement>& a, const shared<UIElement>& b) {
+			if (!a || !b) return a < b; // Move nulls to the start
+			return a->GetZindex() < b->GetZindex();
+		});
+		m_owningworld->GetInputController()->SortChildrenByZindex();
+		return Actor::SortChildrenByZindex();
 	}
 
 	weak<UIButton> UIElement::AddButton(const std::string& id, Btn_Text_Properties _prop)
@@ -470,15 +554,43 @@ namespace cart {
 		return _btn;
 	}
 
-	void UIElement::AddChild(weak<UIElement> _ui)
+	weak<Object> UIElement::Child(const std::string& id)
+	{
+		
+		auto find = std::find_if(m_children.begin(), m_children.end(), [&id](shared<UIElement>& elem)
+		{
+			std::string elemId = elem->GetId();
+			return id == elemId;
+		
+		});
+		if (find != m_children.end())
+		{
+			return *find;
+		}
+		return {};
+	}
+
+	bool UIElement::AddButtonElement(weak<UIButton> _btn)
+	{
+		return	AddChild(_btn);
+	}
+
+	bool UIElement::AddButtonElement(weak<ImageButton> _btn)
+	{
+		return	AddChild(_btn);
+	}
+
+	bool UIElement::AddChild(weak<Actor> elem)
 	{		
-		_ui.lock()->onReady.BindAction(GetWeakRef(), &UIElement::OnChildReady);// listen to child ready event
-		shared<UIElement> shared_ui = _ui.lock();
-		weak<UIElement> self = std::dynamic_pointer_cast<UIElement>(GetWeakRef().lock());
-		shared_ui.get()->parent(self);
-		m_children.push_back(shared_ui);
-		shared_ui.reset();
-	
+		shared<UIElement> shared_ui = std::dynamic_pointer_cast<UIElement>(elem.lock());
+		if (shared_ui) {
+			shared_ui->onReady.BindAction(GetWeakRef(), &UIElement::OnChildReadyHandler);// listen to child ready event			
+			shared_ui->SetParent(GetWeakRef());
+			shared_ui->SetZindex(m_zIndex +  m_children.size(), false);
+			m_children.push_back(shared_ui);
+			return true;
+		}
+		return false;
 	}
 
 	void UIElement::RemoveChild(const std::string& id)
@@ -508,7 +620,31 @@ namespace cart {
 		Actor::AssetsLoadCompleted();
 	}
 
-	void UIElement::OnChildReady(const std::string& id)
+	void UIElement::SetZindex(int index, bool sort)
+	{
+		Actor::SetZindex(index, sort);		
+		if (sort) {
+			auto parentlock = m_parentObj.lock();
+			if (parentlock) {
+				weak<UIElement> ui = std::dynamic_pointer_cast<UIElement>(parentlock);
+				auto uilock = ui.lock();
+				if (uilock) {
+					uilock->SortChildrenByZindex();
+				}
+			}
+			else {
+				m_owningworld->SortChildrenByZindex();			
+			}
+			/*float cnt = 1;
+			for (auto& child : m_children) {
+				child->SetZindex(index + cnt);
+				cnt++;
+			}*/
+		}
+	}
+
+
+	void UIElement::OnChildReadyHandler(const std::string& id)
 	{		
 		for (auto iter = m_children.begin(); iter != m_children.end();)
 		{
@@ -520,35 +656,22 @@ namespace cart {
 			++iter;
 		}
 		m_areChildrenReady = true;
-		/*if (m_ui_comp_factory.HasComponents()) {
-			if (m_ui_comp_factory.HasComponent(LAYOUT)) {
-				m_ui_comp_factory.GetComponent(LAYOUT).lock().get()->UpdateLayout();
-			}
-			else if (m_ui_comp_factory.HasComponent(V_LAYOUT))
-			{
-				m_ui_comp_factory.GetComponent(V_LAYOUT).lock().get()->UpdateLayout();
-			}
-			else if (m_ui_comp_factory.HasComponent(H_LAYOUT))
-			{
-				m_ui_comp_factory.GetComponent(H_LAYOUT).lock().get()->UpdateLayout();
-			}
-			
-		}*/
-
+		
 		if(m_areChildrenReady)
+		{
+			UpdateLayout();
+		}
 		Actor::Start();
 	}
 
-	void UIElement::OnScreenSizeChange()
+	void UIElement::OnScreenSizeChangeHandler()
 	{
 		// Add  Concrete Implemtation
 	}
 
-	void UIElement::OnLayoutChange()
+	void UIElement::OnLayoutChangeHandler()
 	{
-	//	Logger::Get()->Trace("UIElement::OnLayoutChange");
-		// Add  Concrete Implemtation
-
+		onLayoutChanged.Broadcast();
 	}
 
 
@@ -563,7 +686,10 @@ namespace cart {
 			iter->get()->Destroy();
 			iter = m_children.erase(iter);
 		}		
+		m_owningworld->GetHUD().lock()->onModalClose.RemoveActionsByObjectId(GetId());
 		m_ui_comp_factory.Destroy();
+		onLayoutChanged.Destroy();
+
 		SetVisible(false);
 		Actor::Destroy();
 	}

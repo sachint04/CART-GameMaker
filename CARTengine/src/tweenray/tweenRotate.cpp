@@ -39,12 +39,12 @@ namespace cart {
 				float vec = LERP(m_startAngle, m_targetAngle, (float)t);
 				Vector3 axis = LERP(m_startAxis, m_targetAxis, (float)t);
 				//std::string __id = m_actor.lock()->GetID();
-				m_actor.lock()->SetRotation3({ axis.x, axis.y, axis.z, vec });
-				
-
-				
+				m_actor.lock()->SetRotation(vec);
+				m_actor.lock()->SetRotation3({ axis.x, axis.y, axis.z, vec });								
 			}
 			else {
+				m_actor.lock()->SetRotation(m_targetAngle);
+				m_actor.lock()->SetRotation3({ m_targetAxis.x, m_targetAxis.y, m_targetAxis.z, m_targetAngle });
 				//std::cout <<this << " -> Tween Move Complete \n";
 				m_ready = false;
 				m_go = false;

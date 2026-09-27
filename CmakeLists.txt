@@ -29,12 +29,13 @@ FetchContent_MakeAvailable(raylib)
 
 
 SET(JSON_VERSION v3.12.0)
+FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz)
 FetchContent_Declare(
 	nlohmann_json
 	GIT_REPOSITORY https://github.com/nlohmann/json.git
 	GIT_TAG   ${JSON_VERSION}     
 )
-FetchContent_MakeAvailable(nlohmann_json)
+FetchContent_MakeAvailable(json)
 
 add_subdirectory(CARTengine)
 add_subdirectory(CARTgame)

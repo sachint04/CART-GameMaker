@@ -5,7 +5,10 @@ its a framework provides advance component layer cross platform games/simulation
     Instruction to compile and install
     
 	#1  run->
-		download ninja complier and copy ninja-win.exe (for windows) in the root of emsdk folder. Mac support will be commming soon.
+		windows -
+		download ninja complier and copy ninja-win.exe (for windows) in the root of emsdk folder. 
+		Mac
+		Install ninja and set ninja to environment path
   
 	#2 run  ->  
 		cmake -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DPLATFORM=Web -DCMAKE_TOOLCHAIN_FILE="<LOCAL FOLER>/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake"

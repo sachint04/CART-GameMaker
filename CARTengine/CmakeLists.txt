@@ -128,3 +128,4 @@ target_include_directories(${CART_ENGINE_TARGET_NAME} PUBLIC
 	${PROJECT_SOURCE_DIR}/build/_deps/raylib-build/raylib/include
 )
 
+target_link_libraries(${CART_ENGINE_TARGET_NAME}  PUBLIC raylib nlohmann_json::nlohmann_json)

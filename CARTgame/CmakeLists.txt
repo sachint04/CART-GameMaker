@@ -50,7 +50,7 @@ if(EMSCRIPTEN)
         "-sEXPORTED_RUNTIME_METHODS=['ccall','UTF8ToString','stringToUTF8']"
         
         # Virtual File System asset preloader
-        "--preload-file=D:/xampp1/htdocs/cardmakerasset/fonts@assets/fonts"
+        "--preload-file=${PROJECT_SOURCE_DIR}/assets/fonts@assets/fonts"
     )
 endif()
 
@@ -79,7 +79,7 @@ CopyLibDirToTarget(${CART_ENGINE_TARGET_NAME} ${CART_GAME_TARGET_NAME})
 CopyLibDirToTarget(raylib ${CART_GAME_TARGET_NAME})
 
 # Link required libraries to the native application
-target_link_libraries(${CART_GAME_TARGET_NAME}  PUBLIC raylib nlohmann_json::nlohmann_json)
+#target_link_libraries(${CART_GAME_TARGET_NAME}  PUBLIC raylib nlohmann_json::nlohmann_json)
 
 
 

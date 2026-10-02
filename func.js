@@ -209,4 +209,3 @@
 				return null;
 			}
 		}
-</script>

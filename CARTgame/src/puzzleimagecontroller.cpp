@@ -1,4 +1,5 @@
 #include "puzzleimagecontroller.h"
+#include <format>
 #include <raylib.h>
 #include "Types.h"
 #include "GameStage.h"
@@ -53,6 +54,7 @@ void PuzzleImageController::Start()
     uint16_t scrH = GetScreenHeight();
 
     float rectsize = 400.f;
+    
     Rectangle bgrect = { (scrW - rectsize) / 2.f, (scrH - rectsize) / 2.f, rectsize,rectsize };
     // Rectangle bgrect = { scrW / 2.f - 250.f, scrH / 2 - 200.f,  rectsize, rectsize };
 
@@ -170,7 +172,7 @@ void PuzzleImageController::Start()
     txtbtnui = {};
 
     ui = {};
-
+        Logger::Get()->Trace("PuzzleImageController::Start!!");
 }
 
 

@@ -25,7 +25,7 @@ extern int SCREEN_HEIGHT;
 
 float APP_SCALE;
 int FONT_SIZE;
-std::string FONT_NAME = "fonts/framd.ttf";
+std::string FONT_NAME = "fonts/verdana.ttf";
 namespace cart {
 
     // Constructor

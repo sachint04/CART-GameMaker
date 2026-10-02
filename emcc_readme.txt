@@ -33,7 +33,7 @@ emcc -o web/index.html CARTengine/src/framework/Application.cpp CARTengine/src/f
 		download ninja complier and copy ninja-win.exe (for windows) in the root of emsdk folder 
   
 	#2 run  ->  
-		cmake -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DPLATFORM=Web -DCMAKE_TOOLCHAIN_FILE="<LOCAL FOLER>/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake"
+		cmake -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DPLATFORM=Web -DCMAKE_TOOLCHAIN_FILE="~/Git/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake"
   
 	# 3. Compile the project
 		cmake --build build --config Release

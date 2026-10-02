@@ -21,6 +21,7 @@ namespace cart
 #pragma region Loop
 
 
+
 	
 	void PatternSprite::Draw(float _deltaTime)
 	{

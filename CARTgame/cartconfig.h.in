@@ -9,7 +9,7 @@ std::string GetResourceDir()
 #ifdef NDEBUG // release build
 	return "@RESOURCE_FOLDER_NAME@/";
 #else // debug build
-	return "@RESOURCE_SRC_DIR@/";
+	return "@RESOURCE_FOLDER_NAME@/";
 #endif // 
 
 }

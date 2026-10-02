@@ -154,6 +154,7 @@ extern "C" {
 
 int main()
 {
+    
     cart::Application* app = GetApplication();
 #ifdef _WIN32
     //AppResize(SCREEN_WIDTH, SCREEN_HEIGHT);

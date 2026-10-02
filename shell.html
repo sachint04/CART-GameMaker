@@ -32,166 +32,18 @@
 
     <!-- Favicon -->
     <link rel="shortcut icon" href="https://www.raylib.com/favicon.ico">
-
-    <style>
-	.hide{
-		display:none !important;
-	}
-      body {
-        font-family: arial;
-        margin: 0;
-        padding: none;
-      }
-
-      #header {
-        width: 100%;
-        height: 80px;
-        background-color: #888888;
-      }
-
-      /* NOTE: raylib logo is embedded in the page as base64 png image */
-      #logo {
-        width:64px;
-        height:64px;
-        float:left;
-        position:relative;
-        margin:10px;
-        background-image:url('data:image/png;base64,\
-iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIAAAAlC+aJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADs\
-MAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjExR/NCNwAAA7JJREFUaEPtk0FyWzEMQ+37X7fZhxX4\
-YY3AD1OKF1nkzTRlSBCCLeVBnvl/AUdaELOunPno1kts1kixdtEZKVs+xIxebBkZsVknn/L5nFGDLR8T4zVC9fX19S/+tTFijr\
-YK4jUjbPUtqBHpnEE6PkZD7jQZV8n5Recw1XQKciZuPaEtR6UjNs5ENVGMsBVqpPtER0ZMOhpyp8m4YL4OjD9yxsyZxnQycfMJ\
-ETNSzsRE1+dihK3YMiJmpHTW3xpmXPC6BXlCHfqnBlsjY5hxf/6EVEOM2BTEi0fYCX4ONSI6Kq3Blg/prIOMq2CsRur4KQ0x64\
-SdjOufEDEdHZGOhmz5RDHCVqhRuQ86YsVskbc+GXchLiHnFyYH+UigQDVGnImbT8hwFkgLg2qiM8JO6Ylx1FNLa3DmYwqCTsZd\
-4BPqGJG7MwKzpeiWKTKxXkLMVE3MSOmsdwxLH6Rd/wCCLSNDx6djeKfJuArGeoYamRHpaEjnCBYZVy8hZqo2GI36qPjsiOiMsB\
-XGcev4Mx9TLGTchbgEjN/uz6jGrBvDjg+LTNx8Qp2CbG2xMKgmOiPslJ4Yxx+eSnSkzlosZNwFPiHl7FRTkLNRJm4+IeVM0ymI\
-H42wE/wcKalQI4MRl4EW3p6VcRWMua8F6WjIlqZDxvVPiHQ6CjVbYkV9ohhhp/Rk1wiYgpyJ78i4CsZbjkb8Qx+ihvzu3RPaKo\
-gZkY6GlEeMsKdPSOFIC8VoOusg44L5c+T8ouOoGhWbdWJ8tMi4egkxo4hoh2yNTGf3iIyr5Lyic4bRENXo+lvDjAt4C1Hk/OKt\
-UaAj0+n4dMSZ2D+hrYJsaYh2SClG2jV9kJKKzhlGQ1SsW299Mq6C8dYZHTExo8fzieI5ivipYnYy7nwJqGKmOYyRwfiUBXITfh\
-5qSHRGWEkfqJqURgvsdHyWYv7Ko8DnYYegk3EB00cxprdrJRzFd7YQzawu8L1GMTYS/KpPaAFTkIn1EmJmspJSs5xBzSyGhlkB\
-mlxfNFiP5mw4wlbMh4F5Ddxp5jNINBdCEz9zPOC1zD7Q0HBdmXndwv0TMtydEdzlWJT4VZ8Qt9Qn4/onxMIwa5ZYGJU5yufBiC\
-jwE50AGjLCVuS8Yt4H7OgZLKK5EKOsLviEWJSL/+0uMi7gLUSBseYwqEbXvSHCec1CJvZPyHCmYQffaBBfOTCGHM2aEbZi1+gO\
-1XTWVXMnzrhAn5DSOZVsiQlHnSITKzGj6DeTcZWc/3oy7h9//PF4PL4BlvsWrb6RE+oAAAAASUVORK5CYII=');
-      }
-
-      .emscripten { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
-      div.emscripten { text-align: center; }
-      div.emscripten_border { }
-
-      /* NOTE: Canvas *must not* have any border or padding, or mouse coords will be wrong */
-      canvas.emscripten {
-        border: 0px none;
-        background: black;
-        width: 850px;
-		height:650px;
-		margin:0 auto;
-      }
-
-      .spinner {
-        height: 30px;
-        width: 30px;
-        margin: 0;
-        margin-top: 20px;
-        margin-left: 20px;
-        display: inline-block;
-        vertical-align: top;
-        -webkit-animation: rotation .8s linear infinite;
-        -moz-animation: rotation .8s linear infinite;
-        -o-animation: rotation .8s linear infinite;
-        animation: rotation 0.8s linear infinite;
-        border-left: 5px solid black;
-        border-right: 5px solid black;
-        border-bottom: 5px solid black;
-        border-top: 5px solid red;
-        border-radius: 100%;
-        background-color: rgb(245, 245, 245);
-      }
-      @-webkit-keyframes rotation {
-        from {-webkit-transform: rotate(0deg);}
-        to {-webkit-transform: rotate(360deg);}
-      }
-      @-moz-keyframes rotation {
-        from {-moz-transform: rotate(0deg);}
-        to {-moz-transform: rotate(360deg);}
-      }
-      @-o-keyframes rotation {
-        from {-o-transform: rotate(0deg);}
-        to {-o-transform: rotate(360deg);}
-      }
-      @keyframes rotation {
-        from {transform: rotate(0deg);}
-        to {transform: rotate(360deg);}
-      }
-
-      #status {
-        display: inline-block;
-        vertical-align: top;
-        margin-top: 30px;
-        margin-left: 20px;
-        font-weight: bold;
-        color: rgb(40, 40, 40);
-      }
-
-      #progress {
-        height: 0px;
-        width: 0px;
-      }
-
-      #controls {
-        display: inline-block;
-        float: right;
-        vertical-align: top;
-        margin-top: 15px;
-        margin-right: 20px;
-      }
-
-      #output {
-        border-left: 0px none;
-        border-right: 0px none;
-        border-bottom: 0px none;
-        padding-left: 0;
-        padding-right: 0;
-        width: 100%;
-        height: 140px;
-        margin: 0 auto;
-        margin-top: 10px;
-        display: block;
-        background-color: black;
-        color: rgb(37, 174, 38);
-        font-family: 'Lucida Console', Monaco, monospace;
-        outline: none;
-      }
-
-      input[type=button] {
-        background-color: lightgray;
-        border: 4px solid darkgray;
-        color: black;
-        text-decoration: none;
-        cursor: pointer;
-        width: 140px;
-        height: 50px;
-        margin-left: 10px;
-      }
-
-      input[type=button]:hover {
-        background-color: #f5f5f5ff;
-        border-color: black;
-      }
-    </style>
+	<link rel="stylesheet" href="style.css">
+  
   </head>
   <body>
-    <div id="header" class="hide">
-        <a id="logo" href="https://www.raylib.com" class="hide"></a>
-
+    
+      <div id="spinnercontainer" class="hide">
+          <div  id="spinnerview">	
+          <div class="card"></div>
+          <div id="spinner-lbl">Loading...</div>
+        </div>
         <div class="spinner" id='spinner'></div>
         <div class="emscripten" id="status">Downloading...</div>
-
-        <span id='controls'>
-          <span><input type="button" value="📜 SOURCE CODE" onclick="location.href='https://github.com/raysan5/raylib';"/></span>
-          <span><input type="button" value="🖵 FULLSCREEN" onclick="Module.requestFullscreen(false, false)"></span>
-          <span><input type="button" id="btn-audio" value="🔇 MUTE" onclick="toggleAudio()"></span>
-        </span>
-
         <div class="emscripten">
           <progress value="0" max="100" id="progress" hidden=1></progress>
         </div>
@@ -200,11 +52,22 @@ jwE50AGjLCVuS8Yt4H7OgZLKK5EKOsLviEWJSL/+0uMi7gLUSBseYwqEbXvSHCec1CJvZPyHCmYQffaB
     <div class="emscripten_border">
       <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
     </div>
-
+	<!-- ------------- Picture Select UI -------------- -->
+		<div id="imageselect" class="hide">
+			<div class="inputcontainer">
+				<div id="file-name">No file chosen</div>
+				<label for="fileInput" class="custom-file-upload">Select Picture</label>
+				<input type="file"  onclick="this.value = null;" id="fileInput" accept="*">
+			</div>
+			<!--button onclick="document.getElementById('fileInput').click()">Load Image</button-->
+		</div>
     <textarea id="output" rows="8" class="hide"></textarea>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<!--script src="httpreq.js"></script-->
-    <script type='text/javascript' src="https://cdn.jsdelivr.net/gh/eligrey/FileSaver.js/dist/FileSaver.min.js"> </script>
+
+  <script src="vendor/jquery-min-331.js" async defer></script>  
+  <script src="vendor/platform-331.js" async defer></script>
+  <script type='text/javascript' src="detect-gpu.js" async ></script>
+  <script type='text/javascript' src="mobileinput.js" async> </script>
+  <script type='text/javascript' src="https://cdn.jsdelivr.net/gh/eligrey/FileSaver.js/dist/FileSaver.min.js"> </script>
     <script type='text/javascript'>
         function saveFileFromMEMFSToDisk(memoryFSname, localFSname)     // This can be called by C/C++ code
         {
@@ -293,7 +156,7 @@ jwE50AGjLCVuS8Yt4H7OgZLKK5EKOsLviEWJSL/+0uMi7gLUSBseYwqEbXvSHCec1CJvZPyHCmYQffaB
                 statusElement.innerHTML = text;
             },
             totalDependencies: 0,
-            monitorRunDependencies: function(left) {
+			monitorRunDependencies: function(left) {
                 this.totalDependencies = Math.max(this.totalDependencies, left);
                 Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
             },
@@ -308,7 +171,6 @@ jwE50AGjLCVuS8Yt4H7OgZLKK5EKOsLviEWJSL/+0uMi7gLUSBseYwqEbXvSHCec1CJvZPyHCmYQffaB
             Module.setStatus = function(text) { if (text) Module.printErr('[post-exception status] ' + text); };
         };
     </script>
-
     <!-- REF: https://developers.google.com/web/updates/2018/11/web-audio-autoplay -->
     <script type='text/javascript'>
         var audioBtn = document.querySelector('#btn-audio');
@@ -339,105 +201,7 @@ jwE50AGjLCVuS8Yt4H7OgZLKK5EKOsLviEWJSL/+0uMi7gLUSBseYwqEbXvSHCec1CJvZPyHCmYQffaB
             else audioBtn.value = "🔈 RESUME";
         }
     </script>
-	<script type="text/javascript">
-	/* LOAD APP DATA REQUEST */
-		function JSHTTPGetRequest(id, url)
-		{
-		  loadSetting(id, url); 
-		}
-		
-		var loadSetting = function(_id, _url){
-			$.ajax({
-				url: _url,
-				data: "",
-				dataType: 'json',
-				crossDomain: true,
-				contentType: "application/json; charset=utf-8",
-				success: function(data) {
-				   // $images = data;
-				   var strjson = JSON.stringify(data);
-				   console.log(strjson);
-				   GetHTTPCallback(_id, "ok", strjson);
-				  // UnityContext.SendMessage('Grid', "OnSettingLoad", strjson)
-				},
-				error: function(error_log) {
-					alert('There was some error performing the AJAX call!');
-				}
-			});
-		}
-	/* -------------------- END ------------------------- */
-	
-	/* UPLOAD IMAGE TO SERVER */
-	function JSUploadImage(id, url, imageData, filename)
-	{
-			console.log(id, url, w, h, fname);
-
-			const imageDataArray = new Uint8Array(imageData, w * h * 4);
-			// let imageBlob = new Blob([imageDataArray], {type: 'image/png'});
-			
-			let filename = 'myImage.png'; // Desired filename
-			
-			// let imageFile = new File([imageBlob], filename, { type: fileType });
-			
-			let canvas = document.createElement('canvas');
-			canvas.width = w; // Set the desired width of the image
-			canvas.height = h; // Set the desired height of the image
-			const ctx = canvas.getContext('2d');
-			//let imagearr = new ImageData(imageDataArray, width, height, { colorSpace: "display-p3" });
-			const arr = new Uint8ClampedArray(w*h*4);
-			for (let i = 0; i < imageData.length; i += 4) {
-				arr[i + 0] = imageData[i]; // R value
-				arr[i + 1] = imageData[i + 1]; // G value
-				arr[i + 2] = imageData[i + 2]; // B value
-				arr[i + 3] = imageData[i + 3]; // A value
-			}
-			
-			console.log("end of loop ", i*4);
-			let imageDatafroarr = new ImageData(arr, w);
-			// console.log("imageData  arr length", imageData.length, arr.length);
-			ctx.putImageData(imageDatafroarr, 0, 0); // (0,0) are the x,y coordinates to draw at
-			
- 			// document.querySelector('#main').append(canvas);
-			
-			//let file = new File([imageBlob],'image.png',{type:'image/png'});
-			 let imageBlob = new Blob([arr], {type: 'image/png'});
-		 	 let fileType = imageBlob.type; // Get the MIME type from the Blob
-		     let imageFile = new File([imageBlob], filename, { type: fileType });
-			let u = canvas.toDataURL();//URL.createObjectURL(imageFile);
-			let a = document.createElement('a');
-			a.href = u;
-			a.download = filename;
-			a.textContent = "Download Image _ " +filename;
-			document.querySelector('#main').append(a);
-			// $.ajax({
-			// 	url: url,
-			// 	type: "POST",
-			// 	data: form_data,
-			// 	contentType: false,
-			// 	processData: false,
-			// 	success: function(response) {
-			// 		console.log("JSUploadImage success - ",response);//$("#message").html(response);
-			// 		 GetHTTPCallback(id, "ok", "Image upload complete");
-			// 	},
-			// 	error: function(xhr, status, error) {
-			// 		console.log("JSUploadImage Error! ", status, error);
-			// 		$("#message").html("Error uploading file: " + error);
-			// 	}
-			// });
-
-	}
-		
-	/* ------------------- END ------------------------- */
-		function GetHTTPCallback(id, response, data)
-		{
-		  const isValid = Module.ccall('GetHTTPCallback',
-			'number',
-			['string','string', 'string'],
-			[id,response, data]
-		  );
-		  return (isValid === 1);
-		}
-	</script>
+   
     {{{ SCRIPT }}}
   </body>
 </html>

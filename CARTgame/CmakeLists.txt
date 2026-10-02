@@ -29,8 +29,9 @@ add_executable(${CART_GAME_TARGET_NAME}
 if(EMSCRIPTEN)
 	set_target_properties(CARTgame PROPERTIES SUFFIX ".html")
 
+	
     target_link_options(CARTgame PRIVATE
-        "-O3"
+        "-O1"
         "-sUSE_GLFW=3"
         "-sFETCH"               # Fixes: emscripten_fetch, emscripten_fetch_close
         "--bind"                 # Fixes: _emval_get_global, _emval_new_cstring
@@ -41,17 +42,46 @@ if(EMSCRIPTEN)
         "-sMAXIMUM_MEMORY=4GB"
         
         # Link your custom JavaScript libraries directly into the build
-        "--js-library=${PROJECT_SOURCE_DIR}/webmerge.js"
+         "--shell-file=${PROJECT_SOURCE_DIR}/shell.html"
+		"--js-library=${PROJECT_SOURCE_DIR}/webmerge.js"
+		"--pre-js=${PROJECT_SOURCE_DIR}/on-init.js"
         "--post-js=${PROJECT_SOURCE_DIR}/glfw-override.js"
-        "--shell-file=${PROJECT_SOURCE_DIR}/shell.html"
+       
         
         # Exported function arrays
-        "-sEXPORTED_FUNCTIONS=['_free','_malloc','_main','_GetHTTPCallback','_ProcessByteArray','_beforeMain','_OnStageResized','_ProcessMobileInput','_IntruptVirtualKeyboad','_LogTrace']"
-        "-sEXPORTED_RUNTIME_METHODS=['ccall','UTF8ToString','stringToUTF8']"
+        #"-sEXPORTED_FUNCTIONS=['_free','_malloc','_main','_GetHTTPCallback','_ProcessByteArray','_beforeMain','_OnStageResized','_ProcessMobileInput','_IntruptVirtualKeyboad','_LogTrace']"
+		#"-sEXPORTED_RUNTIME_METHODS=['ccall','HEAPU8','UTF8ToString','stringToUTF8']"
         
+		"-sEXPORTED_FUNCTIONS=_free,_malloc,_main,_GetHTTPCallback,_ProcessByteArray,_beforeMain,_OnStageResized,_ProcessMobileInput,_IntruptVirtualKeyboad,_LogTrace"
+        "-sEXPORTED_RUNTIME_METHODS=ccall,HEAPU8,HEAP32,UTF8ToString,stringToUTF8"
         # Virtual File System asset preloader
         "--preload-file=${PROJECT_SOURCE_DIR}/assets/fonts@assets/fonts"
     )
+
+	# set_property(TARGET CARTgame APPEND PROPERTY 
+    # 	 "${PROJECT_SOURCE_DIR}/shell.html"
+	# 	"${PROJECT_SOURCE_DIR}/webmerge.js"
+	# 	"${PROJECT_SOURCE_DIR}/on-init.js"
+	# 	"${PROJECT_SOURCE_DIR}/glfw-override.js"
+	# )
+
+	  set(FRONTEND_DEPS
+        "${PROJECT_SOURCE_DIR}/shell.html"
+        "${PROJECT_SOURCE_DIR}/webmerge.js"
+        "${PROJECT_SOURCE_DIR}/on-init.js"
+        "${PROJECT_SOURCE_DIR}/glfw-override.js"
+    )
+
+    # Automatically "touch" your main C++ file to trigger a re-link if JS/HTML files change
+    # Replace 'main.cpp' with the actual path to your primary source file
+    add_custom_command(
+        OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/force_recompile_trigger"
+        DEPENDS ${FRONTEND_DEPS}
+        COMMAND ${CMAKE_COMMAND} -E touch "${PROJECT_SOURCE_DIR}/main.cpp"
+    )
+
+    # Bind this trigger directly to your executable target
+    target_sources(CARTgame PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/force_recompile_trigger")
 endif()
 
 target_link_libraries(${CART_GAME_TARGET_NAME} PUBLIC ${CART_ENGINE_TARGET_NAME} )

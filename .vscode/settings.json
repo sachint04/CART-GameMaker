@@ -1,0 +1,20 @@
+{
+	"cmake.sourceDirectory": "${workspaceFolder}",
+    "cmake.useCMakePresets": "never",
+    "cmake.useProjectStatusView": false,
+    "cmake.options.statusBarVisibility": "visible",
+    "cmake.additionalKits": [
+        {
+            "name": "GCC (MSYS2 UCRT64)",
+            "compilers": {
+                "C": "D:/msys64/ucrt64/bin/gcc.exe",
+                "CXX": "D:/msys64/ucrt64/bin/g++.exe"
+            },
+            "environmentVariables": {
+                "PATH": "D:/msys64/ucrt64/bin;D:/msys64/usr/bin;${env:PATH}"
+            }
+        }
+    ],
+    "cmake.defaultKit": "GCC (MSYS2 UCRT64)",
+    "C_Cpp.dimInactiveRegions": false
+}

@@ -3,7 +3,7 @@ set(ENGINE_LIB
 	${CMAKE_CURRENT_SOURCE_DIR}/include/gameplayHUD.h	
 	${CMAKE_CURRENT_SOURCE_DIR}/include/Levelone.h
 	${CMAKE_CURRENT_SOURCE_DIR}/include/GameStageOne.h
-	${CMAKE_CURRENT_SOURCE_DIR}/include/puzzleimagecontroller.h
+#	${CMAKE_CURRENT_SOURCE_DIR}/include/puzzleimagecontroller.h
 	${CMAKE_CURRENT_SOURCE_DIR}/include/PatternSprite.h
 	${CMAKE_CURRENT_SOURCE_DIR}/include/View.h
 )
@@ -16,10 +16,13 @@ set(ENGINE_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/src/GameFramework/gameplayHUD.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/Levelone.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/GameStageOne.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/puzzleimagecontroller.cpp
+#	${CMAKE_CURRENT_SOURCE_DIR}/src/puzzleimagecontroller.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/PatternSprite.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/View.cpp
 )
+
+
+#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/out")
 
 add_executable(${CART_GAME_TARGET_NAME}
 	${ENGINE_SRC}
@@ -118,7 +121,7 @@ CopyLibDirToTarget(raylib ${CART_GAME_TARGET_NAME})
 #copy assets folder 
 
 set(RESOURCE_FOLDER_NAME "assets")
-set(RESOURCE_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${RESOURCE_FOLDER_NAME}")
+set(RESOURCE_SRC_DIR "${PROJECT_SOURCE_DIR}/${RESOURCE_FOLDER_NAME}")
 
 add_custom_command(
 	TARGET ${CART_GAME_TARGET_NAME}

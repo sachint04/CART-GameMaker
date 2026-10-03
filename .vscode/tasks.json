@@ -1,0 +1,135 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "CMake: Configure Project",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-S", ".",
+                "-B", "build",
+                "-G", "Ninja",
+                 "-DCMAKE_BUILD_TYPE=Debug",
+                "-DCMAKE_C_COMPILER=D:/msys64/ucrt64/bin/gcc.exe",
+                "-DCMAKE_CXX_COMPILER=D:/msys64/ucrt64/bin/g++.exe"
+            ],
+            "options": {
+                "env": {
+                    "PATH": "D:\\msys64\\ucrt64\\bin;D:\\msys64\\usr\\bin;${env:PATH}"
+                }
+            },
+            "group": "none"
+        },
+        {
+            "label": "CMake: Build Project",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build", "build"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dependsOn": [
+                "CMake: Configure Project"
+            ],
+            "problemMatcher": "$gcc"
+        },        
+       {
+        "label": "CMake: Build Debug Install",
+        "type": "shell",
+        "command": "cmd.exe",
+        "args": [
+            "/c",
+            // Robocopy mirrors files/folders from build to out\debug. 
+            // /XF filters out intermediate files so only your exe, assets, and configs move.
+              "if not exist out\\debug mkdir out\\debug && copy /Y build\\CARTgame\\*.exe out\\debug\\ && if exist assets xcopy /E /I /Y assets out\\debug\\assets"
+        ],
+        "group": { "kind": "build", "isDefault": true },
+        "dependsOn": ["CMake: Build Project"]
+        },
+         // ==================== RELEASE TASKS ====================
+        {
+            "label": "CMake: Configure Release",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-S", ".",
+                "-B", "build", // Separates release artifacts
+                "-G", "Ninja",
+                "-DCMAKE_BUILD_TYPE=Release", // Enables compiler optimizations (-O3)
+                "-DCMAKE_C_COMPILER=D:/msys64/ucrt64/bin/gcc.exe",
+                "-DCMAKE_CXX_COMPILER=D:/msys64/ucrt64/bin/g++.exe"
+            ],
+            "options": { "env": { "PATH": "D:\\msys64\\ucrt64\\bin;D:\\msys64\\usr\\bin;${env:PATH}" } }
+        },
+        {
+            "label": "CMake: Build Release Executable",
+            "type": "shell",
+            "command": "cmake",
+            "args": ["--build", "build"],
+            "group": "build",
+            "dependsOn": ["CMake: Configure Release"],
+            "problemMatcher": "$gcc"
+        },
+         {
+            "label": "CMake: Build Release",
+            "type": "shell",
+            "command": "cmd.exe",
+            "args": [
+                "/c",
+               "if not exist out\\release mkdir out\\release && copy /Y build\\CARTgame\\*.exe out\\release\\ && if exist assets xcopy /E /I /Y assets out\\release\\assets"
+            ],
+            "group": "build",
+            "dependsOn": [
+                "CMake: Build Release Executable"
+            ]
+        },
+        // ==================== EMSCRIPTEN (WEB) PIPELINE ====================
+        {
+            "label": "CMake: Configure Web (Emscripten)",
+            "type": "shell",
+            "command": "emcmake", // Wraps CMake to use Emscripten compiler
+            "args": [
+                "cmake",
+                "-S", ".",
+                "-B", "build_web", // Uses a totally separate build folder so it doesn't conflict with Windows
+                "-G", "Ninja",
+                "-DCMAKE_BUILD_TYPE=Release" 
+            ],
+            "options": {
+                "env": {
+                    // IMPORTANT: Replace this path with the exact location of your Emscripten SDK installation
+                    "PATH": "C:\\emsdk;C:\\emsdk\\upstream\\emscripten;${env:PATH}"
+                }
+            }
+        },
+        {
+            "label": "CMake: Build Web Executable",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build", "build_web"
+            ],
+            "dependsOn": [
+                "CMake: Configure Web (Emscripten)"
+            ]
+        },        
+        {
+            "label": "CMake: Build Web (Emscripten)", // <-- Run this to trigger the Web build
+            "type": "shell",
+            "command": "cmd.exe",
+            "args": [
+                "/c",
+                // Copies web deployment files (.html, .js, .wasm) and your asset folder to out\web
+                "robocopy build_web out\\web *.html *.js *.wasm /E /XD CMakeFiles /R:0 /W:0 || exit 0"
+            ],
+            "group": "build",
+            "dependsOn": [
+                "CMake: Build Web Executable"
+            ]
+        }
+    ]
+    
+}

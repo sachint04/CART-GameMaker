@@ -34,7 +34,11 @@ namespace cart{
 		m_cntrl.lock().get()->SetUIProperties(prop);
 		m_cntrl.lock().get()->SetVisible(true);
 		m_cntrl.lock().get()->Init();
+		
+		GameStage::Start();
 	}
+
+	
 	void GameStageOne::Destroy()
 	{
 		m_cntrl.reset();

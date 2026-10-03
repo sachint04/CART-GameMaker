@@ -29,45 +29,47 @@ namespace cart {
 	{
 		std::string staticassetpath = m_owningworld->GetApplication()->GetStaticAssetsPath();
 		Vector2 screenSize = m_owningworld->GetAppWindowSize();
-#pragma region Exit Button
-		UI_Properties btnui = {};
-		btnui.location = { screenSize.x - 50.f, screenSize.y - 50.f };
-		btnui.size = { 50.f, 50.f };
-		btnui.color = { 82, 59, 116, 255 };
-		Btn_Text_Properties btnprop = {};
-		btnprop.font = staticassetpath + FONT_NAME;
-		btnprop.fontsize = 12.f;
-		btnprop.btncol = GRAY;
-		btnprop.color = GRAY;
-		btnprop.overcol = DARKGRAY;
-		btnprop.text = "X";
-		btnprop.textAlign = ALIGN::CENTER;
-		btnprop.size = { 20.f, 20.f };
-		btnprop.location = { screenSize.x - 25.f, 12.f };
-		btnprop.textcolor = BLACK;
-		std::string exitbtnid = "exitbtn";
+//#pragma region Exit Button
+//		UI_Properties btnui = {};
+//		btnui.location = { screenSize.x - 50.f, screenSize.y - 50.f };
+//		btnui.size = { 50.f, 50.f };
+//		btnui.color = { 82, 59, 116, 255 };
+//		Btn_Text_Properties btnprop = {};
+//		btnprop.font = staticassetpath + FONT_NAME;
+//		btnprop.fontsize = 12.f;
+//		btnprop.btncol = GRAY;
+//		btnprop.color = GRAY;
+//		btnprop.overcol = DARKGRAY;
+//		btnprop.text = "X";
+//		btnprop.textAlign = ALIGN::CENTER;
+//		btnprop.size = { 20.f, 20.f };
+//		btnprop.location = { screenSize.x - 25.f, 12.f };
+//		btnprop.textcolor = BLACK;
+//		std::string exitbtnid = "exitbtn";
+//
+//		weak<UIButton> extbtn = m_owningworld->SpawnActor<UIButton>(exitbtnid);
+//		extbtn.lock()->SetTextProperties(btnprop);
+//		extbtn.lock()->SetVisible(true);
+//		extbtn.lock()->SetActive(true);
+//		extbtn.lock()->Init();
+//		extbtn.lock()->onButtonUp.BindAction(GetWeakRef(), &GameplayHUD::QuitButtonClicked);
+//		AddChild(extbtn);
+//		btnprop = {};// clear struct
+//#pragma endregion
 
-		weak<UIButton> extbtn = m_owningworld->SpawnActor<UIButton>(exitbtnid);
-		extbtn.lock()->SetTextProperties(btnprop);
-		extbtn.lock()->SetVisible(true);
-		extbtn.lock()->SetActive(true);
-		extbtn.lock()->Init();
-		extbtn.lock()->onButtonUp.BindAction(GetWeakRef(), &GameplayHUD::QuitButtonClicked);
-		AddChild(extbtn);
-		btnprop = {};// clear struct
-#pragma endregion
+		HUD::Start();
 	}
 
 
-	void GameplayHUD::RestartButtonClicked(weak<Object> obj, Vector2 pos)
-	{
-		//HUD::RestartButtonClicked(obj,pos);
-	}
+	//void GameplayHUD::RestartButtonClicked(weak<Object> obj, Vector2 pos)
+	//{
+	//	//HUD::RestartButtonClicked(obj,pos);
+	//}
 
-	void GameplayHUD::QuitButtonClicked(weak<Object> obj, Vector2 pos)
-	{
-		HUD::QuitButtonClicked(obj, pos);
-	}
+	//void GameplayHUD::QuitButtonClicked(weak<Object> obj, Vector2 pos)
+	//{
+	//	HUD::QuitButtonClicked(obj, pos);
+	//}
 
 
 

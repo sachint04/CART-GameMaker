@@ -3,9 +3,7 @@
     "systemfont": "verdana",
     "systemfontsize": 14,
     "webreq": {
-      "localsetting": "local_setting.php",
-      "uploadimg":"uploadimg.php",
-      "postdata":"postdata.php"
+      "localsetting": "local_setting.php"
     },
     "display": {
       "xsmall": {
@@ -30,64 +28,9 @@
       }
     },
     "font": {
-      "lobster": {
-        "path": "fonts/Lobster-Regular.ttf"
-      },
       "verdana": {
         "path": "fonts/verdana.ttf"
       },
-      "fascinate": {
-        "path": "fonts/fascinate.ttf"
-      },
-      "firasans": {
-        "path": "fonts/firasans.ttf"
-      },
-      "monsieur": {
-        "path": "fonts/monsieurladoulaise.ttf"
-      },
-      "synevariable": {
-        "path": "fonts/synevariable.ttf"
-      },
-      "unifrakturMaguntia": {
-        "path": "fonts/unifrakturMaguntia.ttf"
-      },
-      "barlow": {
-        "path": "fonts/barlow.ttf"
-      },
-      "bodpstc": {
-        "path": "fonts/bodpstc.ttf"
-      }
-    },
-    "comp": {
-      "simtxtedr": {
-        "fntcnt": 6,
-        "fntnm": "lobster,fascinate,bodpstc,monsieur,unifrakturMaguntia,barlow,",
-        "maxfnt": 40,
-        "minfnt": 14,
-        "dftfnt": 20,
-        "stxt": "Enter text..."
-      },
-      "tmplsel": {
-        "crd01": {
-          "mdl": "cards/template01/card1.glb",
-          "label": "BIRTHDAY"
-        },
-        "crd02": {
-          "mdl": "cards/template01/card1.glb",
-          "label": "ANIVERSARY"
-        },
-        "crd03": {
-          "mdl": "cards/template01/card1.glb",
-          "label": "GET WELL SOON"
-        },
-        "crd04": {
-          "mdl": "cards/template01/card1.glb",
-          "label": "MISS YOU"
-        },
-        "row": 2,
-        "col": 2,
-        "anim": 2
-      }
     },
     "icon": {
       "file1": "0,0",

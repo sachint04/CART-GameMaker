@@ -60,3 +60,8 @@ install(
       "${CMAKE_CURRENT_BINARY_DIR}/CARTgame/CARTgame.data"
     DESTINATION "${WEBGL_ROOT_OUT_DIR}"  
 )
+
+install(
+    DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/assets/"
+    DESTINATION "${WEBGL_ROOT_OUT_DIR}/assets"
+)

@@ -112,6 +112,7 @@ extern "C" {
         json& settings = GetApplication()->SetEnviornmentSettings(_info);
         int w = settings["width"];
         int h = settings["height"];
+        std::cout << "From Application | beforeMain() " << _info << std::endl;
         AppResize(w, h);
     }
 

@@ -31,7 +31,7 @@ var ENVIRONMENT_IS_SHELL = !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_NODE && !ENVIR
 
 // --pre-jses are emitted after the Module integration code, so that they can
 // refer to Module (if they choose; they can also define Module)
-// include: /var/folders/gs/m4__c9l119n990bykh4wmtfw0000gn/T/tmpqek_01ir.js
+// include: /var/folders/gs/m4__c9l119n990bykh4wmtfw0000gn/T/tmpb3gaiu20.js
 if (!Module["expectedDataFileDownloads"]) Module["expectedDataFileDownloads"] = 0;
 
 Module["expectedDataFileDownloads"]++;
@@ -160,7 +160,7 @@ Module["expectedDataFileDownloads"]++;
   });
 })();
 
-// end include: /var/folders/gs/m4__c9l119n990bykh4wmtfw0000gn/T/tmpqek_01ir.js
+// end include: /var/folders/gs/m4__c9l119n990bykh4wmtfw0000gn/T/tmpb3gaiu20.js
 // include: /Users/sachintumbre/Git/CART-GameMaker/on-init.js
 if (typeof Module === "undefined") Module = {};
 
@@ -172,41 +172,6 @@ Module["onRuntimeInitialized"] = function() {
   var resizeTimer;
   var initialHeight = window.innerHeight;
   var fileInput = document.getElementById("fileInput");
-  // Detect GPU TIER
-  (async () => {
-    try {
-      // 1. Call the library (DetectGPU is the global object)
-      const gpuData = await DetectGPU.getGPUTier(1, true);
-      const tier = gpuData.tier || 1;
-      // Default to 1 for safety
-      // 2. Allocate 4 bytes on the WASM HEAP for an int
-      Module.gpuTierPtr = Module._malloc(4);
-      // 3. Write the tier value to that memory address
-      //Module.setValue(Module.gpuTierPtr, tier, 'i32');
-      Module.HEAP32[Module.gpuTierPtr >> 2] = tier;
-    } catch (e) {
-      console.warn("GPU Detection failed, defaulting to Tier 1", e);
-    }
-    //appElement.classList.remove('hide');	
-    var w = window.innerWidth;
-    //Math.min(window.innerWidth, 440);
-    var h = window.innerHeight;
-    //Math.min(window.innerHeight, 844);
-    // em_canvas.setAttribute('width', w);
-    // em_canvas.setAttribute('height', h);
-    let struagnt = window.navigator.userAgent.toLocaleLowerCase();
-    var useragent = 0;
-    if (struagnt.search("iphone") >= 0 || struagnt.search("mac") >= 0) {
-      useragent = 1;
-    } else if (struagnt.search("android") >= 0) {
-      useragent = 2;
-    }
-    const strinfo = '{"width":' + w + ', "height":' + h + ', "useragent":' + useragent + "}";
-    console.log("before main 1 ", strinfo);
-    const isValid = Module.ccall("beforeMain", "number", [ "string" ], [ strinfo ]);
-    APP_INIT = 1;
-  })();
-  // End
   window.JSHTTPostRequest = function(id, url, data, where = "") {
     $.ajax({
       url,
@@ -10753,33 +10718,33 @@ Module["FS_createLazyFile"] = FS_createLazyFile;
 // End JS library exports
 // end include: postlibrary.js
 var ASM_CONSTS = {
-  206824: $0 => {
+  206536: $0 => {
     try {
       FS.mkdirTree(UTF8ToString($0));
     } catch (e) {}
   },
-  206882: () => {
+  206594: () => {
     if (document.fullscreenElement) return 1;
   },
-  206928: () => document.getElementById("canvas").width,
-  206980: () => parseInt(document.getElementById("canvas").style.width),
-  207048: () => {
+  206640: () => document.getElementById("canvas").width,
+  206692: () => parseInt(document.getElementById("canvas").style.width),
+  206760: () => {
     document.exitFullscreen();
   },
-  207075: () => {
+  206787: () => {
     setTimeout(function() {
       Module.requestFullscreen(false, false);
     }, 100);
   },
-  207148: () => {
+  206860: () => {
     if (document.fullscreenElement) return 1;
   },
-  207194: () => document.getElementById("canvas").width,
-  207246: () => screen.width,
-  207271: () => {
+  206906: () => document.getElementById("canvas").width,
+  206958: () => screen.width,
+  206983: () => {
     document.exitFullscreen();
   },
-  207298: () => {
+  207010: () => {
     setTimeout(function() {
       Module.requestFullscreen(false, true);
       setTimeout(function() {
@@ -10787,53 +10752,53 @@ var ASM_CONSTS = {
       }, 100);
     }, 100);
   },
-  207431: () => window.innerWidth,
-  207457: () => window.innerHeight,
-  207484: () => {
+  207143: () => window.innerWidth,
+  207169: () => window.innerHeight,
+  207196: () => {
     if (document.fullscreenElement) return 1;
   },
-  207530: () => document.getElementById("canvas").width,
-  207582: () => parseInt(document.getElementById("canvas").style.width),
-  207650: () => {
+  207242: () => document.getElementById("canvas").width,
+  207294: () => parseInt(document.getElementById("canvas").style.width),
+  207362: () => {
     if (document.fullscreenElement) return 1;
   },
-  207696: () => document.getElementById("canvas").width,
-  207748: () => screen.width,
-  207773: () => window.innerWidth,
-  207799: () => window.innerHeight,
-  207826: () => {
+  207408: () => document.getElementById("canvas").width,
+  207460: () => screen.width,
+  207485: () => window.innerWidth,
+  207511: () => window.innerHeight,
+  207538: () => {
     if (document.fullscreenElement) return 1;
   },
-  207872: () => document.getElementById("canvas").width,
-  207924: () => screen.width,
-  207949: () => {
+  207584: () => document.getElementById("canvas").width,
+  207636: () => screen.width,
+  207661: () => {
     document.exitFullscreen();
   },
-  207976: () => {
+  207688: () => {
     if (document.fullscreenElement) return 1;
   },
-  208022: () => document.getElementById("canvas").width,
-  208074: () => parseInt(document.getElementById("canvas").style.width),
-  208142: () => {
+  207734: () => document.getElementById("canvas").width,
+  207786: () => parseInt(document.getElementById("canvas").style.width),
+  207854: () => {
     document.exitFullscreen();
   },
-  208169: $0 => {
+  207881: $0 => {
     document.getElementById("canvas").style.opacity = $0;
   },
-  208227: () => screen.width,
-  208252: () => screen.height,
-  208278: () => window.screenX,
-  208305: () => window.screenY,
-  208332: $0 => {
+  207939: () => screen.width,
+  207964: () => screen.height,
+  207990: () => window.screenX,
+  208017: () => window.screenY,
+  208044: $0 => {
     navigator.clipboard.writeText(UTF8ToString($0));
   },
-  208385: $0 => {
+  208097: $0 => {
     document.getElementById("canvas").style.cursor = UTF8ToString($0);
   },
-  208456: () => {
+  208168: () => {
     document.getElementById("canvas").style.cursor = "none";
   },
-  208513: ($0, $1, $2, $3) => {
+  208225: ($0, $1, $2, $3) => {
     try {
       navigator.getGamepads()[$0].vibrationActuator.playEffect("dual-rumble", {
         startDelay: 0,
@@ -10847,15 +10812,15 @@ var ASM_CONSTS = {
       } catch (e) {}
     }
   },
-  208769: $0 => {
+  208481: $0 => {
     document.getElementById("canvas").style.cursor = UTF8ToString($0);
   },
-  208840: () => {
+  208552: () => {
     if (document.fullscreenElement) return 1;
   },
-  208886: () => window.innerWidth,
-  208912: () => window.innerHeight,
-  208939: () => {
+  208598: () => window.innerWidth,
+  208624: () => window.innerHeight,
+  208651: () => {
     if (document.pointerLockElement) return 1;
   }
 };
@@ -10905,7 +10870,7 @@ function JS_SetCharLimit(limit) {
 }
 
 // Imports from the Wasm binary.
-var ___getTypeName, _GetHTTPCallback, _PostHTTPCallback, _ProcessByteArray, _malloc, _beforeMain, _OnStageResized, _ProcessMobileInput, _IntruptVirtualKeyboad, _LogTrace, _main, _free, _realloc, _setThrew, __emscripten_stack_restore, __emscripten_stack_alloc, _emscripten_stack_get_current, dynCall_ii, dynCall_vi, dynCall_vii, dynCall_fi, dynCall_vif, dynCall_iii, dynCall_viii, dynCall_viiii, dynCall_iiii, dynCall_viiiii, dynCall_viiiiii, dynCall_iiiiii, dynCall_iiiiiii, dynCall_v, dynCall_viff, dynCall_vidd, dynCall_fffi, dynCall_ffi, dynCall_vffff, dynCall_vf, dynCall_viiiiiiii, dynCall_viiiiiiiii, dynCall_i, dynCall_vff, dynCall_viiiiiii, dynCall_vfi, dynCall_viif, dynCall_vifff, dynCall_viffff, dynCall_vfff, dynCall_jiji, dynCall_iidiiiii, dynCall_viijii, dynCall_iiiii, dynCall_iiiiiiiii, dynCall_iiiiij, dynCall_iiiiid, dynCall_iiiiijj, dynCall_iiiiiiii, dynCall_iiiiiijj, _asyncify_start_unwind, _asyncify_stop_unwind, _asyncify_start_rewind, _asyncify_stop_rewind, memory, __indirect_function_table, wasmMemory;
+var ___getTypeName, _GetHTTPCallback, _PostHTTPCallback, _ProcessByteArray, _malloc, _beforeMain, _OnStageResized, _ProcessMobileInput, _IntruptVirtualKeyboad, _LogTrace, _main, _free, _realloc, _setThrew, __emscripten_stack_restore, __emscripten_stack_alloc, _emscripten_stack_get_current, dynCall_ii, dynCall_vi, dynCall_vii, dynCall_fi, dynCall_vif, dynCall_iii, dynCall_viii, dynCall_viiii, dynCall_viiiii, dynCall_viiiiii, dynCall_iiiiii, dynCall_iiiiiii, dynCall_iiii, dynCall_v, dynCall_viff, dynCall_vidd, dynCall_fffi, dynCall_ffi, dynCall_vffff, dynCall_vf, dynCall_viiiiiiii, dynCall_viiiiiiiii, dynCall_i, dynCall_vff, dynCall_viiiiiii, dynCall_vfi, dynCall_viif, dynCall_vifff, dynCall_viffff, dynCall_vfff, dynCall_jiji, dynCall_iidiiiii, dynCall_viijii, dynCall_iiiii, dynCall_iiiiiiiii, dynCall_iiiiij, dynCall_iiiiid, dynCall_iiiiijj, dynCall_iiiiiiii, dynCall_iiiiiijj, _asyncify_start_unwind, _asyncify_stop_unwind, _asyncify_start_rewind, _asyncify_stop_rewind, memory, __indirect_function_table, wasmMemory;
 
 function assignWasmExports(wasmExports) {
   ___getTypeName = wasmExports["__getTypeName"];
@@ -10933,11 +10898,11 @@ function assignWasmExports(wasmExports) {
   dynCall_iii = dynCalls["iii"] = wasmExports["dynCall_iii"];
   dynCall_viii = dynCalls["viii"] = wasmExports["dynCall_viii"];
   dynCall_viiii = dynCalls["viiii"] = wasmExports["dynCall_viiii"];
-  dynCall_iiii = dynCalls["iiii"] = wasmExports["dynCall_iiii"];
   dynCall_viiiii = dynCalls["viiiii"] = wasmExports["dynCall_viiiii"];
   dynCall_viiiiii = dynCalls["viiiiii"] = wasmExports["dynCall_viiiiii"];
   dynCall_iiiiii = dynCalls["iiiiii"] = wasmExports["dynCall_iiiiii"];
   dynCall_iiiiiii = dynCalls["iiiiiii"] = wasmExports["dynCall_iiiiiii"];
+  dynCall_iiii = dynCalls["iiii"] = wasmExports["dynCall_iiii"];
   dynCall_v = dynCalls["v"] = wasmExports["dynCall_v"];
   dynCall_viff = dynCalls["viff"] = wasmExports["dynCall_viff"];
   dynCall_vidd = dynCalls["vidd"] = wasmExports["dynCall_vidd"];
@@ -11362,6 +11327,43 @@ var wasmExports;
 createWasm().then(() => run());
 
 // end include: postamble.js
+// include: /Users/sachintumbre/Git/CART-GameMaker/on-post.js
+if (!Module["postRun"]) Module["postRun"] = [];
+
+Module.postRun.push(function() {
+  // Detect GPU TIER
+  (async () => {
+    var canvasemscripten = document.querySelector("canvas.emscripten");
+    var w = canvasemscripten.clientWidth;
+    var h = canvasemscripten.clientHeight;
+    try {
+      // 1. Call the library (DetectGPU is the global object)
+      const gpuData = await DetectGPU.getGPUTier(1, true);
+      const tier = gpuData.tier || 1;
+      // Default to 1 for safety
+      // 2. Allocate 4 bytes on the WASM HEAP for an int
+      Module.gpuTierPtr = Module._malloc(4);
+      // 3. Write the tier value to that memory address
+      //Module.setValue(Module.gpuTierPtr, tier, 'i32');
+      Module.HEAP32[Module.gpuTierPtr >> 2] = tier;
+    } catch (e) {
+      console.warn("GPU Detection failed, defaulting to Tier 1", e);
+    }
+    let struagnt = window.navigator.userAgent.toLocaleLowerCase();
+    var useragent = 0;
+    if (struagnt.search("iphone") >= 0 || struagnt.search("mac") >= 0) {
+      useragent = 1;
+    } else if (struagnt.search("android") >= 0) {
+      useragent = 2;
+    }
+    const strinfo = '{"width":' + w + ', "height":' + h + ', "useragent":' + useragent + "}";
+    console.log("before main 1 ", strinfo);
+    const isValid = Module.ccall("beforeMain", "number", [ "string" ], [ strinfo ]);
+    APP_INIT = 1;
+  })();
+});
+
+// end include: /Users/sachintumbre/Git/CART-GameMaker/on-post.js
 // include: /Users/sachintumbre/Git/CART-GameMaker/glfw-override.js
 Module = Module || {};
 

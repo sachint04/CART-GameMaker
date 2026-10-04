@@ -284,7 +284,7 @@ namespace cart {
 	}
 	void World::Draw(float _deltaTime)
 	{
-			ClearBackground(RAYWHITE);
+			ClearBackground(WHITE);
 			
 			BeginMode3D(Application::CAMERA);
 			m_owningApp->ApplyCustomClipping(0.5f, 100.f);
@@ -464,7 +464,7 @@ namespace cart {
 		const char* vPath = vsPath.empty() ? nullptr : vsPath.c_str();
 		const char* fPath = fsPath.empty() ? nullptr : fsPath.c_str();
 		Shader shader = LoadShader(vPath, fPath);
-		if (!IsShaderValid(shader)) {
+		if (shader.id == 0) {
 			// TraceLog is Raylib's built-in logger
 			Logger::Get()->Warn(std::format("SHADER: {} Failed to load. Using default shader.", name));
 			UnloadShaderGlobal(name);//Raylib Function

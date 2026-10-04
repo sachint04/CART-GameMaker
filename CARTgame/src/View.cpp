@@ -24,10 +24,10 @@ namespace cart{
 
 	void View::Start()
 	{
-		weak<Sprite2D> m_sprite = m_owningworld->SpawnActor<Sprite2D>(std::string{ "sprite" });
+		weak<Sprite2D> m_sprite = m_owningworld->SpawnActor<Sprite2D>(std::string{ "sprite" }).lock();
 		AddChild(m_sprite);
 
-		weak<Text> m_txt = m_owningworld->SpawnActor<Text>(std::string{ "txt" });
+		weak<Text> m_txt = m_owningworld->SpawnActor<Text>(std::string{ "welcometxt" }).lock();
 		AddChild(m_txt);
 
 #pragma region Sprite
@@ -36,45 +36,48 @@ namespace cart{
 		std::string staticassetpath = m_owningworld->GetApplication()->GetStaticAssetsPath();
 
 		UI_Properties prop = {};
-		prop.size = { rect.width, rect.height };
+		prop.size = { 342, 100 };
 		prop.location = { 0,0 };
 		prop.pivot = { 0.5f, 0.5f };
 		prop.anchor = { 0.5f, 0.5f ,0.5f, 0.5f };
-		prop.texture = resourcepath + "cartengine.png";
-		
-		prop.component = LAYOUT;
+		prop.texture = resourcepath + "cartengine.png";		
+		prop.component = Layout_Component_Type::LAYOUT;
 		prop.color = WHITE;
-
-		m_sprite.lock().get()->SetUIProperties(prop);
-		m_sprite.lock().get()->MaintainAspectRatio(true);
-		m_sprite.lock().get()->SetVisible(true);
-		m_sprite.lock().get()->Init();
+		prop.borderwidth = 2;
+		prop.bordercol = PURPLE;
+		if(auto lock = m_sprite.lock()){
+			lock->SetUIProperties(prop);
+			lock->MaintainAspectRatio(true);
+			lock->SetVisible(true);
+			lock->Init();
+		}
 #pragma endregion
 
 #pragma region Text
 		Text_Properties tprop = {};
 		tprop.location = { 0,0 };
 		tprop.size = { rect.width, 40 };
-		tprop.location = { 0,380 };
+		tprop.location = { 0,0 };
 		tprop.pivot = { 0.5f, 0.5f };
 		tprop.anchor = { 0.5f, 0 ,0.5f, 0 };
 		tprop.font = staticassetpath + "fonts/verdana.ttf";
-		tprop.fontsize = 20;
+		tprop.text = "Welcome to CART Engine!";
+		tprop.fontsize = 40;
 		tprop.minfontsize = 16;
 		tprop.fontspacing = 1.4f;
 		tprop.minfontspacing = 1.f;
-		tprop.textcolor = BLUE;
-		tprop.component = LAYOUT;
+		tprop.textcolor = BLACK;
+		tprop.component = Layout_Component_Type::LAYOUT;
 		tprop.align = CENTER;
-		tprop.color = { 255,255,255, 0 };
-		tprop.text = "Welcome to CART Engine!";
-		m_txt.lock().get()->SetTextProperties(tprop);
-		m_txt.lock().get()->SetVisible(true);
-		m_txt.lock().get()->Init();
+		tprop.color = { 255,255, 0, 255 };
+		if(auto lock = m_txt.lock()){
+			lock->SetTextProperties(tprop);		
+			lock->SetVisible(true);
+			lock->Init();
+		}
 
+		
 #pragma endregion
-
-
 
 		UIElement::Start();
 	}

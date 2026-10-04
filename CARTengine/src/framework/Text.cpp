@@ -62,7 +62,6 @@ namespace cart {
 
 		//m_textsize = MeasureTextEx(*m_sharedfont, m_text.c_str(), fsize, fspace);
 //		DrawRectangle(m_location.x, m_location.y, m_width, m_height, m_background);	
-
 		if (!m_strlines.empty()) {
 			if (m_multiline) {
 				for (auto iter = m_strlines.begin(); iter != m_strlines.end(); ++iter)

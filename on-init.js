@@ -7,49 +7,7 @@ Module['onRuntimeInitialized'] = function() {
     var resizeTimer;
     var initialHeight = window.innerHeight;
     var fileInput = document.getElementById('fileInput');
-   // Detect GPU TIER
-    (async () =>  
-    {
-            try {
-                // 1. Call the library (DetectGPU is the global object)
-                const gpuData = await DetectGPU.getGPUTier(1, true);
-                const tier = gpuData.tier || 1; // Default to 1 for safety
-                
-                // 2. Allocate 4 bytes on the WASM HEAP for an int
-                Module.gpuTierPtr = Module._malloc(4);
 
-                // 3. Write the tier value to that memory address
-                //Module.setValue(Module.gpuTierPtr, tier, 'i32');
-                Module.HEAP32[Module.gpuTierPtr >> 2] = tier;
-            //	alert("Hardware Tier " + tier + " written to HEAP. \n" + gpuData.reason);
-            //	console.log("Hardware Tier " + tier + " written to HEAP.");
-            } catch (e) {
-                console.warn("GPU Detection failed, defaulting to Tier 1", e);
-            }
-
-            //appElement.classList.remove('hide');	
-            var w = window.innerWidth;//Math.min(window.innerWidth, 440);
-            var h = window.innerHeight;//Math.min(window.innerHeight, 844);
-
-            // em_canvas.setAttribute('width', w);
-            // em_canvas.setAttribute('height', h);
-            let struagnt = window.navigator.userAgent.toLocaleLowerCase();
-            var useragent = 0;
-            if(struagnt.search("iphone") >= 0 || struagnt.search("mac") >= 0){
-                useragent = 1;
-            }else if(struagnt.search("android") >= 0){
-                useragent = 2;
-            }
-            const strinfo = '{"width":'+w+', "height":'+h+', "useragent":'+useragent+'}';
-            console.log("before main 1 ", strinfo);
-            const isValid = Module.ccall('beforeMain',
-            'number',
-                ['string'],
-                [strinfo ]
-            );
-            APP_INIT  = 1;            
-        })();
-    // End
 
     window.JSHTTPostRequest = function(id, url , data, where= "")
         {

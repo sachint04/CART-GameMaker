@@ -81,7 +81,7 @@ namespace cart
 	void HUD::Draw(float _deltaTime)
 	{
 		if (!m_visible)return;
-		UIElement::Draw(_deltaTime);
+
 		for (auto iter = m_Actors.begin(); iter != m_Actors.end(); ++iter)
 		{
 			if (!iter->get()->IsPendingDestroy())

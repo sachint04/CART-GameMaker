@@ -23,9 +23,9 @@
       canvas.emscripten {
         border: 0px none;
         background: black;
-        width: 850px;
-		height:650px;
-		margin:0 auto;
+        width: 800px;
+        height:600px;
+        margin:0 auto;
       }
 
       .spinner {

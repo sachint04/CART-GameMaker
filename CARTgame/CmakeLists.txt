@@ -48,6 +48,7 @@ if(EMSCRIPTEN)
          "--shell-file=${PROJECT_SOURCE_DIR}/shell.html"
 		"--js-library=${PROJECT_SOURCE_DIR}/webmerge.js"
 		"--pre-js=${PROJECT_SOURCE_DIR}/on-init.js"
+		"--post-js=${PROJECT_SOURCE_DIR}/on-post.js"
         "--post-js=${PROJECT_SOURCE_DIR}/glfw-override.js"
        
         

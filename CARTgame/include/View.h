@@ -15,6 +15,6 @@ namespace cart {
 		void Destroy() override;
 
 	private:
-		
+
 	};
 }

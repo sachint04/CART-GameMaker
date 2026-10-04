@@ -1,3 +1,0 @@
-D:/c++/CART/_deps/raylib-subbuild/CMakeFiles/raylib-populate.dir
-D:/c++/CART/_deps/raylib-subbuild/CMakeFiles/ALL_BUILD.dir
-D:/c++/CART/_deps/raylib-subbuild/CMakeFiles/ZERO_CHECK.dir

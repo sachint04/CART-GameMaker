@@ -31,7 +31,7 @@ var ENVIRONMENT_IS_SHELL = !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_NODE && !ENVIR
 
 // --pre-jses are emitted after the Module integration code, so that they can
 // refer to Module (if they choose; they can also define Module)
-// include: /var/folders/gs/m4__c9l119n990bykh4wmtfw0000gn/T/tmpb3gaiu20.js
+// include: /var/folders/gs/m4__c9l119n990bykh4wmtfw0000gn/T/tmpzu344hes.js
 if (!Module["expectedDataFileDownloads"]) Module["expectedDataFileDownloads"] = 0;
 
 Module["expectedDataFileDownloads"]++;
@@ -152,15 +152,19 @@ Module["expectedDataFileDownloads"]++;
       "start": 0,
       "end": 6148
     }, {
-      "filename": "/assets/fonts/verdana.ttf",
+      "filename": "/assets/fonts/PlayerSansMono8x8-Classic.ttf",
       "start": 6148,
-      "end": 249452
+      "end": 21064
+    }, {
+      "filename": "/assets/fonts/verdana.ttf",
+      "start": 21064,
+      "end": 264368
     } ],
-    "remote_package_size": 249452
+    "remote_package_size": 264368
   });
 })();
 
-// end include: /var/folders/gs/m4__c9l119n990bykh4wmtfw0000gn/T/tmpb3gaiu20.js
+// end include: /var/folders/gs/m4__c9l119n990bykh4wmtfw0000gn/T/tmpzu344hes.js
 // include: /Users/sachintumbre/Git/CART-GameMaker/on-init.js
 if (typeof Module === "undefined") Module = {};
 
@@ -10718,33 +10722,33 @@ Module["FS_createLazyFile"] = FS_createLazyFile;
 // End JS library exports
 // end include: postlibrary.js
 var ASM_CONSTS = {
-  206536: $0 => {
+  206568: $0 => {
     try {
       FS.mkdirTree(UTF8ToString($0));
     } catch (e) {}
   },
-  206594: () => {
+  206626: () => {
     if (document.fullscreenElement) return 1;
   },
-  206640: () => document.getElementById("canvas").width,
-  206692: () => parseInt(document.getElementById("canvas").style.width),
-  206760: () => {
+  206672: () => document.getElementById("canvas").width,
+  206724: () => parseInt(document.getElementById("canvas").style.width),
+  206792: () => {
     document.exitFullscreen();
   },
-  206787: () => {
+  206819: () => {
     setTimeout(function() {
       Module.requestFullscreen(false, false);
     }, 100);
   },
-  206860: () => {
+  206892: () => {
     if (document.fullscreenElement) return 1;
   },
-  206906: () => document.getElementById("canvas").width,
-  206958: () => screen.width,
-  206983: () => {
+  206938: () => document.getElementById("canvas").width,
+  206990: () => screen.width,
+  207015: () => {
     document.exitFullscreen();
   },
-  207010: () => {
+  207042: () => {
     setTimeout(function() {
       Module.requestFullscreen(false, true);
       setTimeout(function() {
@@ -10752,53 +10756,53 @@ var ASM_CONSTS = {
       }, 100);
     }, 100);
   },
-  207143: () => window.innerWidth,
-  207169: () => window.innerHeight,
-  207196: () => {
+  207175: () => window.innerWidth,
+  207201: () => window.innerHeight,
+  207228: () => {
     if (document.fullscreenElement) return 1;
   },
-  207242: () => document.getElementById("canvas").width,
-  207294: () => parseInt(document.getElementById("canvas").style.width),
-  207362: () => {
+  207274: () => document.getElementById("canvas").width,
+  207326: () => parseInt(document.getElementById("canvas").style.width),
+  207394: () => {
     if (document.fullscreenElement) return 1;
   },
-  207408: () => document.getElementById("canvas").width,
-  207460: () => screen.width,
-  207485: () => window.innerWidth,
-  207511: () => window.innerHeight,
-  207538: () => {
+  207440: () => document.getElementById("canvas").width,
+  207492: () => screen.width,
+  207517: () => window.innerWidth,
+  207543: () => window.innerHeight,
+  207570: () => {
     if (document.fullscreenElement) return 1;
   },
-  207584: () => document.getElementById("canvas").width,
-  207636: () => screen.width,
-  207661: () => {
+  207616: () => document.getElementById("canvas").width,
+  207668: () => screen.width,
+  207693: () => {
     document.exitFullscreen();
   },
-  207688: () => {
+  207720: () => {
     if (document.fullscreenElement) return 1;
   },
-  207734: () => document.getElementById("canvas").width,
-  207786: () => parseInt(document.getElementById("canvas").style.width),
-  207854: () => {
+  207766: () => document.getElementById("canvas").width,
+  207818: () => parseInt(document.getElementById("canvas").style.width),
+  207886: () => {
     document.exitFullscreen();
   },
-  207881: $0 => {
+  207913: $0 => {
     document.getElementById("canvas").style.opacity = $0;
   },
-  207939: () => screen.width,
-  207964: () => screen.height,
-  207990: () => window.screenX,
-  208017: () => window.screenY,
-  208044: $0 => {
+  207971: () => screen.width,
+  207996: () => screen.height,
+  208022: () => window.screenX,
+  208049: () => window.screenY,
+  208076: $0 => {
     navigator.clipboard.writeText(UTF8ToString($0));
   },
-  208097: $0 => {
+  208129: $0 => {
     document.getElementById("canvas").style.cursor = UTF8ToString($0);
   },
-  208168: () => {
+  208200: () => {
     document.getElementById("canvas").style.cursor = "none";
   },
-  208225: ($0, $1, $2, $3) => {
+  208257: ($0, $1, $2, $3) => {
     try {
       navigator.getGamepads()[$0].vibrationActuator.playEffect("dual-rumble", {
         startDelay: 0,
@@ -10812,15 +10816,15 @@ var ASM_CONSTS = {
       } catch (e) {}
     }
   },
-  208481: $0 => {
+  208513: $0 => {
     document.getElementById("canvas").style.cursor = UTF8ToString($0);
   },
-  208552: () => {
+  208584: () => {
     if (document.fullscreenElement) return 1;
   },
-  208598: () => window.innerWidth,
-  208624: () => window.innerHeight,
-  208651: () => {
+  208630: () => window.innerWidth,
+  208656: () => window.innerHeight,
+  208683: () => {
     if (document.pointerLockElement) return 1;
   }
 };

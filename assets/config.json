@@ -31,6 +31,12 @@
       "verdana": {
         "path": "fonts/verdana.ttf"
       },
+	{
+	"PlayerSansMono8x8-Classic":
+	{
+		"path":"fonts/PlayerSansMono8x8-Classic"
+	}
+	}
     },
     "icon": {
       "file1": "0,0",

@@ -43,8 +43,8 @@ namespace cart{
 		prop.texture = resourcepath + "cartengine.png";		
 		prop.component = Layout_Component_Type::LAYOUT;
 		prop.color = WHITE;
-		prop.borderwidth = 2;
-		prop.bordercol = PURPLE;
+		//prop.borderwidth = 2;
+		//prop.bordercol = PURPLE;
 		if(auto lock = m_sprite.lock()){
 			lock->SetUIProperties(prop);
 			lock->MaintainAspectRatio(true);
@@ -57,21 +57,23 @@ namespace cart{
 		Text_Properties tprop = {};
 		tprop.location = { 0,0 };
 		tprop.size = { rect.width, 40 };
-		tprop.location = { 0,0 };
+		tprop.location = { 0, 70 };
 		tprop.pivot = { 0.5f, 0.5f };
-		tprop.anchor = { 0.5f, 0 ,0.5f, 0 };
-		tprop.font = staticassetpath + "fonts/verdana.ttf";
-		tprop.text = "Welcome to CART Engine!";
-		tprop.fontsize = 40;
+		tprop.anchor = { 0.5f, 0.5f ,0.5f, 0.5f };
+		tprop.font = staticassetpath + "fonts/PlayerSansMono8x8-Classic.ttf";
+		tprop.text = "Hello, CARTEngine!";
+		tprop.fontsize = 20;
 		tprop.minfontsize = 16;
 		tprop.fontspacing = 1.4f;
 		tprop.minfontspacing = 1.f;
-		tprop.textcolor = BLACK;
-		tprop.component = Layout_Component_Type::LAYOUT;
+		tprop.textcolor = PURPLE;
+		tprop.multiline = false;
+	tprop.component = Layout_Component_Type::LAYOUT;
 		tprop.align = CENTER;
-		tprop.color = { 255,255, 0, 255 };
+		tprop.color = { 255,255, 255, 0 };
 		if(auto lock = m_txt.lock()){
-			lock->SetTextProperties(tprop);		
+			lock->SetTextProperties(tprop);	
+			lock->UpdateTextLocation();	
 			lock->SetVisible(true);
 			lock->Init();
 		}

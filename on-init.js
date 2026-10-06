@@ -9,7 +9,8 @@ Module['onRuntimeInitialized'] = function() {
     var fileInput = document.getElementById('fileInput');
 
 
-    window.JSHTTPostRequest = function(id, url , data, where= "")
+	  
+    	window.JSHTTPostRequest = function(id, url , data, where= "")
         {
 
 	        $.ajax({

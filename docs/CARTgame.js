@@ -31,7 +31,7 @@ var ENVIRONMENT_IS_SHELL = !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_NODE && !ENVIR
 
 // --pre-jses are emitted after the Module integration code, so that they can
 // refer to Module (if they choose; they can also define Module)
-// include: /var/folders/gs/m4__c9l119n990bykh4wmtfw0000gn/T/tmp_097v1yq.js
+// include: /var/folders/gs/m4__c9l119n990bykh4wmtfw0000gn/T/tmpfw133rcd.js
 if (!Module["expectedDataFileDownloads"]) Module["expectedDataFileDownloads"] = 0;
 
 Module["expectedDataFileDownloads"]++;
@@ -164,7 +164,7 @@ Module["expectedDataFileDownloads"]++;
   });
 })();
 
-// end include: /var/folders/gs/m4__c9l119n990bykh4wmtfw0000gn/T/tmp_097v1yq.js
+// end include: /var/folders/gs/m4__c9l119n990bykh4wmtfw0000gn/T/tmpfw133rcd.js
 // include: /Users/sachintumbre/Git/CART-GameMaker/on-init.js
 if (typeof Module === "undefined") Module = {};
 
@@ -11338,6 +11338,20 @@ Module.postRun.push(function() {
   // Detect GPU TIER
   (async () => {
     var canvasemscripten = document.querySelector("canvas.emscripten");
+    // Resize Window
+    const TARGET_ASPECT = 16 / 9;
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    let calculatedWidth = windowHeight * TARGET_ASPECT;
+    let calculatedHeight = windowHeight;
+    // If the calculated width is too wide for the browser, clamp width instead
+    if (calculatedWidth > windowWidth) {
+      calculatedWidth = windowWidth;
+      calculatedHeight = windowWidth / TARGET_ASPECT;
+    }
+    canvasemscripten.style.width = Math.floor(calculatedWidth) + "px";
+    canvasemscripten.style.height = Math.floor(calculatedHeight) + "px";
+    // END
     var w = canvasemscripten.clientWidth;
     var h = canvasemscripten.clientHeight;
     try {
@@ -11361,7 +11375,7 @@ Module.postRun.push(function() {
       useragent = 2;
     }
     const strinfo = '{"width":' + w + ', "height":' + h + ', "useragent":' + useragent + "}";
-    console.log("before main 1 ", strinfo);
+    //  console.log("before main 1 ", strinfo);
     const isValid = Module.ccall("beforeMain", "number", [ "string" ], [ strinfo ]);
     APP_INIT = 1;
   })();

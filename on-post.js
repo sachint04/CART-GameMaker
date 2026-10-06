@@ -4,7 +4,24 @@ Module.postRun.push(function(){
     // Detect GPU TIER
     (async () =>  
         {
-            var canvasemscripten  = document.querySelector('canvas.emscripten');        
+            var canvasemscripten  = document.querySelector('canvas.emscripten');    
+            // Resize Window
+            const TARGET_ASPECT = 16 / 9; 
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+
+            let calculatedWidth = windowHeight * TARGET_ASPECT;
+            let calculatedHeight = windowHeight;
+
+            // If the calculated width is too wide for the browser, clamp width instead
+            if (calculatedWidth > windowWidth) {
+                calculatedWidth = windowWidth;
+                calculatedHeight = windowWidth / TARGET_ASPECT;
+            }
+            canvasemscripten.style.width = Math.floor(calculatedWidth) + "px";
+            canvasemscripten.style.height = Math.floor(calculatedHeight) + "px";
+        // END
+            
             var w = canvasemscripten.clientWidth;
             var h = canvasemscripten.clientHeight;
             try {
@@ -31,7 +48,7 @@ Module.postRun.push(function(){
                 useragent = 2;
             }
             const strinfo = '{"width":'+w+', "height":'+h+', "useragent":'+ useragent+'}';
-            console.log("before main 1 ", strinfo);
+          //  console.log("before main 1 ", strinfo);
             const isValid = Module.ccall('beforeMain',
             'number',
                 ['string'],
